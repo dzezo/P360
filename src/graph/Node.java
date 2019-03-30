@@ -43,6 +43,25 @@ public class Node {
 			return 0;
 	}
 	
+	public void setArticulationPoint(int adjAP) {
+		if(adjAP < 2)
+			repetitionsAllowed = 2;
+		else if (adjAP < 4)
+			repetitionsAllowed = 3;
+		else
+			repetitionsAllowed = 4;
+	}
+	
+	public void resetArticulationPoint() {
+		repetitionsAllowed ^= repetitionsAllowed;
+	}
+	
+	public boolean isArticulationPoint() {
+		if(repetitionsAllowed == 0)
+			return false;
+		return true;
+	}
+	
 	public void print() {
 		System.out.println("id: " + id);
 		System.out.println("repetitions: " + repetitionsAllowed);

@@ -92,4 +92,15 @@ public class Path {
 	public int getVisitedNodeCount() {
 		return this.visitedNodeCount;
 	}
+	
+	public void print() {
+		for(int i = 0; i < path.length; i++) {
+			if(i%10 == 0)
+				System.out.println();
+			if(i != path.length - 1)
+				System.out.print(path[i] + ", ");
+			else
+				System.out.println(path[i]);
+		}
+	}
 }

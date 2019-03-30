@@ -31,19 +31,19 @@ public class NodeList {
 		// napravi graf
 		createNode(firstNode);
 		// redukuj graf
+		boolean simplification = false;
 		boolean reduction = false;
 		do {
 			// izbaci nepotrebne cvorove
-			simplifyGraph();
+			simplification = simplifyGraph();
 			// izbaci listove
 			reduction = removeLeaves();
 			if(!reduction) {
 				findArticulationPoint();
 				reduction = removeExtraConnections();
 			}
-			
-			print();
-		} while(reduction);
+		} while(simplification || reduction);
+		print();
 	}
 	
 	private void add(Node newNode) {
@@ -143,7 +143,9 @@ public class NodeList {
 	/**
 	 * Obilazi se graf i izabacuju se cvorovi sa dve veze
 	 */
-	private void simplifyGraph() {
+	private boolean simplifyGraph() {
+		boolean isSimplified = false;
+		
 		Node node = head;
 		
 		while(node != null) {
@@ -226,10 +228,14 @@ public class NodeList {
 				
 				// izbaci cvor
 				remove(node);
+				if(!isSimplified) 
+					isSimplified = true;
 			}
 			// sledeci cvor
 			node = node.next;
 		}
+		
+		return isSimplified;
 	}
 	
 	/**
@@ -319,9 +325,7 @@ public class NodeList {
 		
 		System.out.println("genPathTime: " + ((System.currentTimeMillis() - time) / 1000.0f));
 		
-		for(int id : bestPath.getPath()) {
-			System.out.print(id + ", ");
-		}
+		bestPath.print();
 	}
 	
 	/**
@@ -453,25 +457,29 @@ public class NodeList {
 		// Postavi broj mogucih ponavljanja
 		Iterator<Node> iterator = articulationPoints.iterator();
 		while(iterator.hasNext()) {
-			Node ap = iterator.next();
+			Node node = iterator.next();
+			
+			int i,j;
 			int adjAP = 0;
-			for(int i = 0; i < ap.connectionCount; i++) {
-				if(articulationPoints.contains(ap.edges[i].destination))
+			if(articulationPoints.contains(node.edges[0].destination))
+				adjAP++;
+			for(i = 1; i < node.connectionCount; i++) {
+				for(j = 0; j < i; j++)
+					if(node.edges[j].destination == node.edges[i].destination)
+						break;
+				if(i == j && articulationPoints.contains(node.edges[i].destination))
 					adjAP++;
 			}
-			if(adjAP < 2)
-				ap.repetitionsAllowed = 2;
-			else if (adjAP < 4)
-				ap.repetitionsAllowed = 3;
-			else
-				ap.repetitionsAllowed = 4;
+			
+			node.setArticulationPoint(adjAP);
+			
 		}
 		
 		// Postavi ocekivanu duzinu putanje
 		Node start = head;
 		pathNodeCount = reducedNodeCount;
 		while (start != null) {
-			if(start.repetitionsAllowed > 0)
+			if(start.isArticulationPoint())
 				pathNodeCount += start.repetitionsAllowed - 1;
 			start = start.next;
 		}
@@ -493,6 +501,7 @@ public class NodeList {
 		
 		int childCount = 0;
 		boolean isArticulationPoint = false;
+		node.resetArticulationPoint();
 		
 		for(int i = 0; i < node.connectionCount; i++) {
 			Node adj = node.edges[i].destination;
@@ -553,8 +562,11 @@ public class NodeList {
 						if(node.edges[i].destination == node.edges[j].destination)
 							connections[connCount++] = node.edges[j];
 					
-					if(connCount > 1) {
-						removeConnections(node, connections, connCount);
+					boolean rem = false;
+					if(connCount > 1)
+						rem = removeConnections(node, connections, connCount);
+					
+					if(rem) {
 						if(!isConnectionRemoved)
 							isConnectionRemoved = true;
 						
@@ -585,16 +597,16 @@ public class NodeList {
 		Node nodeB = connections[0].destination;
 		
 		if(connCount == 2) {
-			if(nodeA.repetitionsAllowed == 0 && nodeB.repetitionsAllowed == 0) {
+			if(!nodeA.isArticulationPoint() && !nodeB.isArticulationPoint()) {
 				if(connections[0].weight < connections[1].weight)
 					removeConnection(nodeA, nodeB, connections[0]);
 				else
-					removeConnection(nodeA, nodeB, connections[0]);
+					removeConnection(nodeA, nodeB, connections[1]);
 				return true;
 			}
 		}
 		else if(connCount == 3) {
-			if(nodeA.repetitionsAllowed == 0 && nodeB.repetitionsAllowed == 0 &&
+			if(!nodeA.isArticulationPoint() && !nodeB.isArticulationPoint() &&
 					nodeA.connectionCount == 4 && nodeB.connectionCount == 4) 
 			{
 				Edge conn1, conn2;
