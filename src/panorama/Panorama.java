@@ -1,4 +1,4 @@
-package textures;
+package panorama;
 
 import org.lwjgl.util.vector.Vector3f;
 

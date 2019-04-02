@@ -1,4 +1,4 @@
-package textures;
+package panorama;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -6,6 +6,8 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+
+import frames.MapDrawingPanel;
 
 @SuppressWarnings("serial")
 public class MapNode extends Rectangle {
@@ -16,10 +18,10 @@ public class MapNode extends Rectangle {
 	private static Color fillColor = new Color(64,64,64);
 	private Color mainColor;
 	
-	private static int width = 150;
-	private static int height = 75;
-	private int prevX;
-	private int prevY;
+	public static int width = MapDrawingPanel.getGridSize() * 16;
+	public static int height = MapDrawingPanel.getGridSize() * 8;
+	private int pressX;
+	private int pressY;
 	
 	private String name;
 	private static Font nameFont = new Font("Arial", Font.BOLD, 15);
@@ -38,19 +40,11 @@ public class MapNode extends Rectangle {
 		name = panName;
 	}
 	
-	public static int getW() {
-		return width;
-	}
-	
-	public static int getH() {
-		return height;
-	}
-	
 	public boolean isPressed(int x, int y, int oX, int oY) {
 		if(this.contains(x - oX, y - oY)) {
 			selected = true;
-			prevX = x;
-			prevY = y;
+			pressX = x;
+			pressY = y;
 		}
 		else {
 			selected = false;
@@ -62,15 +56,27 @@ public class MapNode extends Rectangle {
 		int dx, dy;
 		int newX, newY;
 		if(selected) {
-			dx = dragX - prevX;
-			dy = dragY - prevY;
+			dx = dragX - pressX;
+			dy = dragY - pressY;
 			newX = this.x + dx;
 			newY = this.y + dy;
+			
 			this.setLocation(newX, newY);
 			calculatePorts(newX, newY);
-			prevX = dragX;
-			prevY = dragY;
+			
+			pressX = dragX;
+			pressY = dragY;
 		}
+	}
+	
+	public void centerOnGrid() {
+		int newX, newY; 
+		
+		newX = MapDrawingPanel.centerOnGrid(this.x);
+		newY = MapDrawingPanel.centerOnGrid(this.y);
+		
+		this.setLocation(newX, newY);
+		calculatePorts(newX, newY);
 	}
 	
 	private void calculatePorts(int x, int y) {

@@ -1,4 +1,4 @@
-package textures;
+package panorama;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,10 +8,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-
 import graph.NodeList;
+import utils.ChooserUtils;
+import utils.DialogUtils;
 
 @SuppressWarnings("serial")
 public class PanNode implements Serializable {
@@ -48,7 +47,10 @@ public class PanNode implements Serializable {
 			panorama = new Panorama(panoramaPath);
 	}
 
-	public static void addNode(String panPath, int originX, int originY) {
+	public static void addNode(int originX, int originY) {
+		String panPath = ChooserUtils.openImageDialog();
+		if(panPath == null) return;
+		
 		PanNode newNode = new PanNode(panPath, originX, originY);
 		// Incase there is no home(starting) panorama set;
 		if(home == null)
@@ -119,12 +121,12 @@ public class PanNode implements Serializable {
 		else if(node1.getBot() == node2)
 			alreadyConnected = true;
 		if(alreadyConnected) {
-			JOptionPane.showMessageDialog(null, "Connection between selected nodes already exists.", "Connection Aborted", JOptionPane.INFORMATION_MESSAGE);
+			DialogUtils.showMessage("Connection between selected nodes already exists.", "Connection Aborted");
 			return;
 		}
 		// Determine connection port
-		int width = MapNode.getW();
-		int height = MapNode.getH();
+		int width = MapNode.width;
+		int height = MapNode.height;
 		int x1 = node1.getMapNode().x;
 		int y1 = node1.getMapNode().y;
 		int x2 = node2.getMapNode().x;
@@ -141,7 +143,7 @@ public class PanNode implements Serializable {
 			if(left) {
 				// Check if port is taken
 				if(node1.getLeft() != null || node2.getRight() != null) {
-					JOptionPane.showMessageDialog(null, "Port is already taken.", "Connection Aborted", JOptionPane.INFORMATION_MESSAGE);
+					DialogUtils.showMessage("Port is already taken.", "Connection Aborted");
 					return;
 				}
 				node1.setLeft(node2);
@@ -150,21 +152,21 @@ public class PanNode implements Serializable {
 			else if(right) {
 				// Check if port is taken
 				if(node1.getRight() != null || node2.getLeft() != null) {
-					JOptionPane.showMessageDialog(null, "Port is already taken.", "Connection Aborted", JOptionPane.INFORMATION_MESSAGE);
+					DialogUtils.showMessage("Port is already taken.", "Connection Aborted");
 					return;
 				}
 				node1.setRight(node2);
 				node2.setLeft(node1);
 			}
 			else {
-				JOptionPane.showMessageDialog(null, "Connection is not possible, try changing position", "Connection Aborted", JOptionPane.INFORMATION_MESSAGE);
+				DialogUtils.showMessage("Connection is not possible, try changing position", "Connection Aborted");
 			}
 		}
 		else if(TopOrBot) {
 			if(top) {
 				// Check if port is taken
 				if(node1.getTop() != null || node2.getBot() != null) {
-					JOptionPane.showMessageDialog(null, "Port is already taken.", "Connection Aborted", JOptionPane.INFORMATION_MESSAGE);
+					DialogUtils.showMessage("Port is already taken.", "Connection Aborted");
 					return;
 				}
 				node1.setTop(node2);
@@ -173,18 +175,18 @@ public class PanNode implements Serializable {
 			else if(bot) {
 				// Check if port is taken
 				if(node1.getBot() != null || node2.getTop() != null) {
-					JOptionPane.showMessageDialog(null, "Port is already taken.", "Connection Aborted", JOptionPane.INFORMATION_MESSAGE);
+					DialogUtils.showMessage("Port is already taken.", "Connection Aborted");
 					return;
 				}
 				node1.setBot(node2);
 				node2.setTop(node1);
 			}
 			else {
-				JOptionPane.showMessageDialog(null, "Connection is not possible, try changing position", "Connection Aborted", JOptionPane.INFORMATION_MESSAGE);
+				DialogUtils.showMessage("Connection is not possible, try changing position", "Connection Aborted");
 			}
 		}
 		else {
-			JOptionPane.showMessageDialog(null, "Connection is not possible, try changing position", "Connection Aborted", JOptionPane.INFORMATION_MESSAGE);
+			DialogUtils.showMessage("Connection is not possible, try changing position", "Connection Aborted");
 		}
 	}
 
@@ -208,11 +210,11 @@ public class PanNode implements Serializable {
 			node2.setTop(null);
 		}	
 		else {
-			JOptionPane.showMessageDialog(null, "Connection does not exist.", "No Connection Found", JOptionPane.INFORMATION_MESSAGE);
+			DialogUtils.showMessage("Connection does not exist.", "No Connection Found");
 		}
 	}
 	
-	public static void saveMap(String savePath) {
+	public static boolean saveMap(String savePath) {
 		// Writing to file
 		try {
 			FileOutputStream fs = new FileOutputStream(savePath);
@@ -222,10 +224,14 @@ public class PanNode implements Serializable {
 			oos.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+			return false;
 		}
+		
+		// success
+		return true;
 	}
 	
-	public static boolean loadMap(String loadPath, JFileChooser imageChooser) {
+	public static boolean loadMap(String loadPath) {
 		PanNode head = null;
 		PanNode home = null;
 		try {
@@ -236,23 +242,22 @@ public class PanNode implements Serializable {
 			ois.close();
 		} catch (Exception e) {
 			e.printStackTrace();
+			return false;
 		}
+		
 		// image path checking
 		PanNode start = head;
 		while(start != null) {
 			String panPath = start.getPanoramaPath();
 			File f = new File(panPath);
 			if(!f.exists()) {
-				int dialogRes = JOptionPane.showConfirmDialog(null, "Could not find: " + panPath + "\nDo you want to change the path?", "No Panorama Found", JOptionPane.YES_NO_OPTION);
-				if(dialogRes == JOptionPane.YES_OPTION) {
-					int result = imageChooser.showOpenDialog(null);
-					if(result == JFileChooser.APPROVE_OPTION) {
-						String newPanoramaPath = imageChooser.getSelectedFile().getPath();
-						start.setPanoramaPath(newPanoramaPath);
-					}
+				int dialogRes = DialogUtils.showConfirmDialog("Could not find: " + panPath + "\nDo you want to change the path?", "No Panorama Found");
+				if(dialogRes == DialogUtils.YES) {
+					String newPanoramaPath = ChooserUtils.openImageDialog();
+					if(newPanoramaPath != null) start.setPanoramaPath(newPanoramaPath);
 				}
-				else if(dialogRes == JOptionPane.NO_OPTION) {
-					JOptionPane.showMessageDialog(null, "Could not load: " + loadPath, "Loading Aborted", JOptionPane.INFORMATION_MESSAGE);
+				else if(dialogRes == DialogUtils.NO) {
+					DialogUtils.showMessage("Could not load: " + loadPath, "Loading Aborted");
 					return false;
 				}
 			}
@@ -260,9 +265,11 @@ public class PanNode implements Serializable {
 				start = start.getNext();
 			}
 		}
+		
 		// loading
 		PanNode.setHead(head);
 		PanNode.setHome(home);
+		
 		// success
 		return true;
 	}
@@ -272,7 +279,8 @@ public class PanNode implements Serializable {
 		graph.generatePath();
 	}
 	
-	// GETTERS AND SETTERS	
+	// GETTERS AND SETTERS
+	
 	public int getID() {
 		return this.drawNum;
 	}

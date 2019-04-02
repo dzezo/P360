@@ -1,8 +1,8 @@
 package glRenderer;
 
 import gui.GuiNavButtons;
-import textures.PanNode;
-import textures.Panorama;
+import panorama.PanNode;
+import panorama.Panorama;
 
 public class Scene {
 	private static PanNode activePanorama;

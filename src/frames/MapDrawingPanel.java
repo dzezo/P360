@@ -1,5 +1,6 @@
 package frames;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -8,22 +9,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 
-import javax.swing.JComponent;
-
-import textures.MapNode;
-import textures.PanNode;
+import panorama.MapNode;
+import panorama.PanNode;
 
 @SuppressWarnings("serial")
-public class MapDrawingPanel extends JComponent {
-	private Color panelColor = new Color(128,128,128);
-	
-	private int originX = 0;
-	private int originY = 0;
-	private int x;
-	private int y;
-	
-	private PanNode selectedNode1;
-	private PanNode selectedNode2;
+public class MapDrawingPanel extends MapPanel {
+	private static int gridSize = 10;
 	
 	private boolean dragAllowed = true;
 	
@@ -32,15 +23,15 @@ public class MapDrawingPanel extends JComponent {
 		this.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent press) {
 				// getting mouse click location
-				x = press.getX();
-				y = press.getY();
+				mouseX = press.getX();
+				mouseY = press.getY();
 				
 				if(press.isControlDown()) {
 					if(selectedNode1 == null) {
-						selectedNode1 = getSelectedNode(x,y);
+						selectedNode1 = getSelectedNode(mouseX,mouseY);
 					}
 					else if(selectedNode2 == null) {
-						selectedNode2 = getSelectedNode(x,y);
+						selectedNode2 = getSelectedNode(mouseX,mouseY);
 						if(selectedNode1.equals(selectedNode2))
 							selectedNode2 = null;
 					}
@@ -48,11 +39,18 @@ public class MapDrawingPanel extends JComponent {
 				else {
 					selectedNode1 = null;
 					selectedNode2 = null;
-					selectedNode1 = getSelectedNode(x,y);
+					selectedNode1 = getSelectedNode(mouseX,mouseY);
 				}
 			}
 			
 			public void mouseReleased(MouseEvent released) {
+				// center after drag
+				originX = centerOnGrid(originX);
+				originY = centerOnGrid(originY);
+				if(selectedNode1 != null)
+					selectedNode1.getMapNode().centerOnGrid();
+				
+				// allow drag
 				dragAllowed = true;
 			}
 		});
@@ -76,63 +74,35 @@ public class MapDrawingPanel extends JComponent {
 		});
 	}
 	
-	private PanNode getSelectedNode(int x,int y) {
-		PanNode selectedNode = null;
-		PanNode start = PanNode.getHead();
-		while(start != null) {
-			MapNode node = start.getMapNode();
-			if(node.isPressed(x, y, originX, originY)) {
-				selectedNode = start;
-			}
-			start = start.getNext();
-		}
-		return selectedNode;
+	private void drawGrid(Graphics2D g) {
+		g.setStroke(new BasicStroke(0.2f));
+		g.setColor(new Color(0,0,0));
+		
+		int x = -originX;
+		int y = -originY;
+		int endX = x + this.getWidth();
+		int endY = y + this.getHeight();
+		
+		for(int i = 0; i < this.getHeight()/gridSize + 1; i++)
+			g.drawLine(x, y + i*gridSize, endX, y + i*gridSize);
+		for(int i = 0; i < this.getWidth()/gridSize + 1; i++)
+			g.drawLine(x + i*gridSize, y, x + i*gridSize, endY);
 	}
 	
-	private boolean isNodeSelected(MapNode node) {
-		if(selectedNode1 != null)
-			if(selectedNode1.getMapNode() == node)
-				return true;
-		if(selectedNode2 != null)
-			if(selectedNode2.getMapNode() == node)
-				return true;
-		return false;
+	public static int centerOnGrid(int coord) {
+        int q = coord / gridSize; 
+        
+        int n1 = gridSize * q; 
+        int n2 = (coord * gridSize) > 0 ? (gridSize * (q + 1)) : (gridSize * (q - 1)); 
+           
+        if (Math.abs(coord - n1) < Math.abs(coord - n2)) 
+            return n1; 
+        else
+        	return n2;  
 	}
 	
-	private void dragPanel(int dragX, int dragY) {
-		int dx, dy;
-		dx = dragX - x;
-		dy = dragY - y;
-		originX += dx;
-		originY += dy;
-		x = dragX;
-		y = dragY;
-	}
-	
-	public void setOrigin(int oX, int oY) {
-		originX = -oX;
-		originY = -oY;
-	}
-	
-	public int getOriginX() {
-		return -originX;
-	}
-	
-	public int getOriginY() {
-		return -originY;
-	}
-	
-	public PanNode getSelectedNode1() {
-		return selectedNode1;
-	}
-	
-	public PanNode getSelectedNode2() {
-		return selectedNode2;
-	}
-	
-	public void deselectNodes() {
-		selectedNode1 = null;
-		selectedNode2 = null;
+	public static int getGridSize() {
+		return gridSize;
 	}
 	
 	public void paint(Graphics g) {
@@ -144,6 +114,10 @@ public class MapDrawingPanel extends JComponent {
 		
 		// Translates the origin of the Graphics2D context to the point (x, y) in the current coordinate system.
 		graphicSettings.translate(originX, originY);
+		
+		// Drawing grid
+		drawGrid(graphicSettings);
+		
 		// Drawing starts from the head (root), and draw number zero is assigned to it.
 		int drawNum = 0;
 		PanNode start = PanNode.getHead();
@@ -154,4 +128,13 @@ public class MapDrawingPanel extends JComponent {
 			start = start.getNext();
 		}
 	}
+	
+	public void setOrigin(int oX, int oY) {
+		originX = -oX;
+		originY = -oY;
+		
+		originX = centerOnGrid(originX);
+		originY = centerOnGrid(originY);
+	}
+
 }

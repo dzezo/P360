@@ -7,18 +7,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
 
 import org.lwjgl.LWJGLException;
 
@@ -27,8 +22,11 @@ import glRenderer.Scene;
 import input.Controller;
 import input.Controllers;
 import input.InputManager;
-import textures.PanNode;
+import panorama.PanNode;
+import utils.ChooserUtils;
+import utils.DialogUtils;
 
+@SuppressWarnings("serial")
 public class MainFrame extends Frame {
 	// FRAME
 	private Canvas displayCanvas = new Canvas();
@@ -46,6 +44,7 @@ public class MainFrame extends Frame {
 	private JMenuItem map_load = new JMenuItem("Load Map");
 	private JMenuItem map_save = new JMenuItem("Save Map");
 	private JMenuItem map_change = new JMenuItem("Change Map");
+	private JMenuItem map_show = new JMenuItem("Show Map");
 	/* viewMenu items */
 	private static JMenuItem view_fullScreen = new JMenuItem("Full Screen");
 	private static JCheckBoxMenuItem view_autoPan = new JCheckBoxMenuItem("Auto Pan");
@@ -54,12 +53,14 @@ public class MainFrame extends Frame {
 	/* load */
 	private boolean newImage = false;
 	private boolean newMap = false;
-	/* map creation gui */
-	private MapFrame mapCreat = new MapFrame("Create Map");
+	/* map gui */
+	private MapDrawingFrame mapEditor = new MapDrawingFrame("Create Map");
+	private MapViewFrame mapView = new MapViewFrame("View Map");
 	
 	
 	public MainFrame(String title) {
 		super(title);
+		ChooserUtils.init();
 		createMenuBar();
 		createFrame();
 		// Frame created
@@ -73,20 +74,20 @@ public class MainFrame extends Frame {
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		mainPanel.add(displayCanvas, BorderLayout.CENTER);
 		
-		frame.add(mainPanel);
-		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		frame.setVisible(true);
-		frame.pack();
-		frame.setLocationRelativeTo(null);
+		add(mainPanel);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		setVisible(true);
+		pack();
+		setLocationRelativeTo(null);
 		
-		// Frame Listeners
-		frame.addWindowListener(new WindowAdapter() 
+		// Frame Listener
+		addWindowListener(new WindowAdapter() 
 		{
             public void windowClosing(WindowEvent we){
             	// Break main loop
             	running = false;
-            	// Disposing mapcreat frame
-            	mapCreat.cleanUp();
+            	// Disposing mapEditor frame
+            	mapEditor.cleanUp();
             	// Disposing self
                 cleanUp();
             }
@@ -101,20 +102,23 @@ public class MainFrame extends Frame {
 	private void createMenuBar() {
 		// FILE
 		fileMenu.add(file_open);
+		
 		// MAP
 		mapMenu.add(map_new);
 		mapMenu.add(map_load);
-		map_save.setEnabled(false);
 		mapMenu.add(map_save);
 		mapMenu.addSeparator();
-		map_change.setEnabled(false);
 		mapMenu.add(map_change);
+		mapMenu.add(map_show);	
+		enableMapMode(false);
+		
 		// VIEW
 		view_autoPan.setSelected(true);
 		viewMenu.add(view_autoPan);
 		viewMenu.addSeparator();
 		view_fullScreen.setEnabled(false);
 		viewMenu.add(view_fullScreen);
+		
 		// GAMEPAD
 		gamePadMenu.add(gamePad_scan);
 		gamePadMenu.addSeparator();
@@ -124,178 +128,47 @@ public class MainFrame extends Frame {
 		menuBar.add(viewMenu);
 		menuBar.add(gamePadMenu);
 		
-		frame.setJMenuBar(menuBar);
-		
-		/* Menu listeners */
-		MenuListener ml = new MenuListener() {
-			public void menuCanceled(MenuEvent e) {
-				displayCanvas.requestFocusInWindow();
-			}
-			public void menuDeselected(MenuEvent e) {}
-			public void menuSelected(MenuEvent e) {
-				displayCanvas.requestFocusInWindow();
-			}};
-		
-		fileMenu.addMenuListener(ml);
-		mapMenu.addMenuListener(ml);
-		viewMenu.addMenuListener(ml);
+		setJMenuBar(menuBar);
 		
 		/* Item listeners */
-		file_open.addActionListener(new ActionListener() 
-		{
-			public void actionPerformed(ActionEvent event) {
-				//show file chooser dialog
-				int result = imageChooser.showOpenDialog(null);
-				//if file selected
-				if(result == JFileChooser.APPROVE_OPTION) {
-					String newPath = imageChooser.getSelectedFile().getPath();
-					PanNode activePanorama = Scene.getActivePanorama();
-					// If there's no active panorama or selected panorma is not the same as active one
-					// then set new active panorama and enable fullscreen mode
-					if(activePanorama == null || !newPath.equals(activePanorama.getPanoramaPath())) {
-						// Remove map if loaded
-						PanNode.setHead(null);
-						PanNode.setHome(null);
-						// set new single panorama
-						PanNode newPanorama = new PanNode(newPath);
-						Scene.setActivePanorama(newPanorama);
-						enableFullScreen();
-						newImage = true;
-						// disable map mode
-						map_save.setEnabled(false);
-						map_change.setEnabled(false);
-					}
-				}
-				displayCanvas.requestFocusInWindow();
-			}
-		});
-		
+		file_open.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) { openSingleImage(); }
+		});		
 		map_new.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				// No map loaded
-				if(PanNode.getHead() == null)
-					mapCreat.setVisible(true);
-				// Map loaded, prompt overwrite
-				else {
-					String msg = "Creating new map will overwrite existing one, \nDo you want to continue?";
-					int dialogRes = JOptionPane.showConfirmDialog(null, msg, "New Map", JOptionPane.YES_NO_OPTION);
-					if(dialogRes == JOptionPane.YES_OPTION) {
-						PanNode.setHead(null);
-						PanNode.setHome(null);
-						mapCreat.setVisible(true);
-					}
-					else if(dialogRes == JOptionPane.NO_OPTION) {
-						displayCanvas.requestFocusInWindow();
-					}
-				}
-				map_save.setEnabled(true);
-				map_change.setEnabled(true);
-				mapCreat.frame.setTitle("New Map");
-			}			
-		});
-		
+			public void actionPerformed(ActionEvent arg0) { newMap(); }			
+		});		
 		map_load.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				// show and read dialog
-				int result = mapChooser.showOpenDialog(null);
-				if(result == JFileChooser.APPROVE_OPTION) {
-					String loadPath = mapChooser.getSelectedFile().getPath();
-					// attach extension if there is not any
-					if(!loadPath.endsWith(".p360"))
-						loadPath = loadPath.concat(".p360");
-					// check if file exists
-					File file = new File(loadPath);
-					if(!file.exists()) {
-						// show error msg and leave
-						JOptionPane.showMessageDialog(null, "File does not exist", "Load Map", JOptionPane.INFORMATION_MESSAGE);
-						return;
-					}
-					// loading
-					boolean success = PanNode.loadMap(loadPath, imageChooser);
-					if(!success) return;
-					// setting the origin of a map
-					int originX = PanNode.getHome().getMapNode().x;
-					int originY = PanNode.getHome().getMapNode().y;
-					mapCreat.getMapPanel().setOrigin(originX, originY);
-					// display map source as title
-					mapCreat.frame.setTitle(loadPath);
-					enableFullScreen();
-					newMap = true;
-					// enable map mode
-					map_save.setEnabled(true);
-					map_change.setEnabled(true);
-				}
-				displayCanvas.requestFocusInWindow();
-			}
-		});
-		
+			public void actionPerformed(ActionEvent arg0) { loadMap(); }
+		});		
 		map_save.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				if(PanNode.getHead() == null) {
-					JOptionPane.showMessageDialog(null, "Nothing to save!", "Save", JOptionPane.INFORMATION_MESSAGE);
-				}
-				else {
-					String savePath;
-					int result = mapChooser.showSaveDialog(null);
-					if(result == JFileChooser.APPROVE_OPTION) {
-						// determining saving path
-						// set saving location
-						savePath = mapChooser.getSelectedFile().getPath();
-						// attach extension if there is not any
-						if(!savePath.endsWith(".p360"))
-							savePath = savePath.concat(".p360");
-						// check if file exists
-						File saveFile = new File(savePath);
-				        if (saveFile.exists()) {
-				          int overwriteResult = JOptionPane.showConfirmDialog(null, "The file already exists. Do you want to overwrite it?", "Confirm Replace", JOptionPane.YES_NO_OPTION);
-				          if(overwriteResult == JOptionPane.NO_OPTION)
-				        	  return;
-				        }
-						// saving
-						PanNode.saveMap(savePath);
-						// show message
-						mapCreat.frame.setTitle(savePath);
-						JOptionPane.showMessageDialog(null, "Saved!", "Save", JOptionPane.INFORMATION_MESSAGE);
-					}
-				}
-				displayCanvas.requestFocusInWindow();
-			}
+			public void actionPerformed(ActionEvent arg0) { saveMap(); }
+		});		
+		map_change.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) { changeMap(); }
 		});
-		
-		map_change.addActionListener(new ActionListener() 
-		{
-			public void actionPerformed(ActionEvent event) {
-				mapCreat.setVisible(true);
-			}
+		map_show.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) { showMap(); }
+		});	
+		view_fullScreen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) { fullscreen(); }
 		});
-		
-		view_fullScreen.addActionListener(new ActionListener() 
-		{
-			public void actionPerformed(ActionEvent event) {
-				DisplayManager.setFullscreen();
-				displayCanvas.requestFocusInWindow();
-			}
-		});
-		
-		view_autoPan.addActionListener(new ActionListener() 
-		{
-			public void actionPerformed(ActionEvent event) {
-				InputManager.setAutoPan();
-				displayCanvas.requestFocusInWindow();
-			}
+		view_autoPan.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) { autoPan(); }
 		});
 		gamePad_scan.addActionListener(new ActionListener () {
-			public void actionPerformed(ActionEvent arg0) {
-				scanForController();
-				gamePadMenu.doClick();
-			}
+			public void actionPerformed(ActionEvent arg0) { scanForController(); }
 		});
 	}
 
+	private void enableMapMode(boolean b) {
+		map_save.setEnabled(b);
+		map_change.setEnabled(b);
+		map_show.setEnabled(b);
+	}
+	
 	public boolean isRunning() {
 		return running;
 	}
-	
 	
 	public boolean isNewImage() {
 		if(newImage) {
@@ -315,11 +188,88 @@ public class MainFrame extends Frame {
 			return false;
 	}
 
-	
-	public MapFrame getMapFrame() {
-		return mapCreat;
+	public MapDrawingFrame getMapFrame() {
+		return mapEditor;
 	}
-
+	
+	public static void enableFullScreen() {
+		view_fullScreen.setEnabled(true);
+	}
+	
+	public static void autoPan(boolean b) {
+		view_autoPan.setSelected(b);
+	}
+	
+	/* Menubar Actions */
+	private void openSingleImage(){
+		String newPath = ChooserUtils.openImageDialog();
+		if(newPath == null) return;
+		PanNode activePanorama = Scene.getActivePanorama();
+		
+		// If there's no active panorama or selected panorama is not the same as active one
+		// then set new active panorama and enable fullscreen mode
+		if(activePanorama == null || !newPath.equals(activePanorama.getPanoramaPath())) {
+			// Remove map if loaded
+			PanNode.setHead(null);
+			PanNode.setHome(null);
+			// set new single panorama
+			PanNode newPanorama = new PanNode(newPath);
+			Scene.setActivePanorama(newPanorama);
+			enableFullScreen();
+			newImage = true;
+			enableMapMode(false);
+		}
+	}
+	
+	private void newMap() {
+		// No map loaded
+		if(PanNode.getHead() == null)
+			mapEditor.showFrame();
+		
+		// Map loaded, prompt overwrite
+		else {
+			int dialogRes = DialogUtils.showConfirmDialog("Creating new map will overwrite existing one, \nDo you want to continue?", "New Map");
+			if(dialogRes == DialogUtils.YES) {
+				PanNode.setHead(null);
+				PanNode.setHome(null);
+				mapEditor.showFrame();
+			}
+		}
+		
+		enableMapMode(true);
+		mapEditor.setTitle("New Map");
+	}
+	
+	private void loadMap() {
+		// loading
+		boolean success = mapEditor.load();
+		
+		if(success) {
+			newMap = true;
+			enableFullScreen();
+			enableMapMode(true);
+		}
+	}
+	
+	private void saveMap() {
+		mapEditor.save();
+	}
+	
+	private void changeMap() {
+		mapEditor.showFrame();
+	}
+	
+	private void showMap() { 
+		mapView.showFrame(mapEditor.getTitle());
+	}
+	
+	private void fullscreen() {
+		DisplayManager.setFullscreen();
+	}
+	
+	private void autoPan() {
+		InputManager.setAutoPan();
+	}
 	
 	private void scanForController() {
 		// Clear dropdown menu
@@ -354,13 +304,5 @@ public class MainFrame extends Frame {
 			});
 			gamePadMenu.add(controller);
 		}
-	}
-	
-	public static void enableFullScreen() {
-		view_fullScreen.setEnabled(true);
-	}
-	
-	public static void autoPan(boolean b) {
-		view_autoPan.setSelected(b);
 	}
 }

@@ -1,7 +1,7 @@
 package main;
 
 import frames.MainFrame;
-import frames.MapFrame;
+import frames.MapDrawingFrame;
 import glRenderer.Camera;
 import glRenderer.DisplayManager;
 import glRenderer.Renderer;
@@ -16,11 +16,11 @@ import utils.Loader;
 public class Main {
 	public static void main(String[] args) {
 		MainFrame mainFrame = new MainFrame("P360");
-		MapFrame mapFrame = mainFrame.getMapFrame();
-		Camera cam = new Camera();
+		MapDrawingFrame mapFrame = mainFrame.getMapFrame();
+		Camera camera = new Camera();
 		StaticShader shader = new StaticShader();
 		GuiShader guiShader = new GuiShader();
-		Scene.setCamera(cam);
+		Scene.setCamera(camera);
 		GuiNavButtons.init();
 		
 		while(mainFrame.isRunning()) {

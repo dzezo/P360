@@ -7,7 +7,7 @@ import org.lwjgl.util.vector.Vector2f;
 
 import glRenderer.DisplayManager;
 import glRenderer.Scene;
-import textures.PanNode;
+import panorama.PanNode;
 
 public class GuiNavButtons {
 	private static GuiButton navTop;

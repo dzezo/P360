@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import textures.PanNode;
+import panorama.PanNode;
 
 public class NodeList {
 	private Node head;

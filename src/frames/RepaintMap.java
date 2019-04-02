@@ -16,7 +16,7 @@ public class RepaintMap implements Runnable{
 	}
 	
 	public void run() {
-		map.frame.repaint();
+		map.repaint();
 	}
 
 }

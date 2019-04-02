@@ -11,8 +11,8 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
+import panorama.Panorama;
 import shaders.StaticShader;
-import textures.Panorama;
 
 public class Renderer {
 	private static final float HFOV_CAP = 80f;
