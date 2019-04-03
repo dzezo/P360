@@ -50,6 +50,7 @@ public class MainFrame extends Frame {
 	private static JMenuItem view_fullScreen = new JMenuItem("Full Screen");
 	private static JCheckBoxMenuItem view_autoPan = new JCheckBoxMenuItem("Auto Pan");
 	/* soundMenu items */
+	private boolean sound_controlEnabled = false;
 	private boolean sound_play = false;
 	private static JMenuItem sound_playPause = new JMenuItem("Play");
 	private static JMenuItem sound_stop = new JMenuItem("Stop");
@@ -118,7 +119,7 @@ public class MainFrame extends Frame {
 		mapMenu.add(map_change);
 		mapMenu.add(map_show);
 		
-		enableMapControl(false);
+		enableMapControl(sound_controlEnabled);
 		
 		// VIEW
 		viewMenu.add(view_autoPan);
@@ -132,7 +133,8 @@ public class MainFrame extends Frame {
 		soundMenu.add(sound_playPause);
 		soundMenu.add(sound_stop);
 		
-		enableSoundControl(false);
+		sound_playPause.setEnabled(true);
+		sound_stop.setEnabled(true);
 		
 		// GAMEPAD
 		gamePadMenu.add(gamePad_scan);
@@ -182,15 +184,31 @@ public class MainFrame extends Frame {
 		});
 	}
 
-	private void enableMapControl(boolean b) {
-		map_save.setEnabled(b);
-		map_change.setEnabled(b);
-		map_show.setEnabled(b);
+	private void enableMapControl(boolean status) {
+		map_save.setEnabled(status);
+		map_change.setEnabled(status);
+		map_show.setEnabled(status);
 	}
 	
-	private void enableSoundControl(boolean b) {
-		sound_playPause.setEnabled(b);
-		sound_stop.setEnabled(b);
+	public void enableSoundControl(boolean status) {
+		// audio track reached end
+		if(status && !Scene.getActivePanorama().isAudioPlaying() && sound_play) {
+			sound_play = false;
+			sound_playPause.setText("Play");
+		}
+		// track started automatically
+		else if(status && Scene.getActivePanorama().isAudioPlaying() && !sound_play) {
+			sound_play = true;
+			sound_playPause.setText("Pause");
+		}
+		
+		// there is sound and sound is not enabled or
+		// there is no sound and sound is enabled
+		if(status && !sound_controlEnabled || !status && sound_controlEnabled) {
+			// enable/disable
+			sound_playPause.setEnabled(status);
+			sound_stop.setEnabled(status);
+		}
 	}
 	
 	public boolean isRunning() {
@@ -232,6 +250,7 @@ public class MainFrame extends Frame {
 	}
 	
 	/* Menubar Actions */
+	
 	private void openSingleImage(){
 		String newPath = ChooserUtils.openImageDialog();
 		if(newPath == null) return;
@@ -307,12 +326,12 @@ public class MainFrame extends Frame {
 		
 		// is sound is playing -> pause it / change text to play
 		if(sound_play) {
-			pan.pause();
+			pan.pauseAudio();
 			sound_playPause.setText("Play");
 		}
 		// is sound paused -> play it / change text to pause
 		else {
-			pan.play();
+			pan.playAudio();
 			sound_playPause.setText("Pause");
 		}
 		
@@ -323,7 +342,7 @@ public class MainFrame extends Frame {
 	private void soundStop() {
 		PanNode pan = Scene.getActivePanorama();
 		
-		pan.stop();
+		pan.stopAudio();
 		
 		sound_play = false;
 		sound_playPause.setText("Play");

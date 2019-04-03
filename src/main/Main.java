@@ -16,6 +16,7 @@ import utils.Loader;
 
 public class Main {
 	public static void main(String[] args) {
+		// init
 		MainFrame mainFrame = new MainFrame("P360");
 		MapDrawFrame mapFrame = mainFrame.getMapDrawingFrame();
 		MapViewFrame mapView = mainFrame.getMapViewFrame();
@@ -27,6 +28,7 @@ public class Main {
 		GuiNavButtons.init();
 		
 		while(mainFrame.isRunning()) {
+			// check for changes
 			if(mainFrame.isNewImage() || mapView.isUpdated()) {
 				Scene.loadNewImage();
 			}
@@ -35,14 +37,24 @@ public class Main {
 			}
 			
 			if(Scene.isReady()) {
+				if(Scene.hasSound())
+					System.out.println("sound is playing");
+				else
+					System.out.println("sound is not playing");
+				
+				// read inputs
 				InputManager.readInput();
 				GuiNavButtons.update();
+				
+				// render
 				Renderer.prepare();
 				shader.start();
 				Renderer.render(shader);
 				GuiRenderer.render(guiShader);
 				shader.stop();
 			}
+			
+			// update display
 			DisplayManager.updateDisplay();
 		}
 		

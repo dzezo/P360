@@ -9,18 +9,23 @@ public class Scene {
 	private static Camera camera;
 	private static boolean ready;
 	
-	public static void loadNewImage() {
+	/**
+	 * Postavlja odabranu/aktivnu panoramu na scenu
+	 */
+	private static void initScene() {
 		activePanorama.loadPanorama();
 		Renderer.setNewProjection();
 		GuiNavButtons.setAvailableNavButtons(activePanorama);
+	}
+	
+	public static void loadNewImage() {
+		initScene();
 		ready = true;
 	}
 	
 	public static void loadNewMap() {
 		activePanorama = PanNode.getHome();
-		activePanorama.loadPanorama();
-		Renderer.setNewProjection();
-		GuiNavButtons.setAvailableNavButtons(activePanorama);
+		initScene();
 		ready = true;
 	}
 	
@@ -55,36 +60,32 @@ public class Scene {
 	public static void goLeft() {
 		if(activePanorama.getLeft() !=null) {
 			activePanorama = activePanorama.getLeft();
-			activePanorama.loadPanorama();
-			Renderer.setNewProjection();
-			GuiNavButtons.setAvailableNavButtons(activePanorama);
+			initScene();
 		}
 	}
 	
 	public static void goRight() {
 		if(activePanorama.getRight() !=null) {
 			activePanorama = activePanorama.getRight();
-			activePanorama.loadPanorama();
-			Renderer.setNewProjection();
-			GuiNavButtons.setAvailableNavButtons(activePanorama);
+			initScene();
 		}
 	}
 	
 	public static void goTop() {
 		if(activePanorama.getTop() !=null) {
 			activePanorama = activePanorama.getTop();
-			activePanorama.loadPanorama();
-			Renderer.setNewProjection();
-			GuiNavButtons.setAvailableNavButtons(activePanorama);
+			initScene();
 		}
 	}
 	
 	public static void goBot() {
 		if(activePanorama.getBot() !=null) {
 			activePanorama = activePanorama.getBot();
-			activePanorama.loadPanorama();
-			Renderer.setNewProjection();
-			GuiNavButtons.setAvailableNavButtons(activePanorama);
+			initScene();
 		}
+	}
+
+	public static boolean hasSound() {
+		return activePanorama.isAudioPlaying();
 	}
 }

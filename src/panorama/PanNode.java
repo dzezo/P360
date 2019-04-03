@@ -235,6 +235,7 @@ public class PanNode implements Serializable {
 		}
 		
 		// remove audio
+		node.stopAudio();
 		node.audio = null;
 	}
 	
@@ -305,20 +306,28 @@ public class PanNode implements Serializable {
 	
 	// AUDIO CONTROL
 	
-	public void play() {
+	public void playAudio() {
 		this.audio.play();
 	}
 	
-	public void pause() {
+	public void pauseAudio() {
 		this.audio.pause();
 	}
 	
-	public void stop() {
+	public void stopAudio() {
 		this.audio.stop();
 	}
 	
 	public String getAudioName() {
-		return this.audio.getLocation();
+		if(audio != null)
+			return audio.getLocation();
+		return null;
+	}
+	
+	public boolean isAudioPlaying() {
+		if(audio != null)
+			return audio.isPlaying();
+		return false;
 	}
 	
 	// GETTERS AND SETTERS
@@ -335,19 +344,19 @@ public class PanNode implements Serializable {
 		return this.drawNum;
 	}
 	
-	public static void setTail(PanNode newTail) {
-		PanNode tail = head;
-		while(tail.next!=null)
-			tail = tail.next;
-		tail.next = newTail;
-	}
-	
 	public static PanNode getHead() {
 		return head;
 	}
 	
 	public static void setHead(PanNode node) {
 		head = node;
+	}
+	
+	public static void setTail(PanNode newTail) {
+		PanNode tail = head;
+		while(tail.next!=null)
+			tail = tail.next;
+		tail.next = newTail;
 	}
 	
 	public static PanNode getHome() {
@@ -429,5 +438,9 @@ public class PanNode implements Serializable {
 	
 	public void setBot(PanNode bot) {
 		this.bot = bot;
+	}
+
+	public PanAudio getAudio() {
+		return this.audio;
 	}
 }
