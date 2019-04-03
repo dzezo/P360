@@ -139,4 +139,36 @@ public class ChooserUtils {
 		}
 	}
 	
+	public static String openAudioDialog() {
+		int result = jfc_audio.showOpenDialog(null);
+		
+		if(result == JFileChooser.APPROVE_OPTION) {
+			String loadPath = jfc_audio.getSelectedFile().getPath();
+			
+			// attach extension if there is not any
+			if(!loadPath.endsWith(".wav"))
+				loadPath = loadPath.concat(".wav");
+			
+			// check if file exists
+			File file = new File(loadPath);
+			
+			// file does not exist
+			if(!file.exists()) {
+				// show error msg and leave
+				DialogUtils.showMessage("File does not exist", "Load Audio");
+				return null;
+			}
+			// file exists
+			else {
+				// return path to file
+				return loadPath;
+			}
+		}
+		// opening canceled
+		else {
+			return null;
+		}
+		
+	}
+	
 }

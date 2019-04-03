@@ -13,12 +13,12 @@ import panorama.MapNode;
 import panorama.PanNode;
 
 @SuppressWarnings("serial")
-public class MapDrawingPanel extends MapPanel {
+public class MapDrawPanel extends MapPanel {
 	private static int gridSize = 10;
 	
 	private boolean dragAllowed = true;
 	
-	public MapDrawingPanel() {
+	public MapDrawPanel() {
 		// Listeners
 		this.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent press) {

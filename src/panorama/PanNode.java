@@ -20,6 +20,8 @@ public class PanNode implements Serializable {
 	private transient Panorama panorama;
 	private String panoramaPath;
 	
+	private PanAudio audio;
+	
 	private static PanNode head;
 	private static PanNode home;
 	private PanNode next; // Linked list for all pan nodes
@@ -214,6 +216,28 @@ public class PanNode implements Serializable {
 		}
 	}
 	
+	public static void addAudio(PanNode selectedNode, String audioPath) {
+		// find selected node
+		PanNode node = head;
+		while(!node.equals(selectedNode)) {
+			node = node.getNext();
+		}
+		
+		// set audio
+		node.audio = new PanAudio(audioPath);
+	}
+	
+	public static void removeAudio(PanNode selectedNode) {
+		// find selected node
+		PanNode node = head;
+		while(!node.equals(selectedNode)) {
+			node = node.getNext();
+		}
+		
+		// remove audio
+		node.audio = null;
+	}
+	
 	public static boolean saveMap(String savePath) {
 		// Writing to file
 		try {
@@ -277,6 +301,24 @@ public class PanNode implements Serializable {
 	public static void genPath() {
 		NodeList graph = new NodeList(head, home);
 		graph.generatePath();
+	}
+	
+	// AUDIO CONTROL
+	
+	public void play() {
+		this.audio.play();
+	}
+	
+	public void pause() {
+		this.audio.pause();
+	}
+	
+	public void stop() {
+		this.audio.stop();
+	}
+	
+	public String getAudioName() {
+		return this.audio.getLocation();
 	}
 	
 	// GETTERS AND SETTERS

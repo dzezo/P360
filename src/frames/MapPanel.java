@@ -10,6 +10,8 @@ import panorama.PanNode;
 
 @SuppressWarnings("serial")
 public abstract class MapPanel extends JComponent {
+	protected MapFrame parent;
+	
 	protected Color panelColor = new Color(128,128,128);
 	
 	protected int originX = 0;
@@ -70,6 +72,10 @@ public abstract class MapPanel extends JComponent {
 	public void deselectNodes() {
 		selectedNode1 = null;
 		selectedNode2 = null;
+	}
+	
+	public void setParent(MapFrame parentFrame) {
+		this.parent = parentFrame;
 	}
 	
 	public abstract void paint(Graphics g);

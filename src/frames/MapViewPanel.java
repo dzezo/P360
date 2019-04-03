@@ -7,6 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 
+import glRenderer.Scene;
 import panorama.MapNode;
 import panorama.PanNode;
 
@@ -21,8 +22,30 @@ public class MapViewPanel extends MapPanel{
 				mouseX = press.getX();
 				mouseY = press.getY();
 				
-				// check if click is on node
-				selectedNode1 = getSelectedNode(mouseX,mouseY);
+				// check if node is clicked, it will be null if none
+				PanNode node = getSelectedNode(mouseX, mouseY);
+				
+				// if node is clicked and first click is not taken
+				if(node != null && selectedNode1 == null)
+					selectedNode1 = node;
+				// if node is clicked but first click is taken
+				else if(node != null)
+					selectedNode2 = node;
+				// panel click
+				else if(node == null)
+					deselectNodes();
+				
+				// do we have first and second click
+				if(selectedNode1 != null && selectedNode2 != null) {
+					// first and second node click were on the same node
+					if(selectedNode2 == selectedNode1)	
+						setNewActivePanorama();
+					// if they are not the same treat second click as first 
+					else{
+						selectedNode1 = selectedNode2;
+						selectedNode2 = null;
+					}
+				}
 			}
 		});
 		
@@ -58,6 +81,15 @@ public class MapViewPanel extends MapPanel{
 	public void setOrigin(int oX, int oY) {
 		originX = -oX;
 		originY = -oY;
+	}
+	
+	private void setNewActivePanorama() {
+		// set request for change
+		Scene.setActivePanorama(selectedNode1);
+		this.parent.updated = true;
+		
+		// hide map frame
+		this.parent.setVisible(false);
 	}
 
 }

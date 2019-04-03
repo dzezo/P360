@@ -3,15 +3,10 @@ package frames;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JToolBar;
 
 import panorama.PanNode;
@@ -19,10 +14,7 @@ import utils.ChooserUtils;
 import utils.DialogUtils;
 
 @SuppressWarnings("serial")
-public class MapDrawingFrame extends MapFrame {
-	// Map
-	private boolean mapUpdated = false;
-	
+public class MapDrawFrame extends MapFrame {
 	// ToolBar
 	private JToolBar toolbar = new JToolBar();
 	private JButton b_add = new JButton(new ImageIcon(Class.class.getResource("/toolbar/add.png")));
@@ -39,32 +31,14 @@ public class MapDrawingFrame extends MapFrame {
 	private JButton b_save = new JButton(new ImageIcon(Class.class.getResource("/toolbar/save.png")));
 	private JButton b_ok = new JButton(new ImageIcon(Class.class.getResource("/toolbar/ok.png")));
 
-	public MapDrawingFrame(String title) {
+	public MapDrawFrame(String title) {
 		super(title);
+		// instantiate map panel
+		mapPanel = new MapDrawPanel();
+		
+		// create frame
 		createToolBar();
 		createFrame();
-	}
-
-	protected void createFrame() {
-		setSize(mapWidth, mapHeight);
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		setLocationRelativeTo(null);
-		
-		mapPanel = new MapDrawingPanel();
-		add(mapPanel, BorderLayout.CENTER);
-		
-		ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
-		executor.scheduleAtFixedRate(new RepaintMap(this), 0, 20, TimeUnit.MILLISECONDS);
-		
-		setVisible(false);
-		
-		// Listeners
-		addWindowListener(new WindowAdapter() 
-		{
-            public void windowClosing(WindowEvent we){
-                setVisible(false);
-            }
-        });
 	}
 
 	private void createToolBar() {
@@ -85,10 +59,10 @@ public class MapDrawingFrame extends MapFrame {
 			public void actionPerformed(ActionEvent e) { disconnect(); }			
 		});
 		b_addSound.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) { addSound(); }
+			public void actionPerformed(ActionEvent arg0) { addAudio(); }
 		});
 		b_removeSound.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) { removeSound(); }
+			public void actionPerformed(ActionEvent arg0) { removeAudio(); }
 		});
 		b_genPath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) { genPath(); }
@@ -134,21 +108,31 @@ public class MapDrawingFrame extends MapFrame {
 		toolbar.setFloatable(false);
 		getContentPane().add(toolbar, BorderLayout.NORTH);
 	}
-
-	public boolean isMapUpdated() {
-		if (mapUpdated) {
-			mapUpdated = false;
-			return true;
-		}
-		else
-			return false;
-	}
 	
 	public void showFrame() {
+		// show frame
 		setVisible(true);
 		
 		// setting the origin of a map
 		setOrigin();
+	}
+	
+	protected void setOrigin() {
+		if(PanNode.getHome() != null) {
+			int x = PanNode.getHome().getMapNode().x;
+			int y = PanNode.getHome().getMapNode().y;
+			
+			int h = (int) (PanNode.getHome().getMapNode().getHeight() / 2);
+			int w = (int) (PanNode.getHome().getMapNode().getWidth() / 2);
+			
+			int centerX = mapPanel.getWidth() / 2;
+			int centerY = mapPanel.getHeight() / 2;
+			
+			mapPanel.setOrigin(x - centerX + w, y - centerY + h);
+		}
+		else {
+			mapPanel.setOrigin(0,0);
+		}
 	}
 	
 	/* Toolbar Actions */
@@ -195,12 +179,28 @@ public class MapDrawingFrame extends MapFrame {
 			DialogUtils.showMessage("Use Ctrl+click to select multiple panoramas.", "No Selection Found");
 	}
 	
-	private void addSound() {
+	private void addAudio() {
+		PanNode selectedNode = mapPanel.getSelectedNode1();
+		if(selectedNode == null) {
+			DialogUtils.showMessage("Left click to select panorama", "No Selection Found");
+			return;
+		}
 		
+		String audioPath = ChooserUtils.openAudioDialog();
+		if(audioPath == null) 
+			return;
+		
+		PanNode.addAudio(selectedNode, audioPath);
 	}
 	
-	private void removeSound() {
+	private void removeAudio() {
+		PanNode selectedNode = mapPanel.getSelectedNode1();
+		if(selectedNode == null) {
+			DialogUtils.showMessage("Left click to select panorama", "No Selection Found");
+			return;
+		}
 		
+		PanNode.removeAudio(selectedNode);
 	}
 	
 	private void genPath() {
@@ -258,10 +258,12 @@ public class MapDrawingFrame extends MapFrame {
 	}
 	
 	private void ok() {
-		if(PanNode.getHome() != null)
-			mapUpdated = true;
-		setVisible(false);
-		MainFrame.enableFullScreen();
+		if(PanNode.getHome() != null) {
+			updated = true;
+			
+			setVisible(false);
+			MainFrame.enableFullScreen();
+		}
 	}
 	
 }

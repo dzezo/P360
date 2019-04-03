@@ -7,7 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 
-import frames.MapDrawingPanel;
+import frames.MapDrawPanel;
 
 @SuppressWarnings("serial")
 public class MapNode extends Rectangle {
@@ -18,8 +18,8 @@ public class MapNode extends Rectangle {
 	private static Color fillColor = new Color(64,64,64);
 	private Color mainColor;
 	
-	public static int width = MapDrawingPanel.getGridSize() * 16;
-	public static int height = MapDrawingPanel.getGridSize() * 8;
+	public static int width = MapDrawPanel.getGridSize() * 16;
+	public static int height = MapDrawPanel.getGridSize() * 8;
 	private int pressX;
 	private int pressY;
 	
@@ -72,8 +72,8 @@ public class MapNode extends Rectangle {
 	public void centerOnGrid() {
 		int newX, newY; 
 		
-		newX = MapDrawingPanel.centerOnGrid(this.x);
-		newY = MapDrawingPanel.centerOnGrid(this.y);
+		newX = MapDrawPanel.centerOnGrid(this.x);
+		newY = MapDrawPanel.centerOnGrid(this.y);
 		
 		this.setLocation(newX, newY);
 		calculatePorts(newX, newY);

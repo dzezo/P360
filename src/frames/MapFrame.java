@@ -1,11 +1,19 @@
 package frames;
 
-import panorama.PanNode;
+import java.awt.BorderLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import javax.swing.JFrame;
 
 @SuppressWarnings("serial")
 public abstract class MapFrame extends Frame {
 	public static int mapWidth = 800;
 	public static int mapHeight = 600;
+	
+	protected boolean updated = false;
 	
 	protected MapPanel mapPanel;
 	
@@ -13,26 +21,42 @@ public abstract class MapFrame extends Frame {
 		super(title);
 	}
 	
+	protected void createFrame() {
+		setSize(mapWidth, mapHeight);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		setLocationRelativeTo(null);
+		
+		// add map panel to frame
+		mapPanel.setParent(this);
+		add(mapPanel, BorderLayout.CENTER);
+		
+		// repaint frame every 20milis
+		ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
+		executor.scheduleAtFixedRate(new RepaintMap(this), 0, 20, TimeUnit.MILLISECONDS);
+		
+		setVisible(false);
+		
+		// Listeners
+		addWindowListener(new WindowAdapter() 
+		{
+            public void windowClosing(WindowEvent we){
+                setVisible(false);
+            }
+        });
+	}
+	
 	public MapPanel getMapPanel() {
 		return this.mapPanel;
 	}
 	
-	protected void setOrigin() {
-		if(PanNode.getHome() != null) {
-			int x = PanNode.getHome().getMapNode().x;
-			int y = PanNode.getHome().getMapNode().y;
-			
-			int h = (int) (PanNode.getHome().getMapNode().getHeight() / 2);
-			int w = (int) (PanNode.getHome().getMapNode().getWidth() / 2);
-			
-			int centerX = mapPanel.getWidth() / 2;
-			int centerY = mapPanel.getHeight() / 2;
-			
-			mapPanel.setOrigin(x - centerX + w, y - centerY + h);
+	public boolean isUpdated() {
+		if (updated) {
+			updated = false;
+			return true;
 		}
-		else {
-			mapPanel.setOrigin(0,0);
-		}
+		else
+			return false;
 	}
 	
+	protected abstract void setOrigin();
 }

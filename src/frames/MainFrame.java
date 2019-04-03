@@ -36,9 +36,10 @@ public class MainFrame extends Frame {
 	private JMenu fileMenu = new JMenu("File");
 	private JMenu mapMenu = new JMenu("Map");
 	private JMenu viewMenu = new JMenu("View");
+	private JMenu soundMenu = new JMenu("Sound");
 	private JMenu gamePadMenu = new JMenu("Gamepad");
 	/* fileMenu items */
-	private JMenuItem file_open = new JMenuItem("Open...");
+	private JMenuItem file_open = new JMenuItem("Open Image");
 	/* mapMenu items */
 	private JMenuItem map_new = new JMenuItem("New Map");
 	private JMenuItem map_load = new JMenuItem("Load Map");
@@ -48,13 +49,17 @@ public class MainFrame extends Frame {
 	/* viewMenu items */
 	private static JMenuItem view_fullScreen = new JMenuItem("Full Screen");
 	private static JCheckBoxMenuItem view_autoPan = new JCheckBoxMenuItem("Auto Pan");
+	/* soundMenu items */
+	private boolean sound_play = false;
+	private static JMenuItem sound_playPause = new JMenuItem("Play");
+	private static JMenuItem sound_stop = new JMenuItem("Stop");
 	/* gamePadMenu items */
 	private JMenuItem gamePad_scan = new JMenuItem("Scan");
 	/* load */
 	private boolean newImage = false;
 	private boolean newMap = false;
 	/* map gui */
-	private MapDrawingFrame mapEditor = new MapDrawingFrame("Create Map");
+	private MapDrawFrame mapEditor = new MapDrawFrame("Create Map");
 	private MapViewFrame mapView = new MapViewFrame("View Map");
 	
 	
@@ -86,6 +91,8 @@ public class MainFrame extends Frame {
             public void windowClosing(WindowEvent we){
             	// Break main loop
             	running = false;
+            	// Disposing mapView frame
+            	mapView.cleanUp();
             	// Disposing mapEditor frame
             	mapEditor.cleanUp();
             	// Disposing self
@@ -109,15 +116,23 @@ public class MainFrame extends Frame {
 		mapMenu.add(map_save);
 		mapMenu.addSeparator();
 		mapMenu.add(map_change);
-		mapMenu.add(map_show);	
-		enableMapMode(false);
+		mapMenu.add(map_show);
+		
+		enableMapControl(false);
 		
 		// VIEW
-		view_autoPan.setSelected(true);
 		viewMenu.add(view_autoPan);
 		viewMenu.addSeparator();
-		view_fullScreen.setEnabled(false);
 		viewMenu.add(view_fullScreen);
+		
+		view_autoPan.setSelected(true);
+		view_fullScreen.setEnabled(false);
+		
+		// SOUND
+		soundMenu.add(sound_playPause);
+		soundMenu.add(sound_stop);
+		
+		enableSoundControl(false);
 		
 		// GAMEPAD
 		gamePadMenu.add(gamePad_scan);
@@ -126,6 +141,7 @@ public class MainFrame extends Frame {
 		menuBar.add(fileMenu);
 		menuBar.add(mapMenu);
 		menuBar.add(viewMenu);
+		menuBar.add(soundMenu);
 		menuBar.add(gamePadMenu);
 		
 		setJMenuBar(menuBar);
@@ -155,15 +171,26 @@ public class MainFrame extends Frame {
 		view_autoPan.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) { autoPan(); }
 		});
+		sound_playPause.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) { soundPlayPause(); }
+		});
+		sound_stop.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) { soundStop(); }
+		});
 		gamePad_scan.addActionListener(new ActionListener () {
 			public void actionPerformed(ActionEvent arg0) { scanForController(); }
 		});
 	}
 
-	private void enableMapMode(boolean b) {
+	private void enableMapControl(boolean b) {
 		map_save.setEnabled(b);
 		map_change.setEnabled(b);
 		map_show.setEnabled(b);
+	}
+	
+	private void enableSoundControl(boolean b) {
+		sound_playPause.setEnabled(b);
+		sound_stop.setEnabled(b);
 	}
 	
 	public boolean isRunning() {
@@ -188,8 +215,12 @@ public class MainFrame extends Frame {
 			return false;
 	}
 
-	public MapDrawingFrame getMapFrame() {
+	public MapDrawFrame getMapDrawingFrame() {
 		return mapEditor;
+	}
+	
+	public MapViewFrame getMapViewFrame() {
+		return mapView;
 	}
 	
 	public static void enableFullScreen() {
@@ -217,7 +248,7 @@ public class MainFrame extends Frame {
 			Scene.setActivePanorama(newPanorama);
 			enableFullScreen();
 			newImage = true;
-			enableMapMode(false);
+			enableMapControl(false);
 		}
 	}
 	
@@ -236,7 +267,7 @@ public class MainFrame extends Frame {
 			}
 		}
 		
-		enableMapMode(true);
+		enableMapControl(true);
 		mapEditor.setTitle("New Map");
 	}
 	
@@ -247,7 +278,7 @@ public class MainFrame extends Frame {
 		if(success) {
 			newMap = true;
 			enableFullScreen();
-			enableMapMode(true);
+			enableMapControl(true);
 		}
 	}
 	
@@ -269,6 +300,33 @@ public class MainFrame extends Frame {
 	
 	private void autoPan() {
 		InputManager.setAutoPan();
+	}
+	
+	private void soundPlayPause() {
+		PanNode pan = Scene.getActivePanorama();
+		
+		// is sound is playing -> pause it / change text to play
+		if(sound_play) {
+			pan.pause();
+			sound_playPause.setText("Play");
+		}
+		// is sound paused -> play it / change text to pause
+		else {
+			pan.play();
+			sound_playPause.setText("Pause");
+		}
+		
+		// set flag
+		sound_play = !sound_play;
+	}
+	
+	private void soundStop() {
+		PanNode pan = Scene.getActivePanorama();
+		
+		pan.stop();
+		
+		sound_play = false;
+		sound_playPause.setText("Play");
 	}
 	
 	private void scanForController() {
