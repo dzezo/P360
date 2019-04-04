@@ -11,20 +11,26 @@ import frames.MapDrawPanel;
 
 @SuppressWarnings("serial")
 public class MapNode extends Rectangle {
-	private static Color lineColor = new Color(0,0,0);
-	private static Color normalColor = new Color(255,255,255);
-	private static Color selectedColor = new Color(0,191,255);
-	private static Color homeColor = new Color(0,255,0);
-	private static Color fillColor = new Color(64,64,64);
-	private Color mainColor;
+	private PanNode parent;
+	
+	private Color textColor;
+	private static final Color lineColor = new Color(0,0,0);
+	private static final Color normalTextColor = new Color(255,255,255);
+	private static final Color selectedTextColor = new Color(0,191,255);
+	private static final Color homeTextColor = new Color(0,255,0);
+	private static final Color activeTextColor = new Color(255,255,0);
+	private static final Color fillColor = new Color(64,64,64);
 	
 	public static int width = MapDrawPanel.getGridSize() * 16;
 	public static int height = MapDrawPanel.getGridSize() * 8;
+	
 	private int pressX;
 	private int pressY;
 	
-	private String name;
-	private static Font nameFont = new Font("Arial", Font.BOLD, 15);
+	protected String panName;
+	protected String audioName;
+	private static Font panNameFont = new Font("Arial", Font.BOLD, 15);
+	private static Font audioNameFont = new Font("Arial", Font.PLAIN, 15);
 	
 	private Point portLeft = new Point();
 	private Point portRight = new Point();
@@ -32,12 +38,20 @@ public class MapNode extends Rectangle {
 	private Point portBot = new Point();
 	
 	private boolean selected = false;
-	private boolean home = false;
 	
-	public MapNode(String panName, int x, int y) {
+	public MapNode(PanNode parent, int x, int y) {
 		super(x, y, width, height);
+		this.parent = parent;
 		calculatePorts(x,y);
-		name = panName;
+		panName = setNameFromPath(parent.getPanoramaPath());
+		System.out.println(panName);
+	}
+	
+	public String setNameFromPath(String path) {
+		String separator = System.getProperty("file.separator");
+		int lastSeparatorIndex = path.lastIndexOf(separator);
+		
+		return path.substring(lastSeparatorIndex + 1);
 	}
 	
 	public boolean isPressed(int x, int y, int oX, int oY) {
@@ -61,20 +75,14 @@ public class MapNode extends Rectangle {
 			newX = this.x + dx;
 			newY = this.y + dy;
 			
-			this.setLocation(newX, newY);
-			calculatePorts(newX, newY);
+			setNewLocation(newX, newY);
 			
 			pressX = dragX;
 			pressY = dragY;
 		}
 	}
 	
-	public void centerOnGrid() {
-		int newX, newY; 
-		
-		newX = MapDrawPanel.centerOnGrid(this.x);
-		newY = MapDrawPanel.centerOnGrid(this.y);
-		
+	public void setNewLocation(int newX, int newY) {
 		this.setLocation(newX, newY);
 		calculatePorts(newX, newY);
 	}
@@ -93,6 +101,8 @@ public class MapNode extends Rectangle {
 		portBot.y = y + height;
 	}
 	
+	// Getters and Setters
+	
 	public Point getPortLeft() {
 		return portLeft;
 	}
@@ -109,19 +119,42 @@ public class MapNode extends Rectangle {
 		return portBot;
 	}
 	
-	public void setName(String name) {
-		this.name = name;
-	}
+	/* Drawing */
 	
-	public void setHome(boolean b) {
-		this.home = b;
-	}
-	
-	// Drawing
-	
+	/**
+	 * Funkcija koja iscrtava cvor na mapi na kojoj vise cvorova mogu biti selektovana
+	 * @param infoNode - info deo cvora koga iscrtavamo
+	 * @param selected - daje informaciju koji cvor je selektovan na mapi
+	 */
 	public void drawNode(Graphics2D g, PanNode infoNode, boolean selected) {
 		drawConnections(g, infoNode);
-		drawShape(g, selected);
+		drawShape(g);
+		
+		// draw text
+		if(selected)
+			textColor = selectedTextColor;
+		else if(parent.isHome())
+			textColor = homeTextColor;
+		else
+			textColor = normalTextColor;
+		drawText(g);
+	}
+	
+	/**
+	 * Funkcija koja iscrtava cvor na mini mapi
+	 */
+	public void drawNode(Graphics2D g, PanNode infoNode) {
+		drawConnections(g, infoNode);
+		drawShape(g);
+		
+		// draw text
+		if(this.selected)
+			textColor = selectedTextColor;
+		else if(parent.isActive())
+			textColor = activeTextColor;
+		else
+			textColor = normalTextColor;
+		drawText(g);
 	}
 	
 	private void drawConnections(Graphics2D g, PanNode infoNode) {
@@ -156,30 +189,44 @@ public class MapNode extends Rectangle {
 		}
 	}
 	
-	private void drawShape(Graphics2D g, boolean selected) {
-		if(selected)
-			mainColor = selectedColor;
-		else if(home)
-			mainColor = homeColor;
-		else
-			mainColor = normalColor;
-		// Drawing rectangle
+	private void drawShape(Graphics2D g) {
 		g.setColor(fillColor);
 		g.fill(this);
 		g.setStroke(new BasicStroke(1.5f));
 		g.setColor(lineColor);
 		g.draw(this);
-		// Drawing text
-		g.setFont(nameFont);
-		g.setColor(mainColor);
-		// Cuting name string if it is too big
-		while(g.getFontMetrics().stringWidth(name) > width-10) {
-			name = name.substring(0, name.length() - 1);
+	}
+	
+	private void drawText(Graphics2D g) {
+		g.setFont(panNameFont);
+		g.setColor(textColor);
+		
+		// cut audio text if needed
+		while(g.getFontMetrics().stringWidth(panName) > width-10) {
+			panName = panName.substring(0, panName.length() - 1);
 		}
-		// Calculating text starting position
-		int x = (int)this.getCenterX() - g.getFontMetrics().stringWidth(name) / 2;
-		int y = (int)this.getCenterY() + g.getFontMetrics().getHeight() / 4;
-		g.drawString(name, x, y);
+		
+		if(audioName == null) {
+			int x = (int)this.getCenterX() - g.getFontMetrics().stringWidth(panName) / 2;
+			int y = (int)this.getCenterY() + g.getFontMetrics().getHeight() / 4;
+			g.drawString(panName, x, y);
+		}
+		else {			
+			int x = (int)this.getCenterX() - g.getFontMetrics().stringWidth(panName) / 2;
+			int y = (int)this.getCenterY() - g.getFontMetrics().getHeight() / 2;
+			g.drawString(panName, x, y);
+			
+			// cut audio text if needed
+			while(g.getFontMetrics().stringWidth(audioName) > width-10) {
+				audioName = audioName.substring(0, audioName.length() - 1);
+			}
+			
+			g.setFont(audioNameFont);
+			
+			x = (int)this.getCenterX() - g.getFontMetrics().stringWidth(audioName) / 2;
+			y = (int)this.getCenterY() + g.getFontMetrics().getHeight();
+			g.drawString(audioName, x, y);
+		}
 	}
 	
 }

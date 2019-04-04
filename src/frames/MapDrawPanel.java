@@ -47,8 +47,13 @@ public class MapDrawPanel extends MapPanel {
 				// center after drag
 				originX = centerOnGrid(originX);
 				originY = centerOnGrid(originY);
-				if(selectedNode1 != null)
-					selectedNode1.getMapNode().centerOnGrid();
+				if(selectedNode1 != null) {
+					int newX = selectedNode1.getMapNode().x;
+					int newY = selectedNode1.getMapNode().y;
+					newX = centerOnGrid(newX);
+					newY = centerOnGrid(newY);
+					selectedNode1.getMapNode().setNewLocation(newX, newY);
+				}
 				
 				// allow drag
 				dragAllowed = true;
@@ -89,7 +94,7 @@ public class MapDrawPanel extends MapPanel {
 			g.drawLine(x + i*gridSize, y, x + i*gridSize, endY);
 	}
 	
-	public static int centerOnGrid(int coord) {
+	private int centerOnGrid(int coord) {
         int q = coord / gridSize; 
         
         int n1 = gridSize * q; 

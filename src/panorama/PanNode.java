@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import glRenderer.Scene;
 import graph.NodeList;
 import utils.ChooserUtils;
 import utils.DialogUtils;
@@ -37,18 +38,31 @@ public class PanNode implements Serializable {
 	
 	// map constructor
 	public PanNode(String panoramaPath, int x, int y) {
-		this.panoramaPath = panoramaPath;
-		String separator = System.getProperty("file.separator");
-		int lastSeparatorIndex = panoramaPath.lastIndexOf(separator);
-		String panName = panoramaPath.substring(lastSeparatorIndex + 1);		
-		mapNode = new MapNode(panName,x,y);
+		this.panoramaPath = panoramaPath;		
+		mapNode = new MapNode(this, x, y);
 	}
 	
 	public void loadPanorama() {
 		if(panorama == null)
 			panorama = new Panorama(panoramaPath);
 	}
-
+	
+	public boolean isHome() {
+		if (home.equals(this)) 
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean isActive() {
+		if(Scene.getActivePanorama().equals(this))
+			return true;
+		else
+			return false;
+	}
+	
+	/* map creation functionality */
+	
 	public static void addNode(int originX, int originY) {
 		String panPath = ChooserUtils.openImageDialog();
 		if(panPath == null) return;
@@ -111,6 +125,15 @@ public class PanNode implements Serializable {
 		}
 	}
 
+	public static void setHome(PanNode node) {
+		if(node != null) {
+			home = node;
+		}
+		else {
+			home = null;
+		}
+	}
+	
 	public static void connectNodes(PanNode node1, PanNode node2) {
 		// Check if this nodes are already connected
 		boolean alreadyConnected = false;
@@ -225,6 +248,9 @@ public class PanNode implements Serializable {
 		
 		// set audio
 		node.audio = new PanAudio(audioPath);
+		
+		// set graphic representation
+		node.mapNode.audioName = node.mapNode.setNameFromPath(audioPath);
 	}
 	
 	public static void removeAudio(PanNode selectedNode) {
@@ -237,6 +263,9 @@ public class PanNode implements Serializable {
 		// remove audio
 		node.stopAudio();
 		node.audio = null;
+		
+		// remove graphic representation
+		node.mapNode.audioName = null;
 	}
 	
 	public static boolean saveMap(String savePath) {
@@ -304,7 +333,7 @@ public class PanNode implements Serializable {
 		graph.generatePath();
 	}
 	
-	// AUDIO CONTROL
+	/* audio control */
 	
 	public void playAudio() {
 		this.audio.play();
@@ -318,7 +347,7 @@ public class PanNode implements Serializable {
 		this.audio.stop();
 	}
 	
-	public String getAudioName() {
+	public String getAudioPath() {
 		if(audio != null)
 			return audio.getLocation();
 		return null;
@@ -330,20 +359,9 @@ public class PanNode implements Serializable {
 		return false;
 	}
 	
-	// GETTERS AND SETTERS
+	/* getters and setters */
 	
-	public int getID() {
-		return this.drawNum;
-	}
-	
-	public void setDrawNum(int i) {
-		this.drawNum = i;
-	}
-	
-	public int getDrawNum() {
-		return this.drawNum;
-	}
-	
+	// list related
 	public static PanNode getHead() {
 		return head;
 	}
@@ -363,17 +381,17 @@ public class PanNode implements Serializable {
 		return home;
 	}
 	
-	public static void setHome(PanNode node) {
-		// If the param node is not null then it is reassignment
-		if(node != null) {
-			// If there was home node, remove color marking
-			if(home != null)
-				home.getMapNode().setHome(false);
-			home = node;
-			home.getMapNode().setHome(true);
-		}
-		else
-			home = null;
+	// node related
+	public int getID() {
+		return this.drawNum;
+	}
+	
+	public void setDrawNum(int i) {
+		this.drawNum = i;
+	}
+	
+	public int getDrawNum() {
+		return this.drawNum;
 	}
 
 	public MapNode getMapNode() {
@@ -394,10 +412,7 @@ public class PanNode implements Serializable {
 	
 	public void setPanoramaPath(String panoramaPath) {
 		this.panoramaPath = panoramaPath;
-		String separator = System.getProperty("file.separator");
-		int lastSeparatorIndex = panoramaPath.lastIndexOf(separator);
-		String panName = panoramaPath.substring(lastSeparatorIndex + 1);
-		mapNode.setName(panName);
+		mapNode.panName = mapNode.setNameFromPath(panoramaPath);
 	}
 	
 	public PanNode getNext() {
