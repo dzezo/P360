@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
@@ -17,6 +19,7 @@ import javax.swing.JPanel;
 
 import org.lwjgl.LWJGLException;
 
+import glRenderer.AudioManager;
 import glRenderer.DisplayManager;
 import glRenderer.Scene;
 import input.Controller;
@@ -51,9 +54,8 @@ public class MainFrame extends Frame {
 	private static JMenuItem view_fullScreen = new JMenuItem("Full Screen");
 	private static JCheckBoxMenuItem view_autoPan = new JCheckBoxMenuItem("Auto Pan");
 	/* soundMenu items */
-	private boolean sound_play = false;
-	private static JMenuItem sound_playPause = new JMenuItem("Play/Pause");
-	private static JMenuItem sound_stop = new JMenuItem("Stop");
+	private JMenuItem sound_playPause = new JMenuItem("Play");
+	private JMenuItem sound_stop = new JMenuItem("Stop");
 	/* gamePadMenu items */
 	private JMenuItem gamePad_scan = new JMenuItem("Scan");
 	
@@ -67,11 +69,21 @@ public class MainFrame extends Frame {
 	
 	public MainFrame(String title) {
 		super(title);
+		// init dialog setup
 		ChooserUtils.init();
+		
+		// create gui
 		createMenuBar();
 		createFrame();
-		// Frame created
+		
+		// init audio manager
+		ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
+		executor.scheduleAtFixedRate(new AudioManager(this), 0, 20, TimeUnit.MILLISECONDS);
+		
+		// create openGL display
 		DisplayManager.createDisplay(displayCanvas);
+		
+		// ready
 		running = true;
 	}
 	
@@ -190,11 +202,6 @@ public class MainFrame extends Frame {
 		map_show.setEnabled(status);
 	}
 	
-	public static void enableSoundControl(boolean status) {
-		sound_playPause.setEnabled(status);
-		sound_stop.setEnabled(status);
-	}
-	
 	public boolean isRunning() {
 		return running;
 	}
@@ -309,25 +316,17 @@ public class MainFrame extends Frame {
 		PanNode pan = Scene.getActivePanorama();
 		
 		// is sound is playing -> pause it
-		if(sound_play) {
+		if(pan.isAudioPlaying()) {
 			pan.pauseAudio();
 		}
 		// is sound paused -> play it
 		else {
 			pan.playAudio();
 		}
-		
-		// set flag
-		sound_play = !sound_play;
 	}
 	
 	private void soundStop() {
-		PanNode pan = Scene.getActivePanorama();
-		
-		pan.stopAudio();
-		
-		sound_play = false;
-		sound_playPause.setText("Play");
+		Scene.getActivePanorama().stopAudio();
 	}
 	
 	private void scanForController() {
@@ -364,4 +363,20 @@ public class MainFrame extends Frame {
 			gamePadMenu.add(controller);
 		}
 	}
+
+	/* Audio control */
+	
+	public void enableSoundControl(boolean status) {
+		sound_playPause.setEnabled(status);
+		sound_stop.setEnabled(status);
+	}
+	
+	public void setPlayPauseText(boolean audioPlaying) {
+		if(audioPlaying)
+			sound_playPause.setText("Pause");
+		else
+			sound_playPause.setText("Play");
+	}
+	
+
 }

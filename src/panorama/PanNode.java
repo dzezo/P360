@@ -311,21 +311,31 @@ public class PanNode implements Serializable {
 			return false;
 		}
 		
-		// image path checking
+		// path checking
 		PanNode start = head;
 		while(start != null) {
-			String panPath = start.getPanoramaPath();
-			File f = new File(panPath);
-			if(!f.exists()) {
-				int dialogRes = DialogUtils.showConfirmDialog("Could not find: " + panPath + "\nDo you want to change the path?", "No Panorama Found");
-				if(dialogRes == DialogUtils.YES) {
-					String newPanoramaPath = ChooserUtils.openImageDialog();
-					if(newPanoramaPath != null) start.setPanoramaPath(newPanoramaPath);
-				}
-				else if(dialogRes == DialogUtils.NO) {
-					DialogUtils.showMessage("Could not load: " + loadPath, "Loading Aborted");
-					return false;
-				}
+			File imageFile, audioFile;
+			
+			imageFile = new File(start.getPanoramaPath());
+			audioFile = (start.hasAudio()) ? new File(start.getAudioPath()) : null;
+
+			if(!imageFile.exists()) {
+				boolean replace = DialogUtils.replacePathDialog(imageFile.getPath());
+				if(!replace) return false;
+				
+				// user requested replacement -> open image dialog 
+				String newPanoramaPath = ChooserUtils.openImageDialog();
+				if(newPanoramaPath != null) 
+					start.setPanoramaPath(newPanoramaPath);
+			}
+			else if(audioFile != null && !audioFile.exists()) {
+				boolean replace = DialogUtils.replacePathDialog(audioFile.getPath());
+				if(!replace) return false;
+				
+				// user requested replacement -> open audio dialog 
+				String newAudioPath = ChooserUtils.openAudioDialog();
+				if(newAudioPath != null) 
+					start.setAudioPath(newAudioPath);
 			}
 			else {
 				start = start.getNext();
@@ -359,9 +369,13 @@ public class PanNode implements Serializable {
 		this.audio.stop();
 	}
 	
+	public void setAudioPath(String newAudioPath) {
+		audio.setAudioPath(newAudioPath);
+	}
+	
 	public String getAudioPath() {
 		if(audio != null)
-			return audio.getLocation();
+			return audio.getAudioPath();
 		return null;
 	}
 	

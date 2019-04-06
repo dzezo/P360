@@ -10,6 +10,8 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import utils.DialogUtils;
+
 @SuppressWarnings("serial")
 public class PanAudio implements Serializable {
 	private File audioFile;
@@ -29,13 +31,15 @@ public class PanAudio implements Serializable {
 		try {
 			audioInput = AudioSystem.getAudioInputStream(audioFile);
 			audioClip = AudioSystem.getClip();
+			audioClip.open(audioInput);
 		    audioClip.setMicrosecondPosition(audioClipTimePos);
-		    audioClip.open(audioInput);
 		    audioClip.start();
+		    isPlaying = true;
 		}  catch (UnsupportedAudioFileException e) {
 			e.printStackTrace();
 		}  catch (IOException e) {
-			e.printStackTrace();
+			DialogUtils.showMessage("Could not find file: " + audioFile.getPath() + "\nFile is moved or deleted.", 
+					"Could Not Find File");
 		} catch (LineUnavailableException e) {
 			e.printStackTrace();
 		} 
@@ -43,25 +47,41 @@ public class PanAudio implements Serializable {
 	}
 	
 	public void pause() {
-		audioClipTimePos = audioClip.getMicrosecondPosition();
-		audioClip.stop();
-		isPlaying = false;
-		audioClip.close();
+		try {
+			audioClipTimePos = audioClip.getMicrosecondPosition();
+			audioClip.stop();
+			isPlaying = false;
+			audioClip.close();
+			audioInput.close();
+		} catch (IOException e) {
+			DialogUtils.showMessage("Could not find file: " + audioFile.getPath() + "\nFile is moved or deleted.", 
+					"Could Not Find File");
+		}
 	}
 	
 	public void stop() {
-		audioClipTimePos = 0;
-		audioClip.stop();
-		isPlaying = false;
-		audioClip.close();
+		try {
+			audioClipTimePos = 0;
+			audioClip.stop();
+			isPlaying = false;
+			audioClip.close();
+			audioInput.close();
+		} catch (IOException e) {
+			DialogUtils.showMessage("Could not find file: " + audioFile.getPath() + "\nFile is moved or deleted.", 
+					"Could Not Find File");
+		}
 	}
 	
 	private boolean audioReachedEnd() {
 		return (audioClip.getMicrosecondPosition() == audioClip.getMicrosecondLength());
 	}
 	
-	public String getLocation() {
+	public String getAudioPath() {
 		return audioFile.getPath();
+	}
+	
+	public void setAudioPath(String audioPath) {
+		audioFile = new File(audioPath);
 	}
 	
 	public boolean isPlaying() {

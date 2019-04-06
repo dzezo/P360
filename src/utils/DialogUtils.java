@@ -14,4 +14,18 @@ public class DialogUtils {
 		return JOptionPane.showConfirmDialog(null, msg, title, JOptionPane.YES_NO_OPTION);
 	}
 	
+	/**
+	 * Returns true if user wants to replace path, and vice versa
+	 */
+	public static boolean replacePathDialog(String path) {
+		int dialogRes = showConfirmDialog("Could not find: " + path + "\nDo you want to change the path?", "Path Not Found");
+		if(dialogRes == YES) {
+			return true;
+		}
+		else {
+			DialogUtils.showMessage("Could not find: " + path + "\nLoading is aborted.", "Loading Aborted");
+			return false;
+		}
+	}
+	
 }

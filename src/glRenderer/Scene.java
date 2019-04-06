@@ -1,6 +1,5 @@
 package glRenderer;
 
-import frames.MainFrame;
 import gui.GuiNavButtons;
 import panorama.PanNode;
 import panorama.Panorama;
@@ -14,11 +13,6 @@ public class Scene {
 	 * Postavlja odabranu/aktivnu panoramu na scenu
 	 */
 	private static void initScene() {
-		if(activePanorama.hasAudio()) {
-			MainFrame.enableSoundControl(true);
-		}
-		else
-			MainFrame.enableSoundControl(false);
 		activePanorama.loadPanorama();
 		Renderer.setNewProjection();
 		GuiNavButtons.setAvailableNavButtons(activePanorama);
