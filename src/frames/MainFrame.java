@@ -38,6 +38,7 @@ public class MainFrame extends Frame {
 	private JMenu viewMenu = new JMenu("View");
 	private JMenu soundMenu = new JMenu("Sound");
 	private JMenu gamePadMenu = new JMenu("Gamepad");
+	
 	/* fileMenu items */
 	private JMenuItem file_open = new JMenuItem("Open Image");
 	/* mapMenu items */
@@ -50,12 +51,12 @@ public class MainFrame extends Frame {
 	private static JMenuItem view_fullScreen = new JMenuItem("Full Screen");
 	private static JCheckBoxMenuItem view_autoPan = new JCheckBoxMenuItem("Auto Pan");
 	/* soundMenu items */
-	private boolean sound_controlEnabled = false;
 	private boolean sound_play = false;
-	private static JMenuItem sound_playPause = new JMenuItem("Play");
+	private static JMenuItem sound_playPause = new JMenuItem("Play/Pause");
 	private static JMenuItem sound_stop = new JMenuItem("Stop");
 	/* gamePadMenu items */
 	private JMenuItem gamePad_scan = new JMenuItem("Scan");
+	
 	/* load */
 	private boolean newImage = false;
 	private boolean newMap = false;
@@ -119,7 +120,7 @@ public class MainFrame extends Frame {
 		mapMenu.add(map_change);
 		mapMenu.add(map_show);
 		
-		enableMapControl(sound_controlEnabled);
+		enableMapControl(false);
 		
 		// VIEW
 		viewMenu.add(view_autoPan);
@@ -133,8 +134,7 @@ public class MainFrame extends Frame {
 		soundMenu.add(sound_playPause);
 		soundMenu.add(sound_stop);
 		
-		sound_playPause.setEnabled(true);
-		sound_stop.setEnabled(true);
+		enableSoundControl(false);
 		
 		// GAMEPAD
 		gamePadMenu.add(gamePad_scan);
@@ -190,25 +190,9 @@ public class MainFrame extends Frame {
 		map_show.setEnabled(status);
 	}
 	
-	public void enableSoundControl(boolean status) {
-		// audio track reached end
-		if(status && !Scene.getActivePanorama().isAudioPlaying() && sound_play) {
-			sound_play = false;
-			sound_playPause.setText("Play");
-		}
-		// track started automatically
-		else if(status && Scene.getActivePanorama().isAudioPlaying() && !sound_play) {
-			sound_play = true;
-			sound_playPause.setText("Pause");
-		}
-		
-		// there is sound and sound is not enabled or
-		// there is no sound and sound is enabled
-		if(status && !sound_controlEnabled || !status && sound_controlEnabled) {
-			// enable/disable
-			sound_playPause.setEnabled(status);
-			sound_stop.setEnabled(status);
-		}
+	public static void enableSoundControl(boolean status) {
+		sound_playPause.setEnabled(status);
+		sound_stop.setEnabled(status);
 	}
 	
 	public boolean isRunning() {
@@ -324,15 +308,13 @@ public class MainFrame extends Frame {
 	private void soundPlayPause() {
 		PanNode pan = Scene.getActivePanorama();
 		
-		// is sound is playing -> pause it / change text to play
+		// is sound is playing -> pause it
 		if(sound_play) {
 			pan.pauseAudio();
-			sound_playPause.setText("Play");
 		}
-		// is sound paused -> play it / change text to pause
+		// is sound paused -> play it
 		else {
 			pan.playAudio();
-			sound_playPause.setText("Pause");
 		}
 		
 		// set flag

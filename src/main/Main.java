@@ -37,11 +37,6 @@ public class Main {
 			}
 			
 			if(Scene.isReady()) {
-				if(Scene.hasSound())
-					System.out.println("sound is playing");
-				else
-					System.out.println("sound is not playing");
-				
 				// read inputs
 				InputManager.readInput();
 				GuiNavButtons.update();

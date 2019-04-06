@@ -15,28 +15,42 @@ import utils.DialogUtils;
 
 @SuppressWarnings("serial")
 public class PanNode implements Serializable {
+	// graf realizovan kao lista suseda
+	private static PanNode head;
+	private static PanNode home;
+	private PanNode next;
+	
+	// id cvora i njegova graficka reprezentacija
 	private int drawNum = Integer.MAX_VALUE;
 	private MapNode mapNode;
 	
-	private transient Panorama panorama;
-	private String panoramaPath;
-	
-	private PanAudio audio;
-	
-	private static PanNode head;
-	private static PanNode home;
-	private PanNode next; // Linked list for all pan nodes
+	// susedi cvora
 	private PanNode left;
 	private PanNode right;
 	private PanNode top;
 	private PanNode bot;
 	
-	// normal constructor
+	// slika i putanja do slike
+	private transient Panorama panorama;
+	private String panoramaPath;
+	
+	// audio zapis
+	private PanAudio audio;
+	
+	
+	/**
+	 * Konstruktor za panoramu
+	 * @param panoramaPath - file system putanja do panorame
+	 */
 	public PanNode(String panoramaPath) {
 		this.panoramaPath = panoramaPath;
 	}
 	
-	// map constructor
+	/**
+	 * Konstruktor za panoramu koja ima svoju graficku reprezentaciju na mapi
+	 * @param panoramaPath - file system putanja
+	 * @param x, y - koordinate na mapi
+	 */
 	public PanNode(String panoramaPath, int x, int y) {
 		this.panoramaPath = panoramaPath;		
 		mapNode = new MapNode(this, x, y);
@@ -55,7 +69,8 @@ public class PanNode implements Serializable {
 	}
 	
 	public boolean isActive() {
-		if(Scene.getActivePanorama().equals(this))
+		PanNode activePano = Scene.getActivePanorama();
+		if(activePano != null && activePano.equals(this))
 			return true;
 		else
 			return false;
@@ -63,11 +78,8 @@ public class PanNode implements Serializable {
 	
 	/* map creation functionality */
 	
-	public static void addNode(int originX, int originY) {
-		String panPath = ChooserUtils.openImageDialog();
-		if(panPath == null) return;
-		
-		PanNode newNode = new PanNode(panPath, originX, originY);
+	public static void addNode(String panoramaPath, int originX, int originY) {
+		PanNode newNode = new PanNode(panoramaPath, originX, originY);
 		// Incase there is no home(starting) panorama set;
 		if(home == null)
 			setHome(newNode);
@@ -351,6 +363,12 @@ public class PanNode implements Serializable {
 		if(audio != null)
 			return audio.getLocation();
 		return null;
+	}
+	
+	public boolean hasAudio() {
+		if(audio == null)
+			return false;
+		return true;
 	}
 	
 	public boolean isAudioPlaying() {

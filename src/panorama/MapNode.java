@@ -44,7 +44,6 @@ public class MapNode extends Rectangle {
 		this.parent = parent;
 		calculatePorts(x,y);
 		panName = setNameFromPath(parent.getPanoramaPath());
-		System.out.println(panName);
 	}
 	
 	public String setNameFromPath(String path) {

@@ -3,6 +3,7 @@ package frames;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -137,7 +138,16 @@ public class MapDrawFrame extends MapFrame {
 	
 	/* Toolbar Actions */
 	private void add() {
-		PanNode.addNode(mapPanel.getOriginX(), mapPanel.getOriginY());
+		File images[] = ChooserUtils.openImagesDialog();
+		if(images == null) return;
+		
+		int spawnX, spawnY, offset;
+		for(int i = 0; i < images.length; i++) {
+			offset = i*MapDrawPanel.getGridSize();
+			spawnX = mapPanel.getOriginX() + offset;
+			spawnY = mapPanel.getOriginY() + offset;
+			PanNode.addNode(images[i].getPath(), spawnX, spawnY);
+		}
 	}
 	
 	private void remove() {

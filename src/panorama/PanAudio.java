@@ -14,7 +14,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 public class PanAudio implements Serializable {
 	private File audioFile;
 	
-	private AudioInputStream audioInput;
+	private transient AudioInputStream audioInput;
 	
 	private Clip audioClip;
 	private long audioClipTimePos = 0;
@@ -28,18 +28,18 @@ public class PanAudio implements Serializable {
 	public void play() {
 		try {
 			audioInput = AudioSystem.getAudioInputStream(audioFile);
-			audioClip = AudioSystem.getClip();	
-			audioClip.open(audioInput);
-			audioClip.setMicrosecondPosition(audioClipTimePos);
-			audioClip.start();
-			isPlaying = true;
-		} catch (UnsupportedAudioFileException e) {
+			audioClip = AudioSystem.getClip();
+		    audioClip.setMicrosecondPosition(audioClipTimePos);
+		    audioClip.open(audioInput);
+		    audioClip.start();
+		}  catch (UnsupportedAudioFileException e) {
+			e.printStackTrace();
+		}  catch (IOException e) {
 			e.printStackTrace();
 		} catch (LineUnavailableException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		} 
+	   
 	}
 	
 	public void pause() {

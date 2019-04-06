@@ -8,6 +8,7 @@ import javax.swing.filechooser.FileFilter;
 public class ChooserUtils {
 	/* choosers */
 	private static JFileChooser jfc_image = new JFileChooser();
+	private static JFileChooser jfc_images = new JFileChooser();
 	private static JFileChooser jfc_map = new JFileChooser();
 	private static JFileChooser jfc_audio = new JFileChooser();
 	
@@ -52,6 +53,10 @@ public class ChooserUtils {
 		// setting up choosers
 		jfc_image.setAcceptAllFileFilterUsed(false);
 		jfc_image.setFileFilter(ff_image);
+
+		jfc_images.setAcceptAllFileFilterUsed(false);
+		jfc_images.setMultiSelectionEnabled(true);
+		jfc_images.setFileFilter(ff_image);
 		
 		jfc_map.setAcceptAllFileFilterUsed(false);
 		jfc_map.setFileFilter(ff_map);
@@ -132,6 +137,20 @@ public class ChooserUtils {
 			String panPath = jfc_image.getSelectedFile().getPath();
 			
 			return panPath;
+		}
+		// opening canceled;
+		else {
+			return null;
+		}
+	}
+	
+	public static File[] openImagesDialog() {
+		int result = jfc_images.showOpenDialog(null);
+		
+		if(result == JFileChooser.APPROVE_OPTION) {
+			File images[] = jfc_images.getSelectedFiles();
+			
+			return images;
 		}
 		// opening canceled;
 		else {
