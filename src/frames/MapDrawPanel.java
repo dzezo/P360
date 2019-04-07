@@ -129,7 +129,7 @@ public class MapDrawPanel extends MapPanel {
 		while(start != null) {
 			start.setDrawNum(drawNum++);
 			MapNode node = start.getMapNode();
-			node.drawNode(graphicSettings, start, isNodeSelected(node));
+			node.drawNode(graphicSettings, isNodeSelected(node));
 			start = start.getNext();
 		}
 	}

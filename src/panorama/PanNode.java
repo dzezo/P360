@@ -20,6 +20,9 @@ public class PanNode implements Serializable {
 	private static PanNode home;
 	private PanNode next;
 	
+	// putanja u grafu
+	private static PanNode path[];
+	
 	// id cvora i njegova graficka reprezentacija
 	private int drawNum = Integer.MAX_VALUE;
 	private MapNode mapNode;
@@ -273,7 +276,8 @@ public class PanNode implements Serializable {
 		}
 		
 		// remove audio
-		node.stopAudio();
+		if(node.isAudioPlaying())
+			node.stopAudio();
 		node.audio = null;
 		
 		// remove graphic representation
@@ -351,8 +355,58 @@ public class PanNode implements Serializable {
 	}
 	
 	public static void genPath() {
+		// empty map
+		if(head == null) return;
+		
+		// reset graphics
+		if(path != null) {
+			PanNode node = head;
+			while(node != null) {
+				node.mapNode.resetArrows();
+				node = node.next;
+			}
+		}
+		
+		// generate id path
 		NodeList graph = new NodeList(head, home);
-		graph.generatePath();
+		int p[] = graph.generatePath();
+		
+		// create node path and set graphics
+		path = new PanNode[p.length];
+		for(int i = 0; i < p.length; i++) {
+			int j = p[i];
+			PanNode node = head;
+			while(j != 0) {
+				node = node.next;
+				j--;
+			}
+			path[i] = node;
+			// graphic representation
+			if(i == 0)
+				continue;
+			if(node.getTop() != null && node.getTop().equals(path[i-1]))
+				node.mapNode.setTopArrow();
+			else if(node.getLeft() != null && node.getLeft().equals(path[i-1]))
+				node.mapNode.setLeftArrow();
+			else if(node.getBot() != null && node.getBot().equals(path[i-1]))
+				node.mapNode.setBotArrow();
+			else if(node.getRight() != null)
+				node.mapNode.setRightArrow();
+		}
+	}
+	
+	public static void clearPath() {
+		path = null;
+		
+		PanNode node = head;
+		while(node != null) {
+			node.mapNode.resetArrows();
+			node = node.next;
+		}
+	}
+	
+	public static void editPath() {
+		
 	}
 	
 	/* audio control */

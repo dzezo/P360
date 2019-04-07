@@ -43,7 +43,6 @@ public class NodeList {
 				reduction = removeExtraConnections();
 			}
 		} while(simplification || reduction);
-		print();
 	}
 	
 	private void add(Node newNode) {
@@ -313,19 +312,19 @@ public class NodeList {
 		}
 	}
 	
-	public void generatePath() {	
+	public int[] generatePath() {	
 		int i = 0;
 		path[i++] = rootNode;
 		pathLength = i;
 		pathFound = false;
 		
 		long time = System.currentTimeMillis();
-		
 		hamiltonian(i);
+		System.out.println("Putanja je generisana.");
+		System.out.println("Broj neposecenih cvorova je: " + (totalNodeCount - bestPath.getVisitedNodeCount()));
+		System.out.println("Vreme generisanje je: " + ((System.currentTimeMillis() - time) / 1000.0f));
 		
-		System.out.println("genPathTime: " + ((System.currentTimeMillis() - time) / 1000.0f));
-		
-		bestPath.print();
+		return bestPath.getPath();
 	}
 	
 	/**
@@ -334,7 +333,6 @@ public class NodeList {
 	 */
 	private void hamiltonian(int next) {
 		int midPathLen;
-		System.out.println("Trazim: " + next + "\tPath[" + (next-1) + "]: " + path[next-1].id);
 		 
 		if(next == pathNodeCount) {
 			// u slucaju da se graf sastoji od jednog cvora onda nema potega
@@ -364,8 +362,6 @@ public class NodeList {
 				if(newPath.getVisitedNodeCount() > bestPath.getVisitedNodeCount())
 					bestPath = newPath;
 			}
-			
-			System.out.println("Putanja je generisana.\nBroj neposecenih cvorova je: " + (totalNodeCount - bestPath.getVisitedNodeCount()));
 			
 			// da li su svi cvorovi poseceni
 			if(totalNodeCount == bestPath.getVisitedNodeCount()) {
@@ -484,7 +480,6 @@ public class NodeList {
 			start = start.next;
 		}
 		path = new Node[pathNodeCount];
-		System.out.println("Estimated plen: " + pathNodeCount);
 	}
 	
 	/**

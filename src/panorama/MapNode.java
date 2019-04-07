@@ -32,17 +32,32 @@ public class MapNode extends Rectangle {
 	private static Font panNameFont = new Font("Arial", Font.BOLD, 15);
 	private static Font audioNameFont = new Font("Arial", Font.PLAIN, 15);
 	
+	/* port position */
 	private Point portLeft = new Point();
 	private Point portRight = new Point();
 	private Point portTop = new Point();
 	private Point portBot = new Point();
+	
+	/* arrow positon */
+	private Point leftArrow = new Point();
+	private Point rightArrow = new Point();
+	private Point topArrow = new Point();
+	private Point botArrow = new Point();
+	
+	/* arrow flag */
+	private boolean b_leftArrow = false;
+	private boolean b_rightArrow = false;
+	private boolean b_topArrow = false;
+	private boolean b_bottomArrow = false;
 	
 	private boolean selected = false;
 	
 	public MapNode(PanNode parent, int x, int y) {
 		super(x, y, width, height);
 		this.parent = parent;
+		
 		calculatePorts(x,y);
+		
 		panName = setNameFromPath(parent.getPanoramaPath());
 	}
 	
@@ -87,6 +102,7 @@ public class MapNode extends Rectangle {
 	}
 	
 	private void calculatePorts(int x, int y) {
+		// calculating port location
 		portLeft.x = x;
 		portLeft.y = y + height/2;
 		
@@ -98,6 +114,22 @@ public class MapNode extends Rectangle {
 		
 		portBot.x = x + width/2;
 		portBot.y = y + height;
+		
+		// assigning arrow location
+		leftArrow.setLocation(portLeft.x, portLeft.y);
+		rightArrow.setLocation(portRight.x, portRight.y);
+		topArrow.setLocation(portTop.x, portTop.y);
+		botArrow.setLocation(portBot.x, portBot.y);
+		
+		// offseting port location if arrow is present
+		if(b_leftArrow)
+			portLeft.x -= MapDrawPanel.getGridSize();
+		if(b_rightArrow)
+			portRight.x += MapDrawPanel.getGridSize();
+		if(b_topArrow)
+			portTop.y -= MapDrawPanel.getGridSize();
+		if(b_bottomArrow)
+			portBot.y += MapDrawPanel.getGridSize();
 	}
 	
 	// Getters and Setters
@@ -118,71 +150,104 @@ public class MapNode extends Rectangle {
 		return portBot;
 	}
 	
+	public void setArrows(boolean left, boolean right, boolean top, boolean bot) {
+		b_leftArrow = left;
+		b_rightArrow = right;
+		b_topArrow = top;
+		b_bottomArrow = bot;
+		calculatePorts(this.x, this.y);
+	}
+	
+	public void setLeftArrow() {
+		b_leftArrow = true;
+		calculatePorts(this.x, this.y);
+	}
+	
+	public void setRightArrow() {
+		b_rightArrow = true;
+		calculatePorts(this.x, this.y);
+	}
+	
+	public void setTopArrow() {
+		b_topArrow = true;
+		calculatePorts(this.x, this.y);
+	}
+	
+	public void setBotArrow() {
+		b_bottomArrow = true;
+		calculatePorts(this.x, this.y);
+	}
+	
+	public void resetArrows() {
+		b_leftArrow = b_rightArrow = b_topArrow = b_bottomArrow = false;
+		calculatePorts(this.x, this.y);
+	}
+	
 	/* Drawing */
 	
 	/**
 	 * Funkcija koja iscrtava cvor na mapi na kojoj vise cvorova mogu biti selektovana
-	 * @param infoNode - info deo cvora koga iscrtavamo
 	 * @param selected - daje informaciju koji cvor je selektovan na mapi
 	 */
-	public void drawNode(Graphics2D g, PanNode infoNode, boolean selected) {
-		drawConnections(g, infoNode);
+	public void drawNode(Graphics2D g, boolean selected) {
+		// experimental
+		drawArrow(g);
+		
+		drawConnections(g);
 		drawShape(g);
 		
 		// draw text
+		textColor = normalTextColor;
 		if(selected)
 			textColor = selectedTextColor;
 		else if(parent.isHome())
 			textColor = homeTextColor;
-		else
-			textColor = normalTextColor;
 		drawText(g);
 	}
 	
 	/**
 	 * Funkcija koja iscrtava cvor na mini mapi
 	 */
-	public void drawNode(Graphics2D g, PanNode infoNode) {
-		drawConnections(g, infoNode);
+	public void drawNode(Graphics2D g) {
+		drawConnections(g);
 		drawShape(g);
 		
 		// draw text
+		textColor = normalTextColor;
 		if(this.selected)
 			textColor = selectedTextColor;
 		else if(parent.isActive())
 			textColor = activeTextColor;
-		else
-			textColor = normalTextColor;
 		drawText(g);
 	}
 	
-	private void drawConnections(Graphics2D g, PanNode infoNode) {
+	private void drawConnections(Graphics2D g) {
 		MapNode mNode;
 		g.setStroke(new BasicStroke(1.5f));
 		g.setColor(lineColor);
 		// Check there are connections
 		// If there are connections check if they've been drawn.
-		if(infoNode.getLeft() != null) {
-			if(infoNode.getLeft().getDrawNum() > infoNode.getDrawNum()) {
-				mNode = infoNode.getLeft().getMapNode();
+		if(parent.getLeft() != null) {
+			if(parent.getLeft().getDrawNum() > parent.getDrawNum()) {
+				mNode = parent.getLeft().getMapNode();
 				g.drawLine(portLeft.x, portLeft.y, mNode.getPortRight().x, mNode.getPortRight().y);
 			}
 		}
-		if(infoNode.getRight() != null) {
-			if(infoNode.getRight().getDrawNum() > infoNode.getDrawNum()) {
-				mNode = infoNode.getRight().getMapNode();
+		if(parent.getRight() != null) {
+			if(parent.getRight().getDrawNum() > parent.getDrawNum()) {
+				mNode = parent.getRight().getMapNode();
 				g.drawLine(portRight.x, portRight.y, mNode.getPortLeft().x, mNode.getPortLeft().y);
 			}
 		}
-		if(infoNode.getTop() != null) {
-			if(infoNode.getTop().getDrawNum() > infoNode.getDrawNum()) {
-				mNode = infoNode.getTop().getMapNode();
+		if(parent.getTop() != null) {
+			if(parent.getTop().getDrawNum() > parent.getDrawNum()) {
+				mNode = parent.getTop().getMapNode();
 				g.drawLine(portTop.x, portTop.y, mNode.getPortBot().x, mNode.getPortBot().y);
 			}
 		}
-		if(infoNode.getBot() != null) {
-			if(infoNode.getBot().getDrawNum() > infoNode.getDrawNum()) {
-				mNode = infoNode.getBot().getMapNode();
+		if(parent.getBot() != null) {
+			if(parent.getBot().getDrawNum() > parent.getDrawNum()) {
+				mNode = parent.getBot().getMapNode();
 				g.drawLine(portBot.x, portBot.y, mNode.getPortTop().x, mNode.getPortTop().y);
 			}
 		}
@@ -200,7 +265,10 @@ public class MapNode extends Rectangle {
 		g.setFont(panNameFont);
 		g.setColor(textColor);
 		
-		// cut audio text if needed
+		// draw ID text
+		g.drawString(String.valueOf(parent.getDrawNum()), this.x + 5, this.y + 15);
+		
+		// cut name text if needed
 		while(g.getFontMetrics().stringWidth(panName) > width-10) {
 			panName = panName.substring(0, panName.length() - 1);
 		}
@@ -212,7 +280,7 @@ public class MapNode extends Rectangle {
 		}
 		else {			
 			int x = (int)this.getCenterX() - g.getFontMetrics().stringWidth(panName) / 2;
-			int y = (int)this.getCenterY() - g.getFontMetrics().getHeight() / 2;
+			int y = (int)this.getCenterY();
 			g.drawString(panName, x, y);
 			
 			// cut audio text if needed
@@ -223,8 +291,33 @@ public class MapNode extends Rectangle {
 			g.setFont(audioNameFont);
 			
 			x = (int)this.getCenterX() - g.getFontMetrics().stringWidth(audioName) / 2;
-			y = (int)this.getCenterY() + g.getFontMetrics().getHeight();
+			y = (int)this.getCenterY() + 25;
 			g.drawString(audioName, x, y);
+		}
+	}
+	
+	private void drawArrow(Graphics2D g) {
+		g.setStroke(new BasicStroke(1.5f));
+		g.setColor(lineColor);
+		if(b_leftArrow && parent.getLeft() != null) {
+			g.drawLine(leftArrow.x, leftArrow.y, leftArrow.x - 6, leftArrow.y + 3);
+			g.drawLine(leftArrow.x, leftArrow.y, leftArrow.x - MapDrawPanel.getGridSize(), leftArrow.y);
+			g.drawLine(leftArrow.x, leftArrow.y, leftArrow.x - 6, leftArrow.y - 3);
+		}
+		if(b_rightArrow && parent.getRight() != null) {
+			g.drawLine(rightArrow.x, rightArrow.y, rightArrow.x + 6, rightArrow.y + 3);
+			g.drawLine(rightArrow.x, rightArrow.y, rightArrow.x + MapDrawPanel.getGridSize(), rightArrow.y);
+			g.drawLine(rightArrow.x, rightArrow.y, rightArrow.x + 6, rightArrow.y - 3);
+		}
+		if(b_topArrow && parent.getTop() != null) {
+			g.drawLine(topArrow.x, topArrow.y, topArrow.x + 3, topArrow.y - 6);
+			g.drawLine(topArrow.x, topArrow.y, topArrow.x, topArrow.y - MapDrawPanel.getGridSize());
+			g.drawLine(topArrow.x, topArrow.y, topArrow.x -3, topArrow.y - 6);
+		}
+		if(b_bottomArrow && parent.getBot() != null) {
+			g.drawLine(botArrow.x, botArrow.y, botArrow.x + 3, botArrow.y + 6);
+			g.drawLine(botArrow.x, botArrow.y, botArrow.x, botArrow.y + MapDrawPanel.getGridSize());
+			g.drawLine(botArrow.x, botArrow.y, botArrow.x - 3, botArrow.y + 6);
 		}
 	}
 	

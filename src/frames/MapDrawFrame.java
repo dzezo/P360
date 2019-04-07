@@ -218,11 +218,11 @@ public class MapDrawFrame extends MapFrame {
 	}
 	
 	private void clearPath() {
-		
+		PanNode.clearPath();
 	}
 	
 	private void editPath() {
-		
+		PanNode.editPath();
 	}
 	
 	public boolean load() {

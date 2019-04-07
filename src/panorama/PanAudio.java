@@ -17,8 +17,7 @@ public class PanAudio implements Serializable {
 	private File audioFile;
 	
 	private transient AudioInputStream audioInput;
-	
-	private Clip audioClip;
+	private transient Clip audioClip;
 	private long audioClipTimePos = 0;
 	
 	private boolean isPlaying = false;
