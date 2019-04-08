@@ -396,6 +396,8 @@ public class PanNode implements Serializable {
 	}
 	
 	public static void clearPath() {
+		if(path == null) return;
+		
 		path = null;
 		
 		PanNode node = head;
@@ -543,5 +545,13 @@ public class PanNode implements Serializable {
 
 	public PanAudio getAudio() {
 		return this.audio;
+	}
+	
+	public PanNode getPathNode(int i) {
+		return path[i];
+	}
+
+	public PanNode[] getPath() {
+		return path;
 	}
 }

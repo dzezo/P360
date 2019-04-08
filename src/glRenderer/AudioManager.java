@@ -5,6 +5,7 @@ import panorama.PanNode;
 
 public class AudioManager implements Runnable {
 	private MainFrame mainFrame;
+	
 	private boolean controlsEnabled = false;
 	private boolean playText = true;
 	

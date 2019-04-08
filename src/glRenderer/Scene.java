@@ -84,4 +84,9 @@ public class Scene {
 			initScene();
 		}
 	}
+	
+	public static void pathTo(int pathIndex) {
+		activePanorama = activePanorama.getPathNode(pathIndex);
+		initScene();
+	}
 }

@@ -190,10 +190,9 @@ public class MapNode extends Rectangle {
 	 * @param selected - daje informaciju koji cvor je selektovan na mapi
 	 */
 	public void drawNode(Graphics2D g, boolean selected) {
-		// experimental
-		drawArrow(g);
-		
+		drawArrow(g);	
 		drawConnections(g);
+		
 		drawShape(g);
 		
 		// draw text
@@ -209,7 +208,9 @@ public class MapNode extends Rectangle {
 	 * Funkcija koja iscrtava cvor na mini mapi
 	 */
 	public void drawNode(Graphics2D g) {
+		drawArrow(g);
 		drawConnections(g);
+		
 		drawShape(g);
 		
 		// draw text
@@ -227,29 +228,21 @@ public class MapNode extends Rectangle {
 		g.setColor(lineColor);
 		// Check there are connections
 		// If there are connections check if they've been drawn.
-		if(parent.getLeft() != null) {
-			if(parent.getLeft().getDrawNum() > parent.getDrawNum()) {
-				mNode = parent.getLeft().getMapNode();
-				g.drawLine(portLeft.x, portLeft.y, mNode.getPortRight().x, mNode.getPortRight().y);
-			}
+		if(parent.getLeft() != null && parent.getLeft().getDrawNum() > parent.getDrawNum()) {
+			mNode = parent.getLeft().getMapNode();
+			g.drawLine(portLeft.x, portLeft.y, mNode.getPortRight().x, mNode.getPortRight().y);
 		}
-		if(parent.getRight() != null) {
-			if(parent.getRight().getDrawNum() > parent.getDrawNum()) {
-				mNode = parent.getRight().getMapNode();
-				g.drawLine(portRight.x, portRight.y, mNode.getPortLeft().x, mNode.getPortLeft().y);
-			}
+		if(parent.getRight() != null && parent.getRight().getDrawNum() > parent.getDrawNum()) {
+			mNode = parent.getRight().getMapNode();
+			g.drawLine(portRight.x, portRight.y, mNode.getPortLeft().x, mNode.getPortLeft().y);
 		}
-		if(parent.getTop() != null) {
-			if(parent.getTop().getDrawNum() > parent.getDrawNum()) {
-				mNode = parent.getTop().getMapNode();
-				g.drawLine(portTop.x, portTop.y, mNode.getPortBot().x, mNode.getPortBot().y);
-			}
+		if(parent.getTop() != null && parent.getTop().getDrawNum() > parent.getDrawNum()) {
+			mNode = parent.getTop().getMapNode();
+			g.drawLine(portTop.x, portTop.y, mNode.getPortBot().x, mNode.getPortBot().y);
 		}
-		if(parent.getBot() != null) {
-			if(parent.getBot().getDrawNum() > parent.getDrawNum()) {
-				mNode = parent.getBot().getMapNode();
-				g.drawLine(portBot.x, portBot.y, mNode.getPortTop().x, mNode.getPortTop().y);
-			}
+		if(parent.getBot() != null && parent.getBot().getDrawNum() > parent.getDrawNum()) {
+			mNode = parent.getBot().getMapNode();
+			g.drawLine(portBot.x, portBot.y, mNode.getPortTop().x, mNode.getPortTop().y);
 		}
 	}
 	

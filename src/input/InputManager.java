@@ -41,13 +41,8 @@ public class InputManager {
 	// Keyboard movement config
 	private static final float yawSpeed = 0.5f;
 	private static final float pitchSpeed = 0.25f;
-	// Viewer AutoPan config
-	private static boolean autoPanEnabled = true;
-	private static final float autoPanSpeed = 0.05f;
-	private	static final float pitchDampingFactor = 0.005f; // range from 1 to 0
-	private static final long autoPanLatency = 3500; // in milis
-	private static long lastInteractTime;
-	private static long currentTime;
+	// time of last interaction in milis
+	public static long lastInteractTime;
 	
 	public static void readInput() {
 		readKeyboard();
@@ -58,9 +53,10 @@ public class InputManager {
 	}
 	
 	public static void setAutoPan() {
-		autoPanEnabled = !autoPanEnabled;
 		lastInteractTime = 0;
-		MainFrame.autoPan(autoPanEnabled);
+		boolean b = Scene.getCamera().getAutoPan();
+		Scene.getCamera().setAutoPan(!b);
+		MainFrame.autoPan(!b);
 	}
 	
 	public static void setController(Controller c) {
@@ -233,26 +229,7 @@ public class InputManager {
 	}
 	
 	private static void autoPan() {
-		float pitch;
-		if (autoPanEnabled) {
-			// Auto Pan can begin if not disabled
-			currentTime = System.currentTimeMillis();
-			if(currentTime >= (lastInteractTime + autoPanLatency)) {
-				// User is not interacting
-				// Bring down camera pitch if it's not leveled
-				pitch = Scene.getCamera().getPitch();
-				if(pitch != 0) {
-					if(Math.abs(pitch) > terminateDamping) {
-						pitch *= (1 - pitchDampingFactor);
-						Scene.getCamera().setPitch(pitch);
-					}
-					else
-						Scene.getCamera().setPitch(0);
-				}
-				// Pan
-				Scene.getCamera().yaw(autoPanSpeed);
-			}
-		}
+		Scene.getCamera().autoPan();
 	}
 	
 	private static boolean isInteractKey(int key) {
