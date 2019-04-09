@@ -27,7 +27,8 @@ public class MapDrawFrame extends MapFrame {
 	private JButton b_removeSound = new JButton(new ImageIcon(Class.class.getResource("/toolbar/removeSound.png")));
 	private JButton b_genPath = new JButton(new ImageIcon(Class.class.getResource("/toolbar/genPath.png")));
 	private JButton b_clearPath = new JButton(new ImageIcon(Class.class.getResource("/toolbar/clearPath.png")));
-	private JButton b_editPath = new JButton(new ImageIcon(Class.class.getResource("/toolbar/editPath.png")));
+	private JButton b_addToPath = new JButton(new ImageIcon(Class.class.getResource("/toolbar/addToPath.png")));
+	private JButton b_removeFromPath = new JButton(new ImageIcon(Class.class.getResource("/toolbar/removeFromPath.png")));
 	private JButton b_load = new JButton(new ImageIcon(Class.class.getResource("/toolbar/load.png")));
 	private JButton b_save = new JButton(new ImageIcon(Class.class.getResource("/toolbar/save.png")));
 	private JButton b_ok = new JButton(new ImageIcon(Class.class.getResource("/toolbar/ok.png")));
@@ -71,8 +72,11 @@ public class MapDrawFrame extends MapFrame {
 		b_clearPath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) { clearPath(); }
 		});
-		b_editPath.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) { editPath(); }
+		b_addToPath.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) { addToPath(); }
+		});
+		b_removeFromPath.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) { removeFromPath(); }
 		});
 		b_load.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) { load(); }
@@ -97,7 +101,9 @@ public class MapDrawFrame extends MapFrame {
 		toolbar.addSeparator();
 		toolbar.add(b_genPath);
 		toolbar.add(b_clearPath);
-		toolbar.add(b_editPath);
+		toolbar.addSeparator();
+		toolbar.add(b_addToPath);
+		toolbar.add(b_removeFromPath);
 		// Add some glue so subsequent items are pushed to the right
 		toolbar.add(Box.createHorizontalGlue());
 		toolbar.add(b_load);
@@ -221,8 +227,24 @@ public class MapDrawFrame extends MapFrame {
 		PanNode.clearPath();
 	}
 	
-	private void editPath() {
-		PanNode.editPath();
+	private void addToPath() {
+		PanNode selectedNode1 = mapPanel.getSelectedNode1();
+		PanNode selectedNode2 = mapPanel.getSelectedNode2();
+		if(selectedNode1 != null && selectedNode2 != null) {
+			PanNode.addToPath(selectedNode1, selectedNode2);
+		}
+		else
+			DialogUtils.showMessage("Use Ctrl+click to select multiple panoramas.", "No Selection Found");
+	}
+	
+	private void removeFromPath() {
+		PanNode selectedNode1 = mapPanel.getSelectedNode1();
+		PanNode selectedNode2 = mapPanel.getSelectedNode2();
+		if(selectedNode1 != null && selectedNode2 != null) {
+			PanNode.removeFromPath(selectedNode1, selectedNode2);
+		}
+		else
+			DialogUtils.showMessage("Use Ctrl+click to select multiple panoramas.", "No Selection Found");
 	}
 	
 	public boolean load() {

@@ -1,13 +1,9 @@
 package glRenderer;
 
-import java.util.Set;
-
 import panorama.PanNode;
 
 public class TourManager implements Runnable{
 	private static PanNode prevPano;
-	
-	private static Set<PanNode> visited;
 	
 	private static float startAngle;
 	
@@ -21,7 +17,7 @@ public class TourManager implements Runnable{
 		
 		float currentAngle = Scene.getCamera().getYaw();
 		
-		// first on path
+		// first pano condition
 		if(prevPano == null) {
 			prevPano = activePano;
 			startAngle = currentAngle;
@@ -29,9 +25,9 @@ public class TourManager implements Runnable{
 				activePano.playAudio();
 		}
 		
+		// next pano condition
 		if(Math.abs(startAngle - currentAngle) > 360.0f && !activePano.isAudioPlaying()) {
 			goNext = true;
-			//visited.add(prevPano);
 			prevPano = activePano;
 			startAngle = currentAngle;
 			if(activePano.hasAudio())
@@ -40,7 +36,7 @@ public class TourManager implements Runnable{
 	}
 	
 	public static int getPathIndex() {
-		pathIndex = (pathIndex + 1)%(prevPano.getPath().length - 1);
+		pathIndex = (pathIndex + 1)%prevPano.getPath().length;
 		System.out.println(pathIndex);
 		return pathIndex;
 	}

@@ -158,28 +158,23 @@ public class MapNode extends Rectangle {
 		calculatePorts(this.x, this.y);
 	}
 	
-	public void setLeftArrow() {
-		b_leftArrow = true;
+	public void setLeftArrow(boolean b) {
+		b_leftArrow = b;
 		calculatePorts(this.x, this.y);
 	}
 	
-	public void setRightArrow() {
-		b_rightArrow = true;
+	public void setRightArrow(boolean b) {
+		b_rightArrow = b;
 		calculatePorts(this.x, this.y);
 	}
 	
-	public void setTopArrow() {
-		b_topArrow = true;
+	public void setTopArrow(boolean b) {
+		b_topArrow = b;
 		calculatePorts(this.x, this.y);
 	}
 	
-	public void setBotArrow() {
-		b_bottomArrow = true;
-		calculatePorts(this.x, this.y);
-	}
-	
-	public void resetArrows() {
-		b_leftArrow = b_rightArrow = b_topArrow = b_bottomArrow = false;
+	public void setBotArrow(boolean b) {
+		b_bottomArrow = b;
 		calculatePorts(this.x, this.y);
 	}
 	
