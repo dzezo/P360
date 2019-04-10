@@ -1,8 +1,5 @@
 package main;
 
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 import frames.MainFrame;
 import frames.MapDrawFrame;
 import frames.MapViewFrame;
@@ -31,9 +28,6 @@ public class Main {
 		Scene.setCamera(camera);
 		GuiNavButtons.init();
 		
-		ScheduledThreadPoolExecutor executor2 = new ScheduledThreadPoolExecutor(5);
-		executor2.scheduleAtFixedRate(new TourManager(), 0, 20, TimeUnit.MILLISECONDS);
-		
 		while(mainFrame.isRunning()) {
 			// check for changes
 			if(mainFrame.isNewImage() || mapView.isUpdated()) {
@@ -42,9 +36,8 @@ public class Main {
 			if(mainFrame.isNewMap() || mapFrame.isUpdated()) {
 				Scene.loadNewMap();
 			}
-			if(TourManager.goNext()) {
-				Scene.pathTo(TourManager.getPathIndex());
-				executor2.scheduleAtFixedRate(new TourManager(), 0, 20, TimeUnit.MILLISECONDS);
+			if(TourManager.hasPath() && TourManager.nextPano()) {
+				TourManager.goNextPano();
 			}
 			
 			if(Scene.isReady()) {

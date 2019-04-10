@@ -9,26 +9,30 @@ public class Scene {
 	private static Camera camera;
 	private static boolean ready;
 	
-	/**
-	 * Postavlja odabranu/aktivnu panoramu na scenu
-	 */
-	private static void initScene() {
-		activePanorama.loadPanorama();
-		Renderer.setNewProjection();
-		GuiNavButtons.setAvailableNavButtons(activePanorama);
-	}
-	
 	public static void loadNewImage() {
 		initScene();
 		ready = true;
 	}
 	
 	public static void loadNewMap() {
+		// set starting pan
 		activePanorama = PanNode.getHome();
+		
+		// prepare renderer
 		initScene();
+		
+		// check if tour exists
+		if(activePanorama.getPath() != null) {
+			TourManager.init(activePanorama.getPath(), activePanorama);
+		}
+		
+		// set ready flag
 		ready = true;
 	}
 	
+	/**
+	 * Getters and Setters
+	 */	
 	public static boolean isReady() {
 		return ready;
 	}
@@ -57,6 +61,9 @@ public class Scene {
 		activePanorama = newActivePanorama;
 	}
 	
+	/**
+	 * Interfejs za navigaciju dugmicima
+	 */
 	public static void goLeft() {
 		if(activePanorama.getLeft() !=null) {
 			activePanorama = activePanorama.getLeft();
@@ -85,8 +92,13 @@ public class Scene {
 		}
 	}
 	
-	public static void pathTo(int pathIndex) {
-		activePanorama = activePanorama.getPathNode(pathIndex);
-		initScene();
+	/**
+	 * Ucitava aktivnu panoramu na scenu
+	 */
+	public static void initScene() {
+		activePanorama.loadPanorama();
+		Renderer.setNewProjection();
+		GuiNavButtons.setAvailableNavButtons(activePanorama);
 	}
+	
 }

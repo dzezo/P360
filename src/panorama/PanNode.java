@@ -20,8 +20,9 @@ public class PanNode implements Serializable {
 	private static PanNode home;
 	private PanNode next;
 	
-	// putanja u grafu
+	// putanja
 	private static PanNode path[];
+	public transient boolean visited = false;
 	
 	// id cvora i njegova graficka reprezentacija
 	private int drawNum = Integer.MAX_VALUE;
@@ -141,12 +142,7 @@ public class PanNode implements Serializable {
 	}
 
 	public static void setHome(PanNode node) {
-		if(node != null) {
-			home = node;
-		}
-		else {
-			home = null;
-		}
+		home = node;
 	}
 	
 	public static void connectNodes(PanNode node1, PanNode node2) {
@@ -291,6 +287,7 @@ public class PanNode implements Serializable {
 			ObjectOutputStream oos = new ObjectOutputStream(fs);
 			oos.writeObject(head);
 			oos.writeObject(home);
+			oos.writeObject(path);
 			oos.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -302,13 +299,12 @@ public class PanNode implements Serializable {
 	}
 	
 	public static boolean loadMap(String loadPath) {
-		PanNode head = null;
-		PanNode home = null;
 		try {
 			FileInputStream fin = new FileInputStream(loadPath);
 			ObjectInputStream ois = new ObjectInputStream(fin);
 			head = (PanNode) ois.readObject();
 			home = (PanNode) ois.readObject();
+			path = (PanNode[]) ois.readObject();
 			ois.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -345,10 +341,6 @@ public class PanNode implements Serializable {
 				start = start.getNext();
 			}
 		}
-		
-		// loading
-		PanNode.setHead(head);
-		PanNode.setHome(home);
 		
 		// success
 		return true;
@@ -600,6 +592,12 @@ public class PanNode implements Serializable {
 	
 	public static PanNode getHome() {
 		return home;
+	}
+	
+	public static void removeMap() {
+		head = null;
+		home = null;
+		path = null;
 	}
 	
 	// node related

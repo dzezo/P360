@@ -77,8 +77,8 @@ public class MainFrame extends Frame {
 		createFrame();
 		
 		// init audio manager
-		ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
-		executor.scheduleAtFixedRate(new AudioManager(this), 0, 20, TimeUnit.MILLISECONDS);
+		ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
+		executor.scheduleAtFixedRate(new AudioManager(this), 0, 50, TimeUnit.MILLISECONDS);
 		
 		// create openGL display
 		DisplayManager.createDisplay(displayCanvas);
@@ -251,8 +251,7 @@ public class MainFrame extends Frame {
 		// then set new active panorama and enable fullscreen mode
 		if(activePanorama == null || !newPath.equals(activePanorama.getPanoramaPath())) {
 			// Remove map if loaded
-			PanNode.setHead(null);
-			PanNode.setHome(null);
+			PanNode.removeMap();
 			// set new single panorama
 			PanNode newPanorama = new PanNode(newPath);
 			Scene.setActivePanorama(newPanorama);
@@ -271,8 +270,8 @@ public class MainFrame extends Frame {
 		else {
 			int dialogRes = DialogUtils.showConfirmDialog("Creating new map will overwrite existing one, \nDo you want to continue?", "New Map");
 			if(dialogRes == DialogUtils.YES) {
-				PanNode.setHead(null);
-				PanNode.setHome(null);
+				// Remove map if loaded
+				PanNode.removeMap();
 				mapEditor.showFrame();
 			}
 		}

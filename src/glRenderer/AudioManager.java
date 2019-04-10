@@ -6,10 +6,13 @@ import panorama.PanNode;
 public class AudioManager implements Runnable {
 	private MainFrame mainFrame;
 	
-	private boolean controlsEnabled = false;
-	private boolean playText = true;
+	private static boolean controlsEnabled = false;
+	private static boolean playText = true;
 	
-	private PanNode prevActivePano;
+	private static PanNode myActivePano;
+	
+	// flag to play audio only once
+	private static boolean audioPlayed = false;
 	
 	public AudioManager(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
@@ -20,12 +23,12 @@ public class AudioManager implements Runnable {
 		if(activePano == null) return;
 		
 		// Stop audio when switching scenes
-		if(prevActivePano == null)
-			prevActivePano = activePano;
-		else if(!activePano.equals(prevActivePano)) {
-			if(prevActivePano.isAudioPlaying())
-				prevActivePano.stopAudio();
-			prevActivePano = activePano;
+		if(myActivePano == null)
+			myActivePano = activePano;
+		else if(!activePano.equals(myActivePano)) {
+			if(myActivePano.isAudioPlaying())
+				myActivePano.stopAudio();
+			myActivePano = activePano;
 		}
 		
 		// Enable/Disable audio controls
@@ -43,6 +46,16 @@ public class AudioManager implements Runnable {
 			mainFrame.setPlayPauseText(activePano.isAudioPlaying());
 			playText = !playText;
 		}
+		
+		// Automatically play audio while touring
+		if(TourManager.isTouring() && activePano.hasAudio() && !activePano.visited && !audioPlayed) {
+			activePano.playAudio();
+			audioPlayed = true;
+		}
+	}
+	
+	public static void resetAudioPlayed() {
+		audioPlayed = false;
 	}
 
 }

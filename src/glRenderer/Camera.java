@@ -14,11 +14,15 @@ public class Camera {
 	private float pitchMin;
 	private float yaw;
 	
+	// AutoPan
+	private float autoPanTripMeter = 0;
+	private boolean autoPanning = false;
+	
 	// AutoPan config
 	private boolean autoPanEnabled = true;
 	private final float autoPanSpeed = 0.45f;//0.05f;
 	private	final float pitchDampingFactor = 0.005f; // range from 1 to 0
-	private final long autoPanLatency = 3500; // in milis
+	private final long autoPanLatency = 2500; // in milis
 	private	final float terminateDamping = 0.01f; // when to stop damping
 	
 	public Vector3f getPosition() {
@@ -72,6 +76,8 @@ public class Camera {
 			long currentTime = System.currentTimeMillis();
 			if(currentTime >= (InputManager.lastInteractTime + autoPanLatency)) {
 				// User is not interacting
+				autoPanning = true;
+				
 				// Bring down camera pitch if it's not leveled
 				pitch = getPitch();
 				if(pitch != 0) {
@@ -82,8 +88,13 @@ public class Camera {
 					else
 						setPitch(0);
 				}
+				
 				// Pan
 				yaw(autoPanSpeed);
+				autoPanTripMeter += autoPanSpeed;
+			}
+			else {
+				autoPanning = false;
 			}
 		}
 	}
@@ -94,5 +105,20 @@ public class Camera {
 	
 	public boolean getAutoPan() {
 		return this.autoPanEnabled;
+	}
+	
+	public boolean isAutoPanning() {
+		return this.autoPanning;
+	}
+	
+	public boolean cycleComplete() {
+		if(autoPanTripMeter > 360.0f)
+			return true;
+		else
+			return false;
+	}
+	
+	public void resetTripMeter() {
+		autoPanTripMeter = 0;
 	}
 }
