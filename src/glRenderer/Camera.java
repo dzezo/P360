@@ -108,7 +108,7 @@ public class Camera {
 	}
 	
 	public boolean isAutoPanning() {
-		return this.autoPanning;
+		return (autoPanEnabled && autoPanning);
 	}
 	
 	public boolean cycleComplete() {

@@ -25,6 +25,9 @@ public class Scene {
 		if(activePanorama.getPath() != null) {
 			TourManager.init(activePanorama.getPath(), activePanorama);
 		}
+		else {
+			TourManager.stopTourManager();
+		}
 		
 		// set ready flag
 		ready = true;

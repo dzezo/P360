@@ -1,5 +1,6 @@
 package glRenderer;
 
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -7,6 +8,7 @@ import panorama.PanNode;
 
 public class TourManager implements Runnable{
 	private static ScheduledThreadPoolExecutor tour = new ScheduledThreadPoolExecutor(1);
+	private static ScheduledFuture<?> tourTasks;
 	
 	private static PanNode[] path;
 	private static boolean hasPath;
@@ -14,6 +16,7 @@ public class TourManager implements Runnable{
 	private static int pathLocation;
 	
 	private static long timeOfChange; 
+	private static boolean changeComplete;
 	private static long visitedPanTime = 3000;
 	
 	private static boolean touring = false;
@@ -38,6 +41,7 @@ public class TourManager implements Runnable{
 			
 			// dodaj panorame na putanju
 			path[i] = p[i];
+			path[i].visited = false;
 		}
 		
 		// ukoliko postoji pocetak putanje, pokreni turu
@@ -49,16 +53,25 @@ public class TourManager implements Runnable{
 			
 			// resetuj kameru pre pocetka ture
 			Scene.getCamera().resetTripMeter();
-			tour.scheduleAtFixedRate(new TourManager(), 0, 50, TimeUnit.MILLISECONDS);
+			timeOfChange = System.currentTimeMillis();
+			changeComplete = true;
+			
+			// pokreni turua
+			tourTasks = tour.scheduleAtFixedRate(new TourManager(), 0, 50, TimeUnit.MILLISECONDS);
 		}
 		else {
 			hasPath = false;
 		}
 	}
 	
+	/**
+	 * Funkcija koja ispituje da li su zadovoljeni uslovi za prelazak na sledecu panoramu
+	 */
 	public void run() {
-		// ukoliko je automatsko paniranje iskljuceno tura staje
-		if(!Scene.getCamera().isAutoPanning()) {
+		// ukoliko je automatsko paniranje iskljuceno 
+		// ili se nije postavila nova panorama na scenu
+		if(!Scene.getCamera().isAutoPanning() || !changeComplete) {
+			// sacekaj
 			touring = false;
 			return;
 		}
@@ -83,6 +96,7 @@ public class TourManager implements Runnable{
 			// resetuj kameru
 			Scene.getCamera().resetTripMeter();
 			timeOfChange = System.currentTimeMillis();
+			changeComplete = true;
 			
 			return;
 		}
@@ -92,6 +106,7 @@ public class TourManager implements Runnable{
 			// na sledecu panoramu se prelazi ukoliko je isteklo dozvoljeno vreme za vec posecenu panoramu
 			long currentTime = System.currentTimeMillis();
 			if((currentTime - timeOfChange) > visitedPanTime) {
+				changeComplete = false;
 				nextPano = true;
 			}
 			
@@ -102,6 +117,8 @@ public class TourManager implements Runnable{
 		if(Scene.getCamera().cycleComplete() && !activePano.isAudioPlaying()) {
 			// oznaci da je panorama posecena i predji na sledecu
 			activePano.visited = true;
+			
+			changeComplete = false;
 			nextPano = true;
 		}
 	}
@@ -159,6 +176,7 @@ public class TourManager implements Runnable{
 		// resetuj kameru
 		Scene.getCamera().resetTripMeter();
 		timeOfChange = System.currentTimeMillis();
+		changeComplete = true;
 	}
 	
 	/**
@@ -166,5 +184,11 @@ public class TourManager implements Runnable{
 	 */
 	public static boolean isTouring() {
 		return touring;
+	}
+	
+	public static void stopTourManager() {
+		hasPath = false;
+		if(tourTasks != null)
+			tourTasks.cancel(false);
 	}
 }
