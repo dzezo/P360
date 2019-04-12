@@ -21,7 +21,7 @@ public class PanNode implements Serializable {
 	private PanNode next;
 	
 	// putanja
-	private static PanNode path[];
+	public static TourPath tour = new TourPath();
 	public transient boolean visited = false;
 	
 	// id cvora i njegova graficka reprezentacija
@@ -287,7 +287,7 @@ public class PanNode implements Serializable {
 			ObjectOutputStream oos = new ObjectOutputStream(fs);
 			oos.writeObject(head);
 			oos.writeObject(home);
-			oos.writeObject(path);
+			oos.writeObject(tour);
 			oos.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -304,7 +304,7 @@ public class PanNode implements Serializable {
 			ObjectInputStream ois = new ObjectInputStream(fin);
 			head = (PanNode) ois.readObject();
 			home = (PanNode) ois.readObject();
-			path = (PanNode[]) ois.readObject();
+			tour = (TourPath) ois.readObject();
 			ois.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -350,58 +350,35 @@ public class PanNode implements Serializable {
 		// empty map
 		if(head == null) return;
 		
-		// reset graphics
-		if(path != null) {
-			PanNode node = head;
-			while(node != null) {
-				node.mapNode.setTopArrow(false);
-				node.mapNode.setRightArrow(false);
-				node.mapNode.setBotArrow(false);
-				node.mapNode.setLeftArrow(false);
-				node = node.next;
-			}
-		}
+		// clear prev path
+		if(tour.hasPath()) clearPath();
 		
 		// generate id path
 		NodeList graph = new NodeList(head, home);
 		int p[] = graph.generatePath();
 		
-		// create node path and set graphics
-		path = new PanNode[p.length];
-		for(int i = 0; i < p.length; i++) {
-			int j = p[i];
-			PanNode node = head;
-			while(j != 0) {
-				node = node.next;
-				j--;
-			}
-			path[i] = node;
+		// create tour and set graphics
+		PanNode node;
+		PanNode next;
+		
+		node = getNode(p[0]);
+		for(int i = 1; i < p.length; i++) {
+			next = getNode(p[i]);
+			tour.add(new Waypoint(node, next));
 			
 			// set graphics
-			if(i == 0)
-				continue;
-			if(node.getTop() != null && node.getTop().equals(path[i-1]))
-				node.mapNode.setTopArrow(true);
-			else if(node.getLeft() != null && node.getLeft().equals(path[i-1]))
-				node.mapNode.setLeftArrow(true);
-			else if(node.getBot() != null && node.getBot().equals(path[i-1]))
-				node.mapNode.setBotArrow(true);
-			else if(node.getRight() != null)
-				node.mapNode.setRightArrow(true);
+			next.mapNode.setArrow(node, true);
+			
+			node = next;
 		}
 	}
 	
 	public static void clearPath() {
-		if(path == null) return;
-		
-		path = null;
+		tour.clearPath();
 		
 		PanNode node = head;
 		while(node != null) {
-			node.mapNode.setTopArrow(false);
-			node.mapNode.setRightArrow(false);
-			node.mapNode.setBotArrow(false);
-			node.mapNode.setLeftArrow(false);
+			node.mapNode.clearArrows();
 			node = node.next;
 		}
 	}
@@ -422,66 +399,16 @@ public class PanNode implements Serializable {
 			return;
 		}
 		
-		// Find out where to put node2
-		if(path != null && path.length > 1) {
-			int i, j;
-			int lastNode1 = -1;
-			
-			for(i = 0; i < path.length - 1; i++) {	
-				if(node1.equals(path[i])) {
-					lastNode1 = i;
-					if(node2.equals(path[i+1])) {
-						DialogUtils.showMessage("Path between selected nodes already exists.", "Path Creation Aborted");
-						return;
-					}
-				}
-				
-				if(lastNode1 != -1 && node2.equals(path[i])) break;
-			}
-			
-			if(!path[0].equals(path[i]) && node1.equals(path[i])) {
-				lastNode1 = i;
-			}
-			
-			if(lastNode1 == -1) {
-				DialogUtils.showMessage("Current path does not lead to " + node1.mapNode.panName, "Path Creation Aborted");
-				return;
-			}
-			
-			PanNode newPath[] = new PanNode[path.length + 1];
-			for(i = 0, j = 0; i < newPath.length; i++) {
-				if(i == lastNode1 + 1)
-					newPath[i] = node2;
-				else
-					newPath[i] = path[j++];
-			}
-			
-			path = newPath;
-		}
-		else if(path == null || (path.length == 1 && node1.equals(path[0]))) {
-				path = new PanNode[2];
-				path[0] = node1;
-				path[1] = node2;
-		}
-		else {
-			DialogUtils.showMessage("Current path does not lead to " + node1.mapNode.panName, "Path Creation Aborted");
-			return;
-		}
+		// Adding to path
+		tour.add(new Waypoint(node1, node2));
 		
 		// Set graphics
-		if(node2.getTop() != null && node2.getTop().equals(node1))
-			node2.mapNode.setTopArrow(true);
-		else if(node2.getLeft() != null && node2.getLeft().equals(node1))
-			node2.mapNode.setLeftArrow(true);
-		else if(node2.getBot() != null && node2.getBot().equals(node1))
-			node2.mapNode.setBotArrow(true);
-		else if(node2.getRight() != null)
-			node2.mapNode.setRightArrow(true);
+		node2.mapNode.setArrow(node1, true);
 	}
 	
 	public static void removeFromPath(PanNode node1, PanNode node2) {
 		// Check if path exists
-		if(path == null || path.length == 1) {
+		if(!tour.hasPath()) {
 			DialogUtils.showMessage("Path does not exist.", "Path Deletion Aborted");
 			return;
 		}
@@ -501,39 +428,11 @@ public class PanNode implements Serializable {
 			return;
 		}
 		
-		// Find connection on path and remove it.
-		int node2Index = -1;
-		for(int i=0; i < path.length-1; i++) {
-			if(node1.equals(path[i]) && node2.equals(path[i+1])) {
-				node2Index = i+1;
-				break;
-			}
-		}
-		
-		if(node2Index == -1) {
-			DialogUtils.showMessage("Path not found.", "Path Deletion Aborted");
-			return;
-		}
-		
-		PanNode newPath[] = new PanNode[path.length - 1];
-		for(int i=0, j=0; i < path.length; i++) {
-			if(i == node2Index)
-				continue;
-			else
-				newPath[j++] = path[i];
-		}
-		
-		path = newPath;
+		// Removing from path
+		tour.remove(new Waypoint(node1, node2));
 		
 		// Reset graphics
-		if(node2.getTop() != null && node2.getTop().equals(node1))
-			node2.mapNode.setTopArrow(false);
-		else if(node2.getLeft() != null && node2.getLeft().equals(node1))
-			node2.mapNode.setLeftArrow(false);
-		else if(node2.getBot() != null && node2.getBot().equals(node1))
-			node2.mapNode.setBotArrow(false);
-		else if(node2.getRight() != null)
-			node2.mapNode.setRightArrow(false);	
+		node2.mapNode.setArrow(node1, false);	
 	}
 	
 	/* audio control */
@@ -597,7 +496,17 @@ public class PanNode implements Serializable {
 	public static void removeMap() {
 		head = null;
 		home = null;
-		path = null;
+		tour.clearPath();
+	}
+	
+	public static PanNode getNode(int id) {
+		PanNode node = head;
+		while(id != 0) {
+			node = node.next;
+			id--;
+		}
+		
+		return node;
 	}
 	
 	// node related
@@ -677,12 +586,5 @@ public class PanNode implements Serializable {
 	public PanAudio getAudio() {
 		return this.audio;
 	}
-	
-	public PanNode getPathNode(int i) {
-		return path[i];
-	}
 
-	public PanNode[] getPath() {
-		return path;
-	}
 }

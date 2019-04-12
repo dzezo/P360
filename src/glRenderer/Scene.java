@@ -22,8 +22,8 @@ public class Scene {
 		initScene();
 		
 		// check if tour exists
-		if(activePanorama.getPath() != null) {
-			TourManager.init(activePanorama.getPath(), activePanorama);
+		if(PanNode.tour.hasPath()) {
+			TourManager.init(PanNode.tour.getPath(), activePanorama);
 		}
 		else {
 			TourManager.stopTourManager();

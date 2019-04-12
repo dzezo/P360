@@ -149,31 +149,53 @@ public class MapNode extends Rectangle {
 	public Point getPortBot() {
 		return portBot;
 	}
-	
-	public void setArrows(boolean left, boolean right, boolean top, boolean bot) {
-		b_leftArrow = left;
-		b_rightArrow = right;
-		b_topArrow = top;
-		b_bottomArrow = bot;
-		calculatePorts(this.x, this.y);
+
+	/* Arrows */
+	public void setArrow(PanNode neighbour, boolean set) {
+		if(parent.getTop() != null 
+				&& parent.getTop().equals(neighbour)) 
+		{
+			setTopArrow(set);
+		}
+		else if(parent.getLeft() != null 
+				&& parent.getLeft().equals(neighbour)) 
+		{
+			setLeftArrow(set);
+		}
+		else if(parent.getBot() != null 
+				&& parent.getBot().equals(neighbour)) 
+		{
+			setBotArrow(set);
+		}
+		else if(parent.getRight() != null)
+		{
+			setRightArrow(set);
+		}
 	}
 	
-	public void setLeftArrow(boolean b) {
+	public void clearArrows() {
+		setTopArrow(false);
+		setRightArrow(false);
+		setBotArrow(false);
+		setLeftArrow(false);
+	}
+	
+	private void setLeftArrow(boolean b) {
 		b_leftArrow = b;
 		calculatePorts(this.x, this.y);
 	}
 	
-	public void setRightArrow(boolean b) {
+	private void setRightArrow(boolean b) {
 		b_rightArrow = b;
 		calculatePorts(this.x, this.y);
 	}
 	
-	public void setTopArrow(boolean b) {
+	private void setTopArrow(boolean b) {
 		b_topArrow = b;
 		calculatePorts(this.x, this.y);
 	}
 	
-	public void setBotArrow(boolean b) {
+	private void setBotArrow(boolean b) {
 		b_bottomArrow = b;
 		calculatePorts(this.x, this.y);
 	}

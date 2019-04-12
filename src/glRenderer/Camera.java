@@ -19,8 +19,8 @@ public class Camera {
 	private boolean autoPanning = false;
 	
 	// AutoPan config
-	private boolean autoPanEnabled = true;
-	private final float autoPanSpeed = 0.45f;//0.05f;
+	private boolean autoPanEnabled = false;
+	private final float autoPanSpeed = 0.05f;
 	private	final float pitchDampingFactor = 0.005f; // range from 1 to 0
 	private final long autoPanLatency = 2500; // in milis
 	private	final float terminateDamping = 0.01f; // when to stop damping

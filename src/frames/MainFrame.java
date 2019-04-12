@@ -139,7 +139,7 @@ public class MainFrame extends Frame {
 		viewMenu.addSeparator();
 		viewMenu.add(view_fullScreen);
 		
-		view_autoPan.setSelected(true);
+		view_autoPan.setSelected(false);
 		view_fullScreen.setEnabled(false);
 		
 		// SOUND
