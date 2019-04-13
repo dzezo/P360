@@ -236,10 +236,6 @@ public class MainFrame extends Frame {
 		view_fullScreen.setEnabled(true);
 	}
 	
-	public static void autoPan(boolean b) {
-		view_autoPan.setSelected(b);
-	}
-	
 	/* Menubar Actions */
 	
 	private void openSingleImage(){
@@ -308,7 +304,8 @@ public class MainFrame extends Frame {
 	}
 	
 	private void autoPan() {
-		InputManager.setAutoPan();
+		boolean set = InputManager.setAutoPan();
+		view_autoPan.setSelected(set);
 	}
 	
 	private void soundPlayPause() {

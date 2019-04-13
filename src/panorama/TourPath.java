@@ -1,11 +1,13 @@
 package panorama;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class TourPath {
+@SuppressWarnings("serial")
+public class TourPath implements Serializable {
 	private List<Waypoint> list1 = new LinkedList<Waypoint>();
 	private List<Waypoint> list2 = new LinkedList<Waypoint>();
 	

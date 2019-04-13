@@ -1,6 +1,9 @@
 package panorama;
 
-public class Waypoint {
+import java.io.Serializable;
+
+@SuppressWarnings("serial")
+public class Waypoint implements Serializable{
 	protected PanNode node;
 	protected PanNode next;
 	

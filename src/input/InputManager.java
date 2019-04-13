@@ -4,7 +4,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
-import frames.MainFrame;
 import glRenderer.DisplayManager;
 import glRenderer.Scene;
 import gui.GuiNavButtons;
@@ -21,6 +20,7 @@ public class InputManager {
 	public static final int K_BPAN = Keyboard.KEY_S;
 	public static final int K_FSCREEN = Keyboard.KEY_F;
 	public static final int K_PAN = Keyboard.KEY_P;
+	
 	// Gamepad controls
 	private static Controller controller;
 	private static boolean readAxis;
@@ -32,15 +32,18 @@ public class InputManager {
 	public static final int GP_BPAN = 2;
 	public static final int GP_FSCREEN = 6;
 	public static final int GP_PAN = 7;
+	
 	// Mouse movement config
 	private static float pitchDelta;
 	private static float yawDelta;
 	private	static final float mouseSensitivity = 0.1f;
 	private	static final float dampingFactor = 0.1f; // range from 1 to 0
 	private	static final float terminateDamping = 0.01f; // when to stop damping
+	
 	// Keyboard movement config
 	private static final float yawSpeed = 0.5f;
 	private static final float pitchSpeed = 0.25f;
+	
 	// time of last interaction in milis
 	public static long lastInteractTime;
 	
@@ -52,11 +55,13 @@ public class InputManager {
 		autoPan();
 	}
 	
-	public static void setAutoPan() {
+	public static boolean setAutoPan() {
 		lastInteractTime = 0;
+		
 		boolean b = Scene.getCamera().getAutoPan();
 		Scene.getCamera().setAutoPan(!b);
-		MainFrame.autoPan(!b);
+
+		return !b;
 	}
 	
 	public static void setController(Controller c) {
@@ -76,8 +81,7 @@ public class InputManager {
 	}
 	
 	private static void readKeyboard() {
-		// Keyboard
-		// User interact cases
+		// Spammable keys
 		if(Keyboard.isKeyDown(K_LEFT)) {
 			lastInteractTime = System.currentTimeMillis();
 			Scene.getCamera().yaw(-yawSpeed);
@@ -95,13 +99,17 @@ public class InputManager {
 			Scene.getCamera().pitch(pitchSpeed);
 		}
 		
+		// Non-spammable keys
 		if(Keyboard.next()) {
 			if(Keyboard.getEventKeyState()) {
 				int key = Keyboard.getEventKey();
-				if(Display.isFullscreen() && !isInteractKey(key))
+				
+				if(Display.isFullscreen() && !isInteractKey(key)) {
 					DisplayManager.setWindowed();
-				if(!Display.isFullscreen() && key == K_FSCREEN)
+				}
+				if(!Display.isFullscreen() && key == K_FSCREEN) {
 					DisplayManager.setFullscreen();
+				}
 				if(key == K_LPAN) {
 					if(GuiNavButtons.areHidden())
 						GuiNavButtons.showAll();
@@ -126,8 +134,9 @@ public class InputManager {
 					else
 						Scene.goBot();
 				}
-				if(key == K_PAN)
+				if(key == K_PAN) {
 					setAutoPan();
+				}
 			}
 		}				
 	}
