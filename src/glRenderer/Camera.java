@@ -25,10 +25,15 @@ public class Camera {
 	private final long autoPanLatency = 2500; // in milis
 	private	final float terminateDamping = 0.01f; // when to stop damping
 	
+	/**
+	 * Get camera wold positon
+	 */
 	public Vector3f getPosition() {
 		return position;
 	}
 
+	/* PITCH CONTROL METHODS */
+	
 	public float getPitch() {
 		return pitch;
 	}
@@ -37,7 +42,10 @@ public class Camera {
 		this.pitch = pitch;
 	}
 	
-	// rotate around y-axis
+	/**
+	 * Rotate vertically
+	 * @param angle - angle of rotation
+	 */
 	public void pitch(float angle) {
 		if(pitch+angle < pitchMin)
 			pitch = pitchMin;
@@ -47,15 +55,13 @@ public class Camera {
 			pitch += angle;
 	}
 	
-	public void resetPitch() {
-		pitch = 0f;
-	}
-	
 	public void setPitchLimit(float pitchLimit) {
 		this.pitchMax = pitch + pitchLimit;
 		this.pitchMin = pitch - pitchLimit;
 	}
 
+	/* YAW CONTROL METHODS */
+	
 	public float getYaw() {
 		return yaw;
 	}
@@ -64,18 +70,24 @@ public class Camera {
 		this.yaw = yaw;
 	}
 	
-	// rotate around x-axis
+	/**
+	 * Rotate horizontally
+	 * @param angle - angle of rotation
+	 */
 	public void yaw(float angle) {
 		yaw += angle;
 	}
 	
+	/* AUTO PAN METHODS */
+	
 	public void autoPan() {
 		float pitch;
+		// Auto Pan can begin if not disabled
 		if (autoPanEnabled) {
-			// Auto Pan can begin if not disabled
 			long currentTime = System.currentTimeMillis();
+			
+			// Check if user has recently interacted
 			if(currentTime >= (InputManager.lastInteractTime + autoPanLatency)) {
-				// User is not interacting
 				autoPanning = true;
 				
 				// Bring down camera pitch if it's not leveled
@@ -89,8 +101,10 @@ public class Camera {
 						setPitch(0);
 				}
 				
-				// Pan
+				// Pan around 
 				yaw(autoPanSpeed);
+				
+				// Update trip meter
 				autoPanTripMeter += autoPanSpeed;
 			}
 			else {
@@ -99,18 +113,32 @@ public class Camera {
 		}
 	}
 	
-	public void setAutoPan(boolean b) {
-		this.autoPanEnabled = b;
+	/**
+	 * Function that toggles auto pan on and off.
+	 * @returns current auto pan state
+	 */
+	public boolean setAutoPan() {
+		InputManager.lastInteractTime = 0;
+		
+		autoPanEnabled = !autoPanEnabled;
+
+		return autoPanEnabled;
 	}
 	
 	public boolean getAutoPan() {
 		return this.autoPanEnabled;
 	}
 	
+	/**
+	 * @returns true if camera is rotating by itself
+	 */
 	public boolean isAutoPanning() {
 		return (autoPanEnabled && autoPanning);
 	}
 	
+	/**
+	 * @returns true if auto pan made a full circle
+	 */
 	public boolean cycleComplete() {
 		if(autoPanTripMeter > 360.0f)
 			return true;

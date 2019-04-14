@@ -5,6 +5,8 @@ import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -89,6 +91,11 @@ public class MainFrame extends Frame {
 	
 	protected void createFrame() {
 		displayCanvas.setPreferredSize(new Dimension(DisplayManager.getWidth(), DisplayManager.getHeight()));
+		displayCanvas.addFocusListener(new FocusAdapter() {
+			public void focusLost(FocusEvent e) {
+				requestFocusInWindow();
+			}
+		});
 		
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		mainPanel.add(displayCanvas, BorderLayout.CENTER);
@@ -304,7 +311,7 @@ public class MainFrame extends Frame {
 	}
 	
 	private void autoPan() {
-		boolean set = InputManager.setAutoPan();
+		boolean set = Scene.getCamera().setAutoPan();
 		view_autoPan.setSelected(set);
 	}
 	

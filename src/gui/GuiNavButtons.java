@@ -152,44 +152,23 @@ public class GuiNavButtons {
 	}
 	
 	public static void setAvailableNavButtons(PanNode node) {
+		// Get gui rendering list
 		List<GuiTexture> guis = GuiRenderer.getGuiList();
-		lastShowTime = System.currentTimeMillis();
 		
-		if(node.getTop() != null) {
-			navTop.show(guis);
-			navTopAvail = true;
-		}
-		else {
-			navTop.hide(guis);
-			navTopAvail = false;
-		}
+		// Remove previous nav buttons from rendering list
+		if(navTopAvail) navTop.hide(guis);
+		if(navBotAvail) navBot.hide(guis);	
+		if(navRightAvail) navRight.hide(guis);	
+		if(navLeftAvail) navLeft.hide(guis);
 		
-		if(node.getBot() != null) {
-			navBot.show(guis);
-			navBotAvail = true;
-		}
-		else {
-			navBot.hide(guis);
-			navBotAvail = false;
-		}
+		// Set nav buttons that are available for currently active panorama
+		navTopAvail = (node.getTop() != null) ? true : false;
+		navRightAvail = (node.getRight() != null) ? true : false;
+		navBotAvail = (node.getBot() != null) ? true : false;
+		navLeftAvail = (node.getLeft() != null) ? true : false;
 		
-		if(node.getRight() != null) {
-			navRight.show(guis);
-			navRightAvail = true;
-		}
-		else {
-			navRight.hide(guis);
-			navRightAvail = false;
-		}
-		
-		if(node.getLeft() != null) {
-			navLeft.show(guis);
-			navLeftAvail = true;
-		}
-		else {
-			navLeft.hide(guis);
-			navLeftAvail = false;
-		}
+		// Nav buttons are initially hidden
+		areHidden = true;
 	}
 	
 	public static boolean isMouseNear() {

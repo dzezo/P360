@@ -81,7 +81,7 @@ public class Renderer {
 		
 		// Camera
 		int panType = Scene.getPanorama().getType();
-		Scene.getCamera().resetPitch();
+		Scene.getCamera().setPitch(0);
 		if(panType == Panorama.TYPE_CYLINDRICAL)
 			Scene.getCamera().setPitchLimit((vFOV_MAXIMUM - vFOV)/2);
 		else

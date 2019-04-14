@@ -52,16 +52,6 @@ public class InputManager {
 		readMouse();
 		if(controller != null)
 			readControler();
-		autoPan();
-	}
-	
-	public static boolean setAutoPan() {
-		lastInteractTime = 0;
-		
-		boolean b = Scene.getCamera().getAutoPan();
-		Scene.getCamera().setAutoPan(!b);
-
-		return !b;
 	}
 	
 	public static void setController(Controller c) {
@@ -107,35 +97,35 @@ public class InputManager {
 				if(Display.isFullscreen() && !isInteractKey(key)) {
 					DisplayManager.setWindowed();
 				}
-				if(!Display.isFullscreen() && key == K_FSCREEN) {
+				else if(!Display.isFullscreen() && key == K_FSCREEN) {
 					DisplayManager.setFullscreen();
 				}
-				if(key == K_LPAN) {
+				else if(key == K_LPAN) {
 					if(GuiNavButtons.areHidden())
 						GuiNavButtons.showAll();
 					else
 						Scene.goLeft();
 				}
-				if(key == K_RPAN) {
+				else if(key == K_RPAN) {
 					if(GuiNavButtons.areHidden())
 						GuiNavButtons.showAll();
 					else
 						Scene.goRight();
 				}
-				if(key == K_TPAN) {
+				else if(key == K_TPAN) {
 					if(GuiNavButtons.areHidden())
 						GuiNavButtons.showAll();
 					else
 						Scene.goTop();
 				}
-				if(key == K_BPAN) {
+				else if(key == K_BPAN) {
 					if(GuiNavButtons.areHidden())
 						GuiNavButtons.showAll();
 					else
 						Scene.goBot();
 				}
-				if(key == K_PAN) {
-					setAutoPan();
+				else if(key == K_PAN) {
+					Scene.getCamera().setAutoPan();
 				}
 			}
 		}				
@@ -231,14 +221,10 @@ public class InputManager {
 						DisplayManager.setFullscreen();
 				}
 				else if(controller.isButtonPressed(GP_PAN)) {
-					setAutoPan();
+					Scene.getCamera().setAutoPan();
 				}
 			}
 		}
-	}
-	
-	private static void autoPan() {
-		Scene.getCamera().autoPan();
 	}
 	
 	private static boolean isInteractKey(int key) {

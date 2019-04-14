@@ -45,6 +45,9 @@ public class Main {
 				InputManager.readInput();
 				GuiNavButtons.update();
 				
+				// pan camera
+				Scene.getCamera().autoPan();
+				
 				// render
 				Renderer.prepare();
 				shader.start();

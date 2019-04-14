@@ -14,14 +14,14 @@ public interface IButton {
 	
 	/**
 	 * Shows GuiButton
-	 * That's done by ADDING button to a list of gui elements that are being rendered
+	 * That's done by ADDING button to list of gui elements that are being rendered
 	 * @param guiTextureList
 	 */
 	public void show(List<GuiTexture> guiTextureList);
 	
 	/**
 	 * Shows GuiButton
-	 * That's done by REMOVING button to a list of gui elements that are being rendered
+	 * That's done by REMOVING button from list of gui elements that are being rendered
 	 * @param guiTextureList
 	 */
 	public void hide(List<GuiTexture> guiTextureList);
