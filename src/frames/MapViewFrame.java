@@ -1,5 +1,11 @@
 package frames;
 
+import java.awt.BorderLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import javax.swing.JFrame;
+
 import glRenderer.Scene;
 import panorama.PanNode;
 
@@ -13,6 +19,35 @@ public class MapViewFrame extends MapFrame {
 		
 		// create frame
 		createFrame();
+	}
+	
+	protected void createFrame() {
+		setSize(mapWidth, mapHeight);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		setLocationRelativeTo(null);
+		
+		// add map panel to frame
+		mapPanel.setParent(this);
+		add(mapPanel, BorderLayout.CENTER);
+		
+		setVisible(false);
+		
+		// Listeners	
+		addWindowListener(new WindowAdapter() 
+		{
+			public void windowActivated(WindowEvent we) {
+				// repaint frame every 20milis
+				startFrameRepaint();
+			}
+			
+            public void windowClosing(WindowEvent we){
+            	// stop frame repaint
+                stopFrameRepaint();
+                
+            	// hide frame
+                setVisible(false);
+            }
+        });
 	}
 
 	public void showFrame(String title) {

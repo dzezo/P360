@@ -1,15 +1,14 @@
 package frames;
 
-import java.awt.BorderLayout;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.JFrame;
-
 @SuppressWarnings("serial")
 public abstract class MapFrame extends Frame {
+	protected ScheduledThreadPoolExecutor repaint = new ScheduledThreadPoolExecutor(5);;
+	protected ScheduledFuture<?> repaintTasks;
+	
 	public static int mapWidth = 800;
 	public static int mapHeight = 600;
 	
@@ -19,30 +18,6 @@ public abstract class MapFrame extends Frame {
 	
 	public MapFrame(String title) {
 		super(title);
-	}
-	
-	protected void createFrame() {
-		setSize(mapWidth, mapHeight);
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		setLocationRelativeTo(null);
-		
-		// add map panel to frame
-		mapPanel.setParent(this);
-		add(mapPanel, BorderLayout.CENTER);
-		
-		// repaint frame every 20milis
-		ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
-		executor.scheduleAtFixedRate(new RepaintMap(this), 0, 20, TimeUnit.MILLISECONDS);
-		
-		setVisible(false);
-		
-		// Listeners
-		addWindowListener(new WindowAdapter() 
-		{
-            public void windowClosing(WindowEvent we){
-                setVisible(false);
-            }
-        });
 	}
 	
 	public MapPanel getMapPanel() {
@@ -56,6 +31,17 @@ public abstract class MapFrame extends Frame {
 		}
 		else
 			return false;
+	}
+	
+	protected void startFrameRepaint() {
+		if(repaintTasks == null) {
+			repaintTasks = repaint.scheduleAtFixedRate(new RepaintMap(this), 0, 20, TimeUnit.MILLISECONDS);
+		}
+	}
+	
+	protected void stopFrameRepaint() {
+		repaintTasks.cancel(false);
+		repaintTasks = null;
 	}
 	
 	protected abstract void setOrigin();

@@ -28,6 +28,7 @@ import input.Controller;
 import input.Controllers;
 import input.InputManager;
 import panorama.PanNode;
+import utils.AutoSave;
 import utils.ChooserUtils;
 import utils.DialogUtils;
 
@@ -146,7 +147,7 @@ public class MainFrame extends Frame {
 		viewMenu.addSeparator();
 		viewMenu.add(view_fullScreen);
 		
-		view_autoPan.setSelected(false);
+		view_autoPan.setSelected(true);
 		view_fullScreen.setEnabled(false);
 		
 		// SOUND
@@ -203,7 +204,7 @@ public class MainFrame extends Frame {
 		});
 	}
 
-	private void enableMapControl(boolean status) {
+	public void enableMapControl(boolean status) {
 		map_save.setEnabled(status);
 		map_change.setEnabled(status);
 		map_show.setEnabled(status);
@@ -265,16 +266,19 @@ public class MainFrame extends Frame {
 	}
 	
 	private void newMap() {
-		// No map loaded
-		if(PanNode.getHead() == null)
+		if(PanNode.getHead() == null) {
+			// No map loaded
+			AutoSave.resetSavingPath();
 			mapEditor.showFrame();
-		
-		// Map loaded, prompt overwrite
+		}
 		else {
+			// Map loaded, prompt overwrite
 			int dialogRes = DialogUtils.showConfirmDialog("Creating new map will overwrite existing one, \nDo you want to continue?", "New Map");
 			if(dialogRes == DialogUtils.YES) {
 				// Remove map if loaded
 				PanNode.removeMap();
+				
+				AutoSave.resetSavingPath();
 				mapEditor.showFrame();
 			}
 		}

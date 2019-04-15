@@ -3,14 +3,18 @@ package frames;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JToolBar;
 
 import panorama.PanNode;
+import utils.AutoSave;
 import utils.ChooserUtils;
 import utils.DialogUtils;
 
@@ -114,6 +118,42 @@ public class MapDrawFrame extends MapFrame {
 		// Disables toolbar from moving
 		toolbar.setFloatable(false);
 		getContentPane().add(toolbar, BorderLayout.NORTH);
+	}
+	
+	protected void createFrame() {
+		setSize(mapWidth, mapHeight);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		setLocationRelativeTo(null);
+		
+		// add map panel to frame
+		mapPanel.setParent(this);
+		add(mapPanel, BorderLayout.CENTER);
+		
+		setVisible(false);
+		
+		// Listeners
+		addWindowListener(new WindowAdapter() 
+		{
+			public void windowActivated(WindowEvent we) {
+				// repaint frame every 20milis
+				startFrameRepaint();
+				
+				// auto save every minute
+				AutoSave.startSaving();
+			}
+			
+            public void windowClosing(WindowEvent we){
+            	// stop frame repaint
+                stopFrameRepaint();
+                
+                // stop auto save and save once more
+                AutoSave.stopSaving();
+                AutoSave.save();
+                
+            	// hide frame
+                setVisible(false);
+            }
+        });
 	}
 	
 	public void showFrame() {
@@ -293,7 +333,13 @@ public class MapDrawFrame extends MapFrame {
 		if(PanNode.getHome() != null) {
 			updated = true;
 			
+			// stop auto save and save once more
+            AutoSave.stopSaving();
+            AutoSave.save();
+            
+            // hide frame
 			setVisible(false);
+			
 			MainFrame.enableFullScreen();
 		}
 	}

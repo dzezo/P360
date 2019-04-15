@@ -10,6 +10,8 @@ import java.io.Serializable;
 
 import glRenderer.Scene;
 import graph.NodeList;
+import utils.AutoLoad;
+import utils.AutoSave;
 import utils.ChooserUtils;
 import utils.DialogUtils;
 
@@ -294,6 +296,12 @@ public class PanNode implements Serializable {
 			return false;
 		}
 		
+		// set autoload destination
+		AutoLoad.setLastUsedMap(savePath);
+		
+		// set autosave destination
+		AutoSave.setSavingPath(savePath);
+		
 		// success
 		return true;
 	}
@@ -341,6 +349,12 @@ public class PanNode implements Serializable {
 				start = start.getNext();
 			}
 		}
+		
+		// set autoload destination
+		AutoLoad.setLastUsedMap(loadPath);
+				
+		// set autosave destination
+		AutoSave.setSavingPath(loadPath);
 		
 		// success
 		return true;

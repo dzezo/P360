@@ -13,6 +13,7 @@ import gui.GuiRenderer;
 import input.InputManager;
 import shaders.GuiShader;
 import shaders.StaticShader;
+import utils.AutoLoad;
 import utils.Loader;
 
 public class Main {
@@ -27,6 +28,12 @@ public class Main {
 		GuiShader guiShader = new GuiShader();
 		Scene.setCamera(camera);
 		GuiNavButtons.init();
+		
+		// load previously used map
+		if(AutoLoad.load()) {
+			Scene.loadNewMap();
+			mainFrame.enableMapControl(true);
+		}
 		
 		while(mainFrame.isRunning()) {
 			// check for changes
