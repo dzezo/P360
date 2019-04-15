@@ -57,5 +57,10 @@ public class AudioManager implements Runnable {
 	public static void resetAudioPlayed() {
 		audioPlayed = false;
 	}
+	
+	public static void stopAudio() {
+		if(myActivePano != null && myActivePano.isAudioPlaying())
+			myActivePano.stopAudio();
+	}
 
 }

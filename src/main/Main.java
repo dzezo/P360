@@ -3,6 +3,7 @@ package main;
 import frames.MainFrame;
 import frames.MapDrawFrame;
 import frames.MapViewFrame;
+import glRenderer.AudioManager;
 import glRenderer.Camera;
 import glRenderer.DisplayManager;
 import glRenderer.Renderer;
@@ -41,6 +42,7 @@ public class Main {
 				Scene.loadNewImage();
 			}
 			if(mainFrame.isNewMap() || mapFrame.isUpdated()) {
+				AudioManager.stopAudio();
 				Scene.loadNewMap();
 			}
 			if(TourManager.hasPath() && TourManager.nextPano()) {
@@ -66,6 +68,9 @@ public class Main {
 			// update display
 			DisplayManager.updateDisplay();
 		}
+		
+		// stop audio
+		AudioManager.stopAudio();
 		
 		// Releasing resources
 		shader.cleanUp();
