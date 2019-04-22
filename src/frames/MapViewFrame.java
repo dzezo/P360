@@ -69,8 +69,8 @@ public class MapViewFrame extends MapFrame {
 			int h = (int) (activePan.getMapNode().getHeight() / 2);
 			int w = (int) (activePan.getMapNode().getWidth() / 2);
 			
-			int centerX = mapPanel.getWidth() / 2;
-			int centerY = mapPanel.getHeight() / 2;
+			int centerX = getWidth() / 2;
+			int centerY = getHeight() / 2;
 			
 			mapPanel.setOrigin(x - centerX + w, y - centerY + h);
 		}

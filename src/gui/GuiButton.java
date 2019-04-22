@@ -41,24 +41,15 @@ public abstract class GuiButton implements IButton {
 		guiTexture.setScale(originalScale);
 	}
 
-	public void update(boolean clicked) {
-		if(!isHidden) {
-			Vector2f location = guiTexture.getPosition();
-			Vector2f scale = guiTexture.getScale();
-			Vector2f mouseCoords = DisplayManager.getNormalizedMouseCoords();
-			
-			if(location.y + scale.y > -mouseCoords.y 
-					&& location.y - scale.y < -mouseCoords.y
-					&& location.x + scale.x > mouseCoords.x
-					&& location.x - scale.x < mouseCoords.x) 
-			{
-				whileHovering(this);
+	public void update() {
+		if(!isHidden) {	
+			if(mouseOver()){
 				if(!isHovering) {
 					isHovering = true;
 					onStartHover(this);
 				}
-				if(clicked)
-					onClick(this);
+				
+				whileHovering(this);
 			}
 			else {
 				isHovering = false;
@@ -66,5 +57,20 @@ public abstract class GuiButton implements IButton {
 			}
 		}
 	}
-
+	
+	public boolean mouseOver() {
+		Vector2f location = guiTexture.getPosition();
+		Vector2f scale = guiTexture.getScale();
+		Vector2f mouseCoords = DisplayManager.getNormalizedMouseCoords();
+		
+		return (location.y + scale.y > -mouseCoords.y 
+				&& location.y - scale.y < -mouseCoords.y
+				&& location.x + scale.x > mouseCoords.x
+				&& location.x - scale.x < mouseCoords.x);
+	}
+	
+	public void click() {
+		if(mouseOver())
+			onClick(this);
+	}
 }

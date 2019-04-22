@@ -2,7 +2,6 @@ package gui;
 
 import java.util.List;
 
-import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
 
 import glRenderer.DisplayManager;
@@ -179,20 +178,26 @@ public class GuiNavButtons {
 			return false;
 	}
 	
+	public static void click() {
+		navTop.click();
+		navBot.click();
+		navRight.click();
+		navLeft.click();
+	}
+	
 	public static void update() {
 		currentTime = System.currentTimeMillis();
-		if(currentTime >= lastShowTime + hideLatency)
+		
+		if(isMouseNear()) {
+			showAll();
+		}
+		else if(currentTime >= lastShowTime + hideLatency) {
 			hideAll();
+		}
 		
-		boolean clicked = false;
-		while(Mouse.next())
-			if(Mouse.getEventButton() == 0)
-				if(Mouse.getEventButtonState()) 
-					clicked = true;
-		
-		navTop.update(clicked);
-		navBot.update(clicked);
-		navRight.update(clicked);
-		navLeft.update(clicked);
+		navTop.update();
+		navBot.update();
+		navRight.update();
+		navLeft.update();
 	}
 }

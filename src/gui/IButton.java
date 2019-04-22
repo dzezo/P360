@@ -30,6 +30,15 @@ public interface IButton {
 	
 	public void resetScale();
 	
-	public void update(boolean clicked);
+	public void update();
 	
+	/**
+	 * @return true if mouse cursor is over button
+	 */
+	public boolean mouseOver();
+	
+	/**
+	 * Calls onClick if conditions are met
+	 */
+	public void click();
 }

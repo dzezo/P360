@@ -36,6 +36,11 @@ public class MapDrawFrame extends MapFrame {
 	private JButton b_load = new JButton(new ImageIcon(Class.class.getResource("/toolbar/load.png")));
 	private JButton b_save = new JButton(new ImageIcon(Class.class.getResource("/toolbar/save.png")));
 	private JButton b_ok = new JButton(new ImageIcon(Class.class.getResource("/toolbar/ok.png")));
+	
+	// Error messages
+	private final String err_selection = "No Selection Found";
+	private final String err_noSelection = "Left click to select panorama";
+	private final String err_noMultipleSelection = "You need to select both panoramas to run this function.\nYou can use ctrl+click or left and right mouse click to do so.";
 
 	public MapDrawFrame(String title) {
 		super(title);
@@ -159,6 +164,7 @@ public class MapDrawFrame extends MapFrame {
 	public void showFrame() {
 		// show frame
 		setVisible(true);
+		setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		
 		// setting the origin of a map
 		setOrigin();
@@ -172,8 +178,8 @@ public class MapDrawFrame extends MapFrame {
 			int h = (int) (PanNode.getHome().getMapNode().getHeight() / 2);
 			int w = (int) (PanNode.getHome().getMapNode().getWidth() / 2);
 			
-			int centerX = mapPanel.getWidth() / 2;
-			int centerY = mapPanel.getHeight() / 2;
+			int centerX = getWidth() / 2;
+			int centerY = getHeight() / 2;
 			
 			mapPanel.setOrigin(x - centerX + w, y - centerY + h);
 		}
@@ -203,7 +209,7 @@ public class MapDrawFrame extends MapFrame {
 			mapPanel.deselectNodes();
 		}
 		else
-			DialogUtils.showMessage("Left click to select panorama", "No Selection Found");
+			DialogUtils.showMessage(err_noSelection, err_selection);
 	}
 	
 	private void home() {
@@ -212,7 +218,7 @@ public class MapDrawFrame extends MapFrame {
 			PanNode.setHome(selectedNode);
 		}
 		else
-			DialogUtils.showMessage("Left click to select panorama", "No Selection Found");
+			DialogUtils.showMessage(err_noSelection, err_selection);
 	}
 	
 	private void connect() {
@@ -222,7 +228,7 @@ public class MapDrawFrame extends MapFrame {
 			PanNode.connectNodes(selectedNode1, selectedNode2);
 		}
 		else
-			DialogUtils.showMessage("Use Ctrl+click to select multiple panoramas.", "No Selection Found");
+			DialogUtils.showMessage(err_noMultipleSelection, err_selection);
 	}
 	
 	private void disconnect() {
@@ -232,13 +238,13 @@ public class MapDrawFrame extends MapFrame {
 			PanNode.disconnectNode(selectedNode1, selectedNode2);
 		}
 		else
-			DialogUtils.showMessage("Use Ctrl+click to select multiple panoramas.", "No Selection Found");
+			DialogUtils.showMessage(err_noMultipleSelection, err_selection);
 	}
 	
 	private void addAudio() {
 		PanNode selectedNode = mapPanel.getSelectedNode1();
 		if(selectedNode == null) {
-			DialogUtils.showMessage("Left click to select panorama", "No Selection Found");
+			DialogUtils.showMessage(err_noSelection, err_selection);
 			return;
 		}
 		
@@ -252,7 +258,7 @@ public class MapDrawFrame extends MapFrame {
 	private void removeAudio() {
 		PanNode selectedNode = mapPanel.getSelectedNode1();
 		if(selectedNode == null) {
-			DialogUtils.showMessage("Left click to select panorama", "No Selection Found");
+			DialogUtils.showMessage(err_noSelection, err_selection);
 			return;
 		}
 		
@@ -274,7 +280,7 @@ public class MapDrawFrame extends MapFrame {
 			PanNode.addToPath(selectedNode1, selectedNode2);
 		}
 		else
-			DialogUtils.showMessage("Use Ctrl+click to select multiple panoramas.", "No Selection Found");
+			DialogUtils.showMessage(err_noMultipleSelection, err_selection);
 	}
 	
 	private void removeFromPath() {
@@ -284,7 +290,7 @@ public class MapDrawFrame extends MapFrame {
 			PanNode.removeFromPath(selectedNode1, selectedNode2);
 		}
 		else
-			DialogUtils.showMessage("Use Ctrl+click to select multiple panoramas.", "No Selection Found");
+			DialogUtils.showMessage(err_noMultipleSelection, err_selection);
 	}
 	
 	public boolean load() {

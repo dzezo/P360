@@ -14,6 +14,12 @@ public class Camera {
 	private float pitchMin;
 	private float yaw;
 	
+	// Rotation config
+	private float yawVelocity = 0;
+	private float pitchVelocity = 0;
+	private	final float dampingFactor = 0.1f; // range from 0 to 1
+	private	final float terminateDamping = 0.01f; // when to stop damping
+	
 	// AutoPan
 	private float autoPanTripMeter = 0;
 	private boolean autoPanning = false;
@@ -23,7 +29,6 @@ public class Camera {
 	private final float autoPanSpeed = 0.05f;
 	private	final float pitchDampingFactor = 0.005f; // range from 1 to 0
 	private final long autoPanLatency = 2500; // in milis
-	private	final float terminateDamping = 0.01f; // when to stop damping
 	
 	/**
 	 * Get camera wold positon
@@ -76,6 +81,37 @@ public class Camera {
 	 */
 	public void yaw(float angle) {
 		yaw += angle;
+	}
+	
+	/* MOVEMENT METHODS */
+	
+	/**
+	 * Camera rotation velocity is via InputManger, when mouse drag occurs
+	 */
+	public void setRotationVelocity(float yawVelocity, float pitchVelocity) {
+		this.yawVelocity = yawVelocity;
+		this.pitchVelocity = pitchVelocity;
+	}
+	
+	/**
+	 * Rotate camera based on set velocity
+	 */
+	public void rotateCamera() {
+		if(Math.abs(yawVelocity) > 0) {
+			yaw(-yawVelocity);
+			if(Math.abs(yawVelocity) < terminateDamping)
+				yawVelocity = 0;
+			else
+				yawVelocity *= (1-dampingFactor);
+		}
+		
+		if(Math.abs(pitchVelocity) > 0) {
+			pitch(pitchVelocity);
+			if(Math.abs(pitchVelocity) < terminateDamping)
+				pitchVelocity = 0;
+			else
+				pitchVelocity *= (1-dampingFactor);
+		}
 	}
 	
 	/* AUTO PAN METHODS */

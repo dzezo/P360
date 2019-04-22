@@ -288,7 +288,6 @@ public class MainFrame extends Frame {
 	}
 	
 	private void loadMap() {
-		// loading
 		boolean success = mapEditor.load();
 		
 		if(success) {

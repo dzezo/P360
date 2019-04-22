@@ -2,7 +2,6 @@ package input;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
 
 import glRenderer.DisplayManager;
 import glRenderer.Scene;
@@ -34,11 +33,12 @@ public class InputManager {
 	public static final int GP_PAN = 7;
 	
 	// Mouse movement config
-	private static float pitchDelta;
-	private static float yawDelta;
 	private	static final float mouseSensitivity = 0.1f;
-	private	static final float dampingFactor = 0.1f; // range from 1 to 0
-	private	static final float terminateDamping = 0.01f; // when to stop damping
+	
+	// Mouse double click
+	private static boolean click = false;
+	private static long clickTime;
+	private static final long doubleClickLatency = 300; // in milis
 	
 	// Keyboard movement config
 	private static final float yawSpeed = 0.5f;
@@ -93,11 +93,10 @@ public class InputManager {
 		if(Keyboard.next()) {
 			if(Keyboard.getEventKeyState()) {
 				int key = Keyboard.getEventKey();
-				
-				if(Display.isFullscreen() && !isInteractKey(key)) {
+				if(DisplayManager.isFullscreen() && !isInteractKey(key)) {
 					DisplayManager.setWindowed();
 				}
-				else if(!Display.isFullscreen() && key == K_FSCREEN) {
+				else if(!DisplayManager.isFullscreen() && key == K_FSCREEN) {
 					DisplayManager.setFullscreen();
 				}
 				else if(key == K_LPAN) {
@@ -132,31 +131,40 @@ public class InputManager {
 	}
 	
 	private static void readMouse() {
-		// Mouse
-		// Reading user interaction
-		if(GuiNavButtons.isMouseNear()) {
-			GuiNavButtons.showAll();
-		}
+		// detect mouse drag
 		if(Mouse.isButtonDown(0)) {
-			pitchDelta = Mouse.getDY() * mouseSensitivity;
-			yawDelta = Mouse.getDX() * mouseSensitivity;
+			float pitchDelta = Mouse.getDY() * mouseSensitivity;
+			float yawDelta = Mouse.getDX() * mouseSensitivity;
+			
+			Scene.getCamera().setRotationVelocity(yawDelta, pitchDelta);
+			
 			// Last time user interacted
 			lastInteractTime = System.currentTimeMillis();
 		}
-		// Detecting interaction
-		if(Math.abs(yawDelta) > 0) {
-			Scene.getCamera().yaw(-yawDelta);
-			if(Math.abs(yawDelta) < terminateDamping)
-				yawDelta = 0;
-			else
-				yawDelta *= (1-dampingFactor);
+		
+		// detect left click
+		if(Mouse.next() && Mouse.getEventButtonState() && Mouse.isButtonDown(0)) {
+			// double click condition
+			if (click && clickTime + doubleClickLatency > System.currentTimeMillis()){
+				if(DisplayManager.isFullscreen())
+					DisplayManager.setWindowed();
+				else
+					DisplayManager.setFullscreen();
+				
+				// reset for next detection
+				click = false;
+			}
+			else {
+				click = true;
+				clickTime = System.currentTimeMillis();
+				
+				// detect if click happened on gui
+				if(!GuiNavButtons.areHidden())
+					GuiNavButtons.click();
+			}
 		}
-		if(Math.abs(pitchDelta) > 0) {
-			Scene.getCamera().pitch(pitchDelta);
-			if(Math.abs(pitchDelta) < terminateDamping)
-				pitchDelta = 0;
-			else
-				pitchDelta *= (1-dampingFactor);
+		else if (click && clickTime + doubleClickLatency < System.currentTimeMillis()) {
+			click = false;
 		}
 	}
 	
@@ -215,7 +223,7 @@ public class InputManager {
 						Scene.goBot();
 				}
 				else if(controller.isButtonPressed(GP_FSCREEN)) {
-					if(Display.isFullscreen())
+					if(DisplayManager.isFullscreen())
 						DisplayManager.setWindowed();
 					else
 						DisplayManager.setFullscreen();

@@ -92,6 +92,10 @@ public class DisplayManager {
 		fullscreenRequest = true;
 	}
 	
+	public static boolean isFullscreen() {
+		return Display.isFullscreen();
+	}
+	
 	public static void setWindowed() {
 		windowedRequest = true;
 	}

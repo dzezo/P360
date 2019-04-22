@@ -1,5 +1,7 @@
 package main;
 
+import javax.swing.UIManager;
+
 import frames.MainFrame;
 import frames.MapDrawFrame;
 import frames.MapViewFrame;
@@ -18,7 +20,10 @@ import utils.AutoLoad;
 import utils.Loader;
 
 public class Main {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
+		// set system look and feel
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		
 		// init
 		MainFrame mainFrame = new MainFrame("P360");
 		MapDrawFrame mapFrame = mainFrame.getMapDrawingFrame();
@@ -27,6 +32,7 @@ public class Main {
 		Camera camera = new Camera();
 		StaticShader shader = new StaticShader();
 		GuiShader guiShader = new GuiShader();
+		
 		Scene.setCamera(camera);
 		GuiNavButtons.init();
 		
@@ -52,10 +58,13 @@ public class Main {
 			if(Scene.isReady()) {
 				// read inputs
 				InputManager.readInput();
-				GuiNavButtons.update();
 				
-				// pan camera
+				// move camera
+				Scene.getCamera().rotateCamera();
 				Scene.getCamera().autoPan();
+				
+				// update gui
+				GuiNavButtons.update();
 				
 				// render
 				Renderer.prepare();
