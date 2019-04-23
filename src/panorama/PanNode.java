@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import glRenderer.Scene;
 import graph.NodeList;
@@ -24,6 +26,7 @@ public class PanNode implements Serializable {
 	
 	// putanja
 	public static TourPath tour = new TourPath();
+	public List<Integer> tourNum = new ArrayList<Integer>();
 	public transient boolean visited = false;
 	
 	// id cvora i njegova graficka reprezentacija
@@ -384,7 +387,9 @@ public class PanNode implements Serializable {
 		node = getNode(p[0]);
 		for(int i = 1; i < p.length; i++) {
 			next = getNode(p[i]);
-			tour.add(new Waypoint(node, next));
+			
+			int tourNum = tour.add(new Waypoint(node, next));
+			node.tourNum.add(tourNum);
 			
 			// set graphics
 			next.mapNode.setArrow(node, true);
@@ -398,6 +403,7 @@ public class PanNode implements Serializable {
 		
 		PanNode node = head;
 		while(node != null) {
+			node.tourNum.clear();
 			node.mapNode.clearArrows();
 			node = node.next;
 		}
@@ -420,7 +426,8 @@ public class PanNode implements Serializable {
 		}
 		
 		// Adding to path
-		tour.add(new Waypoint(node1, node2));
+		int tourNum = tour.add(new Waypoint(node1, node2));
+		node1.tourNum.add(tourNum);
 		
 		// Set graphics
 		node2.mapNode.setArrow(node1, true);
@@ -449,7 +456,8 @@ public class PanNode implements Serializable {
 		}
 		
 		// Removing from path
-		tour.remove(new Waypoint(node1, node2));
+		int tourNum = tour.remove(new Waypoint(node1, node2));
+		node1.tourNum.remove((Object)tourNum);
 		
 		// Reset graphics
 		node2.mapNode.setArrow(node1, false);	

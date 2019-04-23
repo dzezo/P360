@@ -11,16 +11,23 @@ public class TourPath implements Serializable {
 	private List<Waypoint> list1 = new LinkedList<Waypoint>();
 	private List<Waypoint> list2 = new LinkedList<Waypoint>();
 	
-	public void add(Waypoint wp) {
-		if(list2.isEmpty())
-			list1.add(wp);
-		else
-			list2.add(wp);
-	}
-	
-	public void remove(Waypoint waypointToRemove) {
+	public int add(Waypoint wp) {
 		List<Waypoint> path;
 		
+		if(list2.isEmpty())
+			path = list1;
+		else
+			path = list2;
+		
+		path.add(wp);
+		
+		return path.size();
+	}
+	
+	public int remove(Waypoint waypointToRemove) {
+		int removeIndex = 1;
+		
+		List<Waypoint> path;
 		if(list2.isEmpty())
 			path = list1;
 		else
@@ -32,9 +39,13 @@ public class TourPath implements Serializable {
 			
 			if(waypoint.equals(waypointToRemove)) {
 				path.remove(waypoint);
-				break;
+				return removeIndex;
 			}
+			
+			removeIndex++;
 		}
+		
+		return 0;
 	}
 	
 	public boolean hasPath() {

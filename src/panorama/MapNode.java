@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.Iterator;
 
 import frames.MapDrawPanel;
 
@@ -275,8 +276,21 @@ public class MapNode extends Rectangle {
 		g.setFont(panNameFont);
 		g.setColor(textColor);
 		
-		// draw ID text
-		g.drawString(String.valueOf(parent.getDrawNum()), this.x + 5, this.y + 15);
+		// draw tourNum text
+		String tour = "";
+		Iterator<Integer> iterator = parent.tourNum.iterator();
+		while(iterator.hasNext()) {
+			String tourNum = String.valueOf(iterator.next());
+			
+			if(!iterator.hasNext()) {
+				tour = tour.concat(String.valueOf(tourNum));
+			}
+			else {
+				tour = tour.concat(String.valueOf(tourNum) + ", ");
+			}
+		}
+		
+		g.drawString(tour, this.x + 5, this.y + 15);
 		
 		// cut name text if needed
 		while(g.getFontMetrics().stringWidth(panName) > width-10) {
