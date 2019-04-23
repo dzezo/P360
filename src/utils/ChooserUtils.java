@@ -6,11 +6,8 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
 public class ChooserUtils {
-	/* choosers */
-	private static JFileChooser jfc_image = new JFileChooser();
-	private static JFileChooser jfc_images = new JFileChooser();
-	private static JFileChooser jfc_map = new JFileChooser();
-	private static JFileChooser jfc_audio = new JFileChooser();
+	/* chooser */
+	private static JFileChooser jfc = new JFileChooser();
 	
 	/* chooser filters */
 	private static FileFilter ff_image = new FileFilter() {
@@ -48,28 +45,19 @@ public class ChooserUtils {
 			return "*.wav";
 		}
 	};
-	
-	public static void init() {
-		// setting up choosers
-		jfc_image.setAcceptAllFileFilterUsed(false);
-		jfc_image.setFileFilter(ff_image);
 
-		jfc_images.setAcceptAllFileFilterUsed(false);
-		jfc_images.setMultiSelectionEnabled(true);
-		jfc_images.setFileFilter(ff_image);
-		
-		jfc_map.setAcceptAllFileFilterUsed(false);
-		jfc_map.setFileFilter(ff_map);
-		
-		jfc_audio.setAcceptAllFileFilterUsed(false);
-		jfc_audio.setFileFilter(ff_audio);
-	}
-	
 	public static String openMapDialog() {
-		int result = jfc_map.showOpenDialog(null);
+		// prep jfc
+		jfc.setAcceptAllFileFilterUsed(false);
+		jfc.setMultiSelectionEnabled(false);
+		jfc.setFileFilter(ff_map);
+		jfc.setAccessory(null);
+		
+		// show jfc
+		int result = jfc.showOpenDialog(null);
 		
 		if(result == JFileChooser.APPROVE_OPTION) {
-			String loadPath = jfc_map.getSelectedFile().getPath();
+			String loadPath = jfc.getSelectedFile().getPath();
 			
 			// attach extension if there is not any
 			if(!loadPath.endsWith(".p360"))
@@ -98,11 +86,18 @@ public class ChooserUtils {
 	}
 	
 	public static String saveMapDialog() {
-		int result = jfc_map.showSaveDialog(null);
+		// prep jfc
+		jfc.setAcceptAllFileFilterUsed(false);
+		jfc.setMultiSelectionEnabled(false);
+		jfc.setFileFilter(ff_map);
+		jfc.setAccessory(null);
+		
+		// show jfc
+		int result = jfc.showSaveDialog(null);
 		
 		// determining saving path
 		if(result == JFileChooser.APPROVE_OPTION) {
-			String savePath = jfc_map.getSelectedFile().getPath();
+			String savePath = jfc.getSelectedFile().getPath();
 			
 			// attach extension if there is not any
 			if(!savePath.endsWith(".p360"))
@@ -131,12 +126,40 @@ public class ChooserUtils {
 	}
 	
 	public static String openImageDialog() {
-		int result = jfc_image.showOpenDialog(null);
+		// prep jfc
+		jfc.setAcceptAllFileFilterUsed(false);
+		jfc.setMultiSelectionEnabled(false);
+		jfc.setFileFilter(ff_image);
+		jfc.setAccessory(new ImagePreview(jfc));
+		
+		// show jfc
+		int result = jfc.showOpenDialog(null);
 		
 		if(result == JFileChooser.APPROVE_OPTION) {
-			String panPath = jfc_image.getSelectedFile().getPath();
+			String panPath = jfc.getSelectedFile().getPath();
 			
-			return panPath;
+			// check file type
+			if(!(panPath.toLowerCase().endsWith(".jpg") 
+					|| panPath.toLowerCase().endsWith(".tif"))) {
+				// show error msg and leave
+				DialogUtils.showMessage("File type not supported", "Load Image");
+				return null;
+			}
+			
+			// check if file exists
+			File file = new File(panPath);
+			
+			// file does not exist
+			if(!file.exists()) {
+				// show error msg and leave
+				DialogUtils.showMessage("File does not exist", "Load Image");
+				return null;
+			}
+			// file exists
+			else {
+				// return path to file
+				return panPath;
+			}
 		}
 		// opening canceled;
 		else {
@@ -145,10 +168,35 @@ public class ChooserUtils {
 	}
 	
 	public static File[] openImagesDialog() {
-		int result = jfc_images.showOpenDialog(null);
+		// prep jfc
+		jfc.setAcceptAllFileFilterUsed(false);
+		jfc.setMultiSelectionEnabled(true);
+		jfc.setFileFilter(ff_image);
+		jfc.setAccessory(new ImagePreview(jfc));
+		
+		// show jfc
+		int result = jfc.showOpenDialog(null);
 		
 		if(result == JFileChooser.APPROVE_OPTION) {
-			File images[] = jfc_images.getSelectedFiles();
+			File images[] = jfc.getSelectedFiles();
+			
+			// check selected images
+			for(File image : images) {
+				// check file type
+				if(!(image.getPath().toLowerCase().endsWith(".jpg") 
+						|| image.getPath().toLowerCase().endsWith(".tif"))) {
+					// show error msg and leave
+					DialogUtils.showMessage("File type not supported", "Load Image");
+					return null;
+				}
+				
+				// check if exists
+				if(!image.exists()) {
+					// show error msg and leave
+					DialogUtils.showMessage("File does not exist", "Load Image");
+					return null;
+				}
+			}
 			
 			return images;
 		}
@@ -159,10 +207,17 @@ public class ChooserUtils {
 	}
 	
 	public static String openAudioDialog() {
-		int result = jfc_audio.showOpenDialog(null);
+		// prep jfc
+		jfc.setAcceptAllFileFilterUsed(false);
+		jfc.setMultiSelectionEnabled(false);
+		jfc.setFileFilter(ff_audio);
+		jfc.setAccessory(null);
+		
+		// show jfc
+		int result = jfc.showOpenDialog(null);
 		
 		if(result == JFileChooser.APPROVE_OPTION) {
-			String loadPath = jfc_audio.getSelectedFile().getPath();
+			String loadPath = jfc.getSelectedFile().getPath();
 			
 			// attach extension if there is not any
 			if(!loadPath.endsWith(".wav"))

@@ -312,27 +312,21 @@ public class MapDrawFrame extends MapFrame {
 	}
 	
 	public boolean save() {
-		if(PanNode.getHead() == null) {
-			DialogUtils.showMessage("Nothing to save!", "Save");
-			return false;
-		}
-		else {
-			// get path
-			String savePath = ChooserUtils.saveMapDialog();
-			if(savePath == null) return false;
+		// get path
+		String savePath = ChooserUtils.saveMapDialog();
+		if(savePath == null) return false;
+		
+		// save
+		boolean success = PanNode.saveMap(savePath);
+		if(success) {
+			// display map source as title
+			setTitle(savePath);
 			
-			// save
-			boolean success = PanNode.saveMap(savePath);
-			if(success) {
-				// display map source as title
-				setTitle(savePath);
-				
-				// show message
-				DialogUtils.showMessage("Saved!", "Save");
-			}
-			
-			return success;
+			// show message
+			DialogUtils.showMessage("Saved!", "Save");
 		}
+		
+		return success;
 	}
 	
 	private void ok() {

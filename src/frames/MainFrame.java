@@ -72,9 +72,6 @@ public class MainFrame extends Frame {
 	
 	public MainFrame(String title) {
 		super(title);
-		// init dialog setup
-		ChooserUtils.init();
-		
 		// create gui
 		createMenuBar();
 		createFrame();

@@ -283,6 +283,12 @@ public class PanNode implements Serializable {
 	}
 	
 	public static boolean saveMap(String savePath) {
+		// can't save empty map
+		if(head == null) {
+			DialogUtils.showMessage("Nothing to save!", "Save");
+			return false;
+		}
+		
 		// Writing to file
 		try {
 			FileOutputStream fs = new FileOutputStream(savePath);
