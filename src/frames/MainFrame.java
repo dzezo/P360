@@ -54,8 +54,8 @@ public class MainFrame extends Frame {
 	private JMenuItem map_change = new JMenuItem("Change Map");
 	private JMenuItem map_show = new JMenuItem("Show Map");
 	/* viewMenu items */
-	private static JMenuItem view_fullScreen = new JMenuItem("Full Screen");
-	private static JCheckBoxMenuItem view_autoPan = new JCheckBoxMenuItem("Auto Pan");
+	private JMenuItem view_fullScreen = new JMenuItem("Full Screen");
+	private JCheckBoxMenuItem view_autoPan = new JCheckBoxMenuItem("Auto Pan");
 	/* soundMenu items */
 	private JMenuItem sound_playPause = new JMenuItem("Play");
 	private JMenuItem sound_stop = new JMenuItem("Stop");
@@ -66,8 +66,8 @@ public class MainFrame extends Frame {
 	private boolean newImage = false;
 	private boolean newMap = false;
 	/* map gui */
-	private MapDrawFrame mapEditor = new MapDrawFrame("Create Map");
-	private MapViewFrame mapView = new MapViewFrame("View Map");
+	private static MapDrawFrame mapEditor = new MapDrawFrame("Create Map");
+	private static MapViewFrame mapView = new MapViewFrame("View Map");
 	
 	
 	public MainFrame(String title) {
@@ -87,7 +87,7 @@ public class MainFrame extends Frame {
 		running = true;
 	}
 	
-	protected void createFrame() {
+	private void createFrame() {
 		displayCanvas.setPreferredSize(new Dimension(DisplayManager.getWidth(), DisplayManager.getHeight()));
 		displayCanvas.addFocusListener(new FocusAdapter() {
 			public void focusLost(FocusEvent e) {
@@ -237,7 +237,7 @@ public class MainFrame extends Frame {
 		return mapView;
 	}
 	
-	public static void enableFullScreen() {
+	public void enableFullScreen() {
 		view_fullScreen.setEnabled(true);
 	}
 	
@@ -255,7 +255,7 @@ public class MainFrame extends Frame {
 			PanNode.removeMap();
 			// set new single panorama
 			PanNode newPanorama = new PanNode(newPath);
-			Scene.setActivePanorama(newPanorama);
+			Scene.setNextActivePanorama(newPanorama);
 			enableFullScreen();
 			newImage = true;
 			enableMapControl(false);
@@ -302,7 +302,7 @@ public class MainFrame extends Frame {
 		mapEditor.showFrame();
 	}
 	
-	private void showMap() { 
+	public static void showMap() { 
 		mapView.showFrame(mapEditor.getTitle());
 	}
 	

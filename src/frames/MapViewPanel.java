@@ -39,7 +39,7 @@ public class MapViewPanel extends MapPanel{
 				if(selectedNode1 != null && selectedNode2 != null) {
 					// first and second node click were on the same node
 					if(selectedNode2 == selectedNode1)	
-						setNewActivePanorama();
+						setNextActivePanorama();
 					// if they are not the same treat second click as first 
 					else{
 						selectedNode1 = selectedNode2;
@@ -83,9 +83,11 @@ public class MapViewPanel extends MapPanel{
 		originY = -oY;
 	}
 	
-	private void setNewActivePanorama() {
-		// set request for change
-		Scene.setActivePanorama(selectedNode1);
+	private void setNextActivePanorama() {
+		// set next panorama
+		Scene.setNextActivePanorama(selectedNode1);
+		
+		// set request for changes
 		this.parent.updated = true;
 		
 		// hide map frame

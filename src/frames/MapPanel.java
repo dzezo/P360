@@ -60,7 +60,7 @@ public abstract class MapPanel extends JComponent {
 	public int getOriginY() {
 		return -originY;
 	}
-	
+
 	public PanNode getSelectedNode1() {
 		return selectedNode1;
 	}

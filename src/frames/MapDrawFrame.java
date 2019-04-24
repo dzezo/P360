@@ -125,7 +125,7 @@ public class MapDrawFrame extends MapFrame {
 		getContentPane().add(toolbar, BorderLayout.NORTH);
 	}
 	
-	protected void createFrame() {
+	private void createFrame() {
 		setSize(mapWidth, mapHeight);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setLocationRelativeTo(null);
@@ -339,8 +339,6 @@ public class MapDrawFrame extends MapFrame {
             
             // hide frame
 			setVisible(false);
-			
-			MainFrame.enableFullScreen();
 		}
 	}
 	

@@ -35,9 +35,13 @@ import javax.swing.*;
 import java.beans.*;
 import java.awt.*;
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @SuppressWarnings("serial")
 public class ImagePreview extends JComponent implements PropertyChangeListener {
+	ExecutorService executor = Executors.newFixedThreadPool(1);
+	
     ImageIcon thumbnail = null;
     File file = null;
 
@@ -46,35 +50,33 @@ public class ImagePreview extends JComponent implements PropertyChangeListener {
         setBorder(BorderFactory.createEtchedBorder());
         fc.addPropertyChangeListener(this);
     }
-
+    
     public void loadImage() {
         if (file == null) {
             thumbnail = null;
             return;
         }
         
-        //Don't use createImageIcon (which is a wrapper for getResource)
-        //because the image we're trying to load is probably not one
-        //of this program's own resources.
-        ImageIcon tmpIcon = new ImageIcon(file.getPath());
-        if (tmpIcon != null) {
-            if (tmpIcon.getIconWidth() > 90) {   	
-    			int w = tmpIcon.getImage().getWidth(null);
-    			int h = tmpIcon.getImage().getHeight(null);	
-    			int side = Math.max(w, h);
-    			
-    			double scale = (double)(getWidth() - 5) / (double)side;
-    			
-    			w = (int) (scale * (double)w);
-    			h = (int) (scale * (double)h);
-            	
-                thumbnail = new ImageIcon(tmpIcon.getImage().
-                                          getScaledInstance(w, h,
-                                                      Image.SCALE_DEFAULT));
-            } else { //no need to miniaturize
-                thumbnail = tmpIcon;
-            }
-        }
+        executor.execute(new Runnable() {
+			public void run() {
+				ImageIcon tmpIcon = new ImageIcon(file.getPath());
+	            if (tmpIcon != null) {
+	            	int w = tmpIcon.getImage().getWidth(null);
+	    			int h = tmpIcon.getImage().getHeight(null);	
+	    			int side = Math.max(w, h);
+	    			
+	    			double scale = (double)(getWidth() - 5) / (double)side;
+	    			
+	    			w = (int) (scale * (double)w);
+	    			h = (int) (scale * (double)h);
+	            	
+	                thumbnail = new ImageIcon(tmpIcon.getImage().
+	                                          getScaledInstance(w, h, Image.SCALE_DEFAULT));
+	                
+	                repaint();
+	            }
+			}
+        });
     }
 
     public void propertyChange(PropertyChangeEvent e) {
@@ -97,15 +99,11 @@ public class ImagePreview extends JComponent implements PropertyChangeListener {
             thumbnail = null;
             if (isShowing()) {
                 loadImage();
-                repaint();
             }
         }
     }
 
     public void paint(Graphics g) {
-        if (thumbnail == null) {
-            loadImage();
-        }
         if (thumbnail != null) {
             int x = getWidth()/2 - thumbnail.getIconWidth()/2;
             int y = getHeight()/2 - thumbnail.getIconHeight()/2;

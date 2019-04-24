@@ -8,6 +8,7 @@ import javax.swing.filechooser.FileFilter;
 public class ChooserUtils {
 	/* chooser */
 	private static JFileChooser jfc = new JFileChooser();
+	private static ImagePreview preview = new ImagePreview(jfc);
 	
 	/* chooser filters */
 	private static FileFilter ff_image = new FileFilter() {
@@ -130,7 +131,7 @@ public class ChooserUtils {
 		jfc.setAcceptAllFileFilterUsed(false);
 		jfc.setMultiSelectionEnabled(false);
 		jfc.setFileFilter(ff_image);
-		jfc.setAccessory(new ImagePreview(jfc));
+		jfc.setAccessory(preview);
 		
 		// show jfc
 		int result = jfc.showOpenDialog(null);
@@ -172,7 +173,7 @@ public class ChooserUtils {
 		jfc.setAcceptAllFileFilterUsed(false);
 		jfc.setMultiSelectionEnabled(true);
 		jfc.setFileFilter(ff_image);
-		jfc.setAccessory(new ImagePreview(jfc));
+		jfc.setAccessory(preview);
 		
 		// show jfc
 		int result = jfc.showOpenDialog(null);

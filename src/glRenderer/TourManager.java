@@ -167,8 +167,7 @@ public class TourManager implements Runnable{
 		}
 		
 		// predji na sledeci cvor
-		Scene.setActivePanorama(nextPano);
-		Scene.initScene();
+		Scene.loadNewImage(nextPano);
 		
 		// resetuj audio menadzer
 		AudioManager.resetAudioPlayed();

@@ -9,8 +9,6 @@ public abstract class Frame extends JFrame{
 		super(title);
 	}
 	
-	protected abstract void createFrame();
-	
 	public void cleanUp() {
 		this.setVisible(false);
         this.dispose();

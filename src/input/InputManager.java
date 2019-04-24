@@ -3,6 +3,7 @@ package input;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
+import frames.MainFrame;
 import glRenderer.DisplayManager;
 import glRenderer.Scene;
 import gui.GuiNavButtons;
@@ -19,6 +20,7 @@ public class InputManager {
 	public static final int K_BPAN = Keyboard.KEY_S;
 	public static final int K_FSCREEN = Keyboard.KEY_F;
 	public static final int K_PAN = Keyboard.KEY_P;
+	public static final int K_MAP = Keyboard.KEY_M;
 	
 	// Gamepad controls
 	private static Controller controller;
@@ -126,10 +128,15 @@ public class InputManager {
 				else if(key == K_PAN) {
 					Scene.getCamera().setAutoPan();
 				}
+				else if(key == K_MAP) {
+					if(DisplayManager.isFullscreen())
+						DisplayManager.setWindowed();
+					MainFrame.showMap();
+				}
 			}
 		}				
 	}
-	
+
 	private static void readMouse() {
 		// detect mouse drag
 		if(Mouse.isButtonDown(0)) {
@@ -245,7 +252,8 @@ public class InputManager {
 				key == K_RPAN || 
 				key == K_TPAN || 
 				key == K_BPAN ||
-				key == K_PAN;
+				key == K_PAN ||
+				key == K_MAP;
 	}
 	
 }

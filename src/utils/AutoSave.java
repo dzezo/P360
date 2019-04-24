@@ -27,6 +27,9 @@ public class AutoSave implements Runnable {
 	}
 	
 	public static void save() {
+		// nothing to save
+		if(PanNode.getHead() == null) return;
+		
 		// get save path
 		String savePath = (!savingPath.isEmpty()) ? savingPath : DEFAULT_FILE_PATH;
 		
@@ -36,7 +39,7 @@ public class AutoSave implements Runnable {
 	
 	public static void startSaving() {
 		if(autoSaveTasks == null)
-			autoSaveTasks = autoSave.scheduleAtFixedRate(new AutoSave(), 0, 1, TimeUnit.MINUTES);
+			autoSaveTasks = autoSave.scheduleAtFixedRate(new AutoSave(), 1, 1, TimeUnit.MINUTES);
 	}
 	
 	public static void stopSaving() {

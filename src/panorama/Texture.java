@@ -7,6 +7,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 import utils.BuffUtils;
 
@@ -29,25 +30,19 @@ public class Texture {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		int[] data = new int[width*height];
-		int a,r,g,b;
-		for(int i = 0; i < width*height; i++) {
-			a = (pixels[i] & 0xFF000000) >> 24;
-			r = (pixels[i] & 0xFF0000) >> 16;
-			g = (pixels[i] & 0xFF00) >> 8;
-			b = (pixels[i] & 0xFF);
-			
-			data[i] = a << 24 | b << 16 | g << 8 | r;
-		}
+		
 		int tex = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex);
+		
+		GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
 		
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 		
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, BuffUtils.storeInIntBuffer(data));
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, 
+				BuffUtils.storeInIntBuffer(pixels));
 		
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		return tex;

@@ -6,15 +6,28 @@ import panorama.Panorama;
 
 public class Scene {
 	private static PanNode activePanorama;
+	private static PanNode nextActivePanorama;
 	private static Camera camera;
 	private static boolean ready;
 	
-	public static void loadNewImage() {
+	public static void loadNewImage(PanNode newImage) {
+		// reset ready flag
+		ready = false;
+		
+		// set image to load
+		activePanorama = newImage;
+		
+		// prepare renderer
 		initScene();
+		
+		// set ready flag
 		ready = true;
 	}
 	
 	public static void loadNewMap() {
+		// reset ready flag
+		ready = false;
+				
 		// set starting pan
 		activePanorama = PanNode.getHome();
 		
@@ -60,8 +73,12 @@ public class Scene {
 		return activePanorama;
 	}
 	
-	public static void setActivePanorama(PanNode newActivePanorama) {
-		activePanorama = newActivePanorama;
+	public static void setNextActivePanorama(PanNode nextPanorama) {
+		nextActivePanorama = nextPanorama;
+	}
+	
+	public static PanNode getNextActivePanorama() {
+		return nextActivePanorama;
 	}
 	
 	/**
@@ -69,29 +86,25 @@ public class Scene {
 	 */
 	public static void goLeft() {
 		if(activePanorama.getLeft() !=null) {
-			activePanorama = activePanorama.getLeft();
-			initScene();
+			loadNewImage(activePanorama.getLeft());
 		}
 	}
 	
 	public static void goRight() {
 		if(activePanorama.getRight() !=null) {
-			activePanorama = activePanorama.getRight();
-			initScene();
+			loadNewImage(activePanorama.getRight());
 		}
 	}
 	
 	public static void goTop() {
 		if(activePanorama.getTop() !=null) {
-			activePanorama = activePanorama.getTop();
-			initScene();
+			loadNewImage(activePanorama.getTop());
 		}
 	}
 	
 	public static void goBot() {
 		if(activePanorama.getBot() !=null) {
-			activePanorama = activePanorama.getBot();
-			initScene();
+			loadNewImage(activePanorama.getBot());
 		}
 	}
 	

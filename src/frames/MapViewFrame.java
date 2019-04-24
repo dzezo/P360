@@ -21,7 +21,7 @@ public class MapViewFrame extends MapFrame {
 		createFrame();
 	}
 	
-	protected void createFrame() {
+	private void createFrame() {
 		setSize(mapWidth, mapHeight);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setLocationRelativeTo(null);
@@ -78,5 +78,5 @@ public class MapViewFrame extends MapFrame {
 			mapPanel.setOrigin(0,0);
 		}
 	}
-
+	
 }

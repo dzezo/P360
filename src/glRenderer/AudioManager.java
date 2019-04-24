@@ -48,7 +48,12 @@ public class AudioManager implements Runnable {
 		}
 		
 		// Automatically play audio while touring
-		if(TourManager.isTouring() && activePano.hasAudio() && !activePano.visited && !audioPlayed) {
+		if(Scene.isReady()
+				&& TourManager.isTouring() 
+				&& !activePano.visited 
+				&& activePano.hasAudio() 
+				&& !audioPlayed) 
+		{
 			activePano.playAudio();
 			audioPlayed = true;
 		}

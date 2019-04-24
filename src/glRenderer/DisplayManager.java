@@ -18,7 +18,6 @@ public class DisplayManager {
 	private static final int FPS_CAP = 60;
 	
 	private static boolean fullscreenRequest = false;
-	private static boolean windowedRequest = false;
 	
 	public static void createDisplay(Canvas canvas) {
 		ContextAttribs attribs = new ContextAttribs(3,2).withForwardCompatible(true).withProfileCore(true);
@@ -38,36 +37,6 @@ public class DisplayManager {
 	}
 	
 	public static void updateDisplay(){
-		if(fullscreenRequest) {
-			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-			int width = (int) screenSize.getWidth();
-			int height = (int) screenSize.getHeight();
-			try {
-				Display.setFullscreen(true);
-			} catch (LWJGLException e) {
-				e.printStackTrace();
-			}
-			// Where to render on display
-			GL11.glViewport(0, 0, width, height);
-			// Request served
-			fullscreenRequest = false;
-		}
-		
-		if (windowedRequest) 
-		{
-			try {
-				Display.setFullscreen(false);
-			} catch (LWJGLException e) {
-				e.printStackTrace();
-			}
-			// Recalculate projection matrix
-			Renderer.setNewProjection();
-			// Where to render on display
-			GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
-			// Request served
-			windowedRequest = false;
-		}
-		
 		if (Display.wasResized()) {
 			GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
 		}
@@ -89,7 +58,18 @@ public class DisplayManager {
 	}
 	
 	public static void setFullscreen() {
-		fullscreenRequest = true;
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		int width = (int) screenSize.getWidth();
+		int height = (int) screenSize.getHeight();
+		try {
+			Display.setFullscreen(true);
+		} catch (LWJGLException e) {
+			e.printStackTrace();
+		}
+		// Recalculate projection matrix
+		Renderer.setNewProjection();
+		// Where to render on display
+		GL11.glViewport(0, 0, width, height);
 	}
 	
 	public static boolean isFullscreen() {
@@ -97,7 +77,15 @@ public class DisplayManager {
 	}
 	
 	public static void setWindowed() {
-		windowedRequest = true;
+		try {
+			Display.setFullscreen(false);
+		} catch (LWJGLException e) {
+			e.printStackTrace();
+		}
+		// Recalculate projection matrix
+		Renderer.setNewProjection();
+		// Where to render on display
+		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
 	}
 	
 	public static boolean isFullscreenRequested() {

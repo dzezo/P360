@@ -38,16 +38,20 @@ public class Main {
 		
 		// load previously used map
 		if(AutoLoad.load()) {
-			Scene.loadNewMap();
 			mainFrame.enableMapControl(true);
+			mainFrame.enableFullScreen();
+			
+			Scene.loadNewMap();
 		}
 		
 		while(mainFrame.isRunning()) {
 			// check for changes
 			if(mainFrame.isNewImage() || mapView.isUpdated()) {
-				Scene.loadNewImage();
+				Scene.loadNewImage(Scene.getNextActivePanorama());
 			}
 			if(mainFrame.isNewMap() || mapFrame.isUpdated()) {
+				mainFrame.enableFullScreen();
+				
 				AudioManager.stopAudio();
 				Scene.loadNewMap();
 			}

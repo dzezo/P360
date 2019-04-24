@@ -18,9 +18,9 @@ public class PanAudio implements Serializable {
 	
 	private transient AudioInputStream audioInput;
 	private transient Clip audioClip;
-	private long audioClipTimePos = 0;
+	private transient long audioClipTimePos = 0;
 	
-	private boolean isPlaying = false;
+	private transient boolean isPlaying = false;
 	
 	public PanAudio(String loc) {
 		audioFile = new File(loc);
