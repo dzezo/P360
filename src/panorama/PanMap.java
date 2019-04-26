@@ -11,7 +11,7 @@ import java.util.Iterator;
 import frames.MapDrawPanel;
 
 @SuppressWarnings("serial")
-public class MapNode extends Rectangle {
+public class PanMap extends Rectangle {
 	private PanNode parent;
 	
 	private Color textColor;
@@ -53,7 +53,7 @@ public class MapNode extends Rectangle {
 	
 	private boolean selected = false;
 	
-	public MapNode(PanNode parent, int x, int y) {
+	public PanMap(PanNode parent, int x, int y) {
 		super(x, y, width, height);
 		this.parent = parent;
 		
@@ -241,7 +241,7 @@ public class MapNode extends Rectangle {
 	}
 	
 	private void drawConnections(Graphics2D g) {
-		MapNode mNode;
+		PanMap mNode;
 		g.setStroke(new BasicStroke(1.5f));
 		g.setColor(lineColor);
 		// Check there are connections

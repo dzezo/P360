@@ -40,9 +40,9 @@ public abstract class GuiButton implements IButton {
 	public void resetScale() {
 		guiTexture.setScale(originalScale);
 	}
-
+	
 	public void update() {
-		if(!isHidden) {	
+		if(!isHidden) {
 			if(mouseOver()){
 				if(!isHovering) {
 					isHovering = true;

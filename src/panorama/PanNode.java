@@ -31,7 +31,7 @@ public class PanNode implements Serializable {
 	
 	// id cvora i njegova graficka reprezentacija
 	private int drawNum = Integer.MAX_VALUE;
-	private MapNode mapNode;
+	private PanMap mapNode;
 	
 	// susedi cvora
 	private PanNode left;
@@ -62,7 +62,7 @@ public class PanNode implements Serializable {
 	 */
 	public PanNode(String panoramaPath, int x, int y) {
 		this.panoramaPath = panoramaPath;		
-		mapNode = new MapNode(this, x, y);
+		mapNode = new PanMap(this, x, y);
 	}
 	
 	public void loadPanorama() {
@@ -166,8 +166,8 @@ public class PanNode implements Serializable {
 			return;
 		}
 		// Determine connection port
-		int width = MapNode.width;
-		int height = MapNode.height;
+		int width = PanMap.width;
+		int height = PanMap.height;
 		int x1 = node1.getMapNode().x;
 		int y1 = node1.getMapNode().y;
 		int x2 = node2.getMapNode().x;
@@ -550,7 +550,7 @@ public class PanNode implements Serializable {
 		return this.drawNum;
 	}
 
-	public MapNode getMapNode() {
+	public PanMap getMapNode() {
 		return mapNode;
 	}
 	

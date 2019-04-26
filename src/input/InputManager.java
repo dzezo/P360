@@ -129,8 +129,9 @@ public class InputManager {
 					Scene.getCamera().setAutoPan();
 				}
 				else if(key == K_MAP) {
-					if(DisplayManager.isFullscreen())
+					if(DisplayManager.isFullscreen()) {
 						DisplayManager.setWindowed();
+					}
 					MainFrame.showMap();
 				}
 			}

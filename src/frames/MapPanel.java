@@ -5,7 +5,7 @@ import java.awt.Graphics;
 
 import javax.swing.JComponent;
 
-import panorama.MapNode;
+import panorama.PanMap;
 import panorama.PanNode;
 
 @SuppressWarnings("serial")
@@ -22,7 +22,7 @@ public abstract class MapPanel extends JComponent {
 	protected PanNode selectedNode1;
 	protected PanNode selectedNode2;
 	
-	protected boolean isNodeSelected(MapNode node) {
+	protected boolean isNodeSelected(PanMap node) {
 		if(selectedNode1 != null && selectedNode1.getMapNode() == node)
 			return true;
 		if(selectedNode2 != null && selectedNode2.getMapNode() == node)
@@ -34,7 +34,7 @@ public abstract class MapPanel extends JComponent {
 		PanNode selectedNode = null;
 		PanNode start = PanNode.getHead();
 		while(start != null) {
-			MapNode node = start.getMapNode();
+			PanMap node = start.getMapNode();
 			if(node.isPressed(x, y, originX, originY)) {
 				selectedNode = start;
 			}

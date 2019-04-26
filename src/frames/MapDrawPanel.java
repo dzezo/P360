@@ -11,7 +11,7 @@ import java.awt.event.MouseMotionAdapter;
 
 import javax.swing.SwingUtilities;
 
-import panorama.MapNode;
+import panorama.PanMap;
 import panorama.PanNode;
 
 @SuppressWarnings("serial")
@@ -79,7 +79,7 @@ public class MapDrawPanel extends MapPanel {
 				// draging is only possible with left click
 				if(dragAllowed && SwingUtilities.isLeftMouseButton(drag)) {
 					if(selectedNode1 != null) {
-						MapNode node = selectedNode1.getMapNode();
+						PanMap node = selectedNode1.getMapNode();
 						node.dragNode(drag.getX(), drag.getY());
 					}
 					else {
@@ -139,7 +139,7 @@ public class MapDrawPanel extends MapPanel {
 		PanNode start = PanNode.getHead();
 		while(start != null) {
 			start.setDrawNum(drawNum++);
-			MapNode node = start.getMapNode();
+			PanMap node = start.getMapNode();
 			node.drawNode(graphicSettings, isNodeSelected(node));
 			start = start.getNext();
 		}

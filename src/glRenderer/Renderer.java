@@ -34,7 +34,8 @@ public class Renderer {
 	
 	public static void render(StaticShader shader) {
 		shader.loadViewMatrix(createViewMatrix());
-		if (Display.wasResized() || DisplayManager.isFullscreenRequested() || newProjection) {
+		if (DisplayManager.wasResized() || newProjection) {
+			DisplayManager.confirmResize();
 			shader.loadProjectionMatrix(createProjectionMatrix());
 			// Request served
 			if(newProjection)
@@ -63,7 +64,7 @@ public class Renderer {
 		
 		// Calculating aspect
 		float aspectRatio;
-		if(DisplayManager.isFullscreenRequested()) {
+		if(DisplayManager.isFullscreen()) {
 			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 			aspectRatio = (float) screenSize.getWidth() / (float) screenSize.getHeight();
 		}

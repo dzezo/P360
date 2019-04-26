@@ -60,6 +60,9 @@ public class ChooserUtils {
 		if(result == JFileChooser.APPROVE_OPTION) {
 			String loadPath = jfc.getSelectedFile().getPath();
 			
+			// reset selected file
+			jfc.setSelectedFile(new File(""));
+			
 			// attach extension if there is not any
 			if(!loadPath.endsWith(".p360"))
 				loadPath = loadPath.concat(".p360");
@@ -100,6 +103,9 @@ public class ChooserUtils {
 		if(result == JFileChooser.APPROVE_OPTION) {
 			String savePath = jfc.getSelectedFile().getPath();
 			
+			// reset selected file
+			jfc.setSelectedFile(new File(""));
+			
 			// attach extension if there is not any
 			if(!savePath.endsWith(".p360"))
 				savePath = savePath.concat(".p360");
@@ -138,6 +144,9 @@ public class ChooserUtils {
 		
 		if(result == JFileChooser.APPROVE_OPTION) {
 			String panPath = jfc.getSelectedFile().getPath();
+			
+			// reset selected file
+			jfc.setSelectedFile(new File(""));
 			
 			// check file type
 			if(!(panPath.toLowerCase().endsWith(".jpg") 
@@ -181,6 +190,9 @@ public class ChooserUtils {
 		if(result == JFileChooser.APPROVE_OPTION) {
 			File images[] = jfc.getSelectedFiles();
 			
+			// reset selected files
+			jfc.setSelectedFile(new File(""));
+			
 			// check selected images
 			for(File image : images) {
 				// check file type
@@ -219,6 +231,9 @@ public class ChooserUtils {
 		
 		if(result == JFileChooser.APPROVE_OPTION) {
 			String loadPath = jfc.getSelectedFile().getPath();
+			
+			// reset selected file
+			jfc.setSelectedFile(new File(""));
 			
 			// attach extension if there is not any
 			if(!loadPath.endsWith(".wav"))

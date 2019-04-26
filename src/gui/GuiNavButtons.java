@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.lwjgl.util.vector.Vector2f;
 
+import frames.MainFrame;
 import glRenderer.DisplayManager;
 import glRenderer.Scene;
 import panorama.PanNode;
@@ -13,11 +14,13 @@ public class GuiNavButtons {
 	private static GuiButton navBot;
 	private static GuiButton navRight;
 	private static GuiButton navLeft;
+	private static GuiButton navMap;
 	
 	private static boolean navTopAvail = false;
 	private static boolean navBotAvail = false;
 	private static boolean navRightAvail = false;
 	private static boolean navLeftAvail = false;
+	private static boolean navMapAvail = false;
 	
 	private static boolean areHidden = false;
 	
@@ -25,10 +28,10 @@ public class GuiNavButtons {
 	private static long lastShowTime;
 	private static final long hideLatency = 3000; // in milis
 	
-	private static float btnLocation = 0.95f;
+	private static float btnLocation = 0.935f;
 	private static float btnArea = 0.875f;
-	private static float btnScaleX = 0.07f;
-	private static float btnScaleY = 0.07f;
+	private static float btnScaleX = 0.055f;
+	private static float btnScaleY = 0.055f;
 	
 	public static void init() {
 		navTop = new GuiButton("/nav/top.png", new Vector2f(0,btnLocation), new Vector2f(btnScaleX, btnScaleY)) {
@@ -103,6 +106,26 @@ public class GuiNavButtons {
 			}
 			
 		};
+		navMap = new GuiButton("/nav/minimap.png", new Vector2f(btnLocation,-0.9f), new Vector2f(btnScaleX, btnScaleY)) {
+			public void onClick(IButton button) {
+				if(DisplayManager.isFullscreen()) {
+					DisplayManager.setWindowed();
+				}
+				MainFrame.showMap();
+			}
+
+			public void onStartHover(IButton button) {
+				button.playHoverAnimation(0.01f);
+			}
+
+			public void onStopHover(IButton button) {
+				button.resetScale();
+			}
+
+			public void whileHovering(IButton button) {
+				
+			}		
+		};
 	}
 	
 	public static void hideAll() {
@@ -120,6 +143,9 @@ public class GuiNavButtons {
 			
 			if(navLeftAvail)
 				navLeft.hide(guis);
+			
+			if(navMapAvail)
+				navMap.hide(guis);
 			
 			areHidden = true;
 		}
@@ -142,6 +168,9 @@ public class GuiNavButtons {
 			if(navLeftAvail)
 				navLeft.show(guis);
 			
+			if(navMapAvail)
+				navMap.show(guis);
+			
 			areHidden = false;
 		}
 	}
@@ -159,12 +188,14 @@ public class GuiNavButtons {
 		if(navBotAvail) navBot.hide(guis);	
 		if(navRightAvail) navRight.hide(guis);	
 		if(navLeftAvail) navLeft.hide(guis);
+		if(navMapAvail) navMap.hide(guis);
 		
 		// Set nav buttons that are available for currently active panorama
 		navTopAvail = (node.getTop() != null) ? true : false;
 		navRightAvail = (node.getRight() != null) ? true : false;
 		navBotAvail = (node.getBot() != null) ? true : false;
 		navLeftAvail = (node.getLeft() != null) ? true : false;
+		navMapAvail = (navLeftAvail || navBotAvail || navRightAvail || navTopAvail) ? true : false;
 		
 		// Nav buttons are initially hidden
 		areHidden = true;
@@ -183,6 +214,7 @@ public class GuiNavButtons {
 		navBot.click();
 		navRight.click();
 		navLeft.click();
+		navMap.click();
 	}
 	
 	public static void update() {
@@ -199,5 +231,6 @@ public class GuiNavButtons {
 		navBot.update();
 		navRight.update();
 		navLeft.update();
+		navMap.update();
 	}
 }

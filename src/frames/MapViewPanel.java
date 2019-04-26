@@ -8,7 +8,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 
 import glRenderer.Scene;
-import panorama.MapNode;
+import panorama.PanMap;
 import panorama.PanNode;
 
 @SuppressWarnings("serial")
@@ -72,7 +72,7 @@ public class MapViewPanel extends MapPanel{
 		PanNode start = PanNode.getHead();
 		while(start != null) {
 			start.setDrawNum(drawNum++);
-			MapNode node = start.getMapNode();
+			PanMap node = start.getMapNode();
 			node.drawNode(graphicSettings);
 			start = start.getNext();
 		}

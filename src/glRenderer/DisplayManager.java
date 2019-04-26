@@ -17,7 +17,7 @@ public class DisplayManager {
 	private static final int HEIGHT = 600;
 	private static final int FPS_CAP = 60;
 	
-	private static boolean fullscreenRequest = false;
+	private static boolean resized = false;
 	
 	public static void createDisplay(Canvas canvas) {
 		ContextAttribs attribs = new ContextAttribs(3,2).withForwardCompatible(true).withProfileCore(true);
@@ -70,6 +70,8 @@ public class DisplayManager {
 		Renderer.setNewProjection();
 		// Where to render on display
 		GL11.glViewport(0, 0, width, height);
+		// Inform about resizing
+		resized = true;
 	}
 	
 	public static boolean isFullscreen() {
@@ -86,10 +88,16 @@ public class DisplayManager {
 		Renderer.setNewProjection();
 		// Where to render on display
 		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
+		// Inform about resizing
+		resized = true;
 	}
 	
-	public static boolean isFullscreenRequested() {
-		return fullscreenRequest;
+	public static boolean wasResized() {
+		return Display.wasResized() || resized;
+	}
+	
+	public static void confirmResize() {
+		if(resized) resized = false;
 	}
 	
 	public static Vector2f getNormalizedMouseCoords() {

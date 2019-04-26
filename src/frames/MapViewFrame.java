@@ -23,6 +23,7 @@ public class MapViewFrame extends MapFrame {
 	
 	private void createFrame() {
 		setSize(mapWidth, mapHeight);
+		setAlwaysOnTop(true);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setLocationRelativeTo(null);
 		
