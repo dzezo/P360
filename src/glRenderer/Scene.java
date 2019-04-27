@@ -1,6 +1,8 @@
 package glRenderer;
 
 import gui.GuiNavButtons;
+import gui.GuiRenderer;
+import gui.GuiSprites;
 import panorama.PanNode;
 import panorama.Panorama;
 
@@ -14,33 +16,8 @@ public class Scene {
 		// reset ready flag
 		ready = false;
 		
-		// set image to load
-		activePanorama = newImage;
-		
 		// prepare renderer
-		initScene();
-		
-		// set ready flag
-		ready = true;
-	}
-	
-	public static void loadNewMap() {
-		// reset ready flag
-		ready = false;
-				
-		// set starting pan
-		activePanorama = PanNode.getHome();
-		
-		// prepare renderer
-		initScene();
-		
-		// check if tour exists
-		if(PanNode.tour.hasPath()) {
-			TourManager.init(PanNode.tour.getPath(), activePanorama);
-		}
-		else {
-			TourManager.stopTourManager();
-		}
+		initScene(newImage);
 		
 		// set ready flag
 		ready = true;
@@ -74,6 +51,9 @@ public class Scene {
 	}
 	
 	public static void setNextActivePanorama(PanNode nextPanorama) {
+		if(!nextPanorama.isLoaded())
+			GuiSprites.loading.show(GuiRenderer.getGuiList());
+		
 		nextActivePanorama = nextPanorama;
 	}
 	
@@ -86,35 +66,39 @@ public class Scene {
 	 */
 	public static void goLeft() {
 		if(activePanorama.getLeft() !=null) {
-			loadNewImage(activePanorama.getLeft());
+			setNextActivePanorama(activePanorama.getLeft());
 		}
 	}
 	
 	public static void goRight() {
 		if(activePanorama.getRight() !=null) {
-			loadNewImage(activePanorama.getRight());
+			setNextActivePanorama(activePanorama.getRight());
 		}
 	}
 	
 	public static void goTop() {
 		if(activePanorama.getTop() !=null) {
-			loadNewImage(activePanorama.getTop());
+			setNextActivePanorama(activePanorama.getTop());
 		}
 	}
 	
 	public static void goBot() {
 		if(activePanorama.getBot() !=null) {
-			loadNewImage(activePanorama.getBot());
+			setNextActivePanorama(activePanorama.getBot());
 		}
 	}
 	
 	/**
 	 * Ucitava aktivnu panoramu na scenu
 	 */
-	public static void initScene() {
+	public static void initScene(PanNode newImage) {
+		// set image to load
+		activePanorama = newImage;
+		
 		activePanorama.loadPanorama();
 		Renderer.setNewProjection();
 		GuiNavButtons.setAvailableNavButtons(activePanorama);
+		GuiSprites.loading.hide(GuiRenderer.getGuiList());
 	}
 	
 }

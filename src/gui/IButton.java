@@ -20,7 +20,7 @@ public interface IButton {
 	public void show(List<GuiTexture> guiTextureList);
 	
 	/**
-	 * Shows GuiButton
+	 * Hides GuiButton
 	 * That's done by REMOVING button from list of gui elements that are being rendered
 	 * @param guiTextureList
 	 */
@@ -38,7 +38,7 @@ public interface IButton {
 	public boolean mouseOver();
 	
 	/**
-	 * Calls onClick if conditions are met
+	 * Calls onClick if mouse was over button at the time of click
 	 */
 	public void click();
 }

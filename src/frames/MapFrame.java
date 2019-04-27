@@ -12,8 +12,6 @@ public abstract class MapFrame extends Frame {
 	public static int mapWidth = 800;
 	public static int mapHeight = 600;
 	
-	protected boolean updated = false;
-	
 	protected MapPanel mapPanel;
 	
 	public MapFrame(String title) {
@@ -22,15 +20,6 @@ public abstract class MapFrame extends Frame {
 	
 	public MapPanel getMapPanel() {
 		return this.mapPanel;
-	}
-	
-	public boolean isUpdated() {
-		if (updated) {
-			updated = false;
-			return true;
-		}
-		else
-			return false;
 	}
 	
 	protected void startFrameRepaint() {

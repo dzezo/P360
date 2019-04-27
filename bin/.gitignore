@@ -1,12 +1,5 @@
 /frames/
-/glRenderer/
-/graph/
+/main/
+/sprites/
 /gui/
 /input/
-/main/
-/models/
-/nav/
-/panorama/
-/shaders/
-/toolbar/
-/utils/

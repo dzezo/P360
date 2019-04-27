@@ -65,9 +65,23 @@ public class PanNode implements Serializable {
 		mapNode = new PanMap(this, x, y);
 	}
 	
-	public void loadPanorama() {
+	/**
+	 * Provera da li je panorama ucitana
+	 * @return true ukoliko jeste
+	 */
+	public boolean isLoaded() {
 		if(panorama == null)
-			panorama = new Panorama(panoramaPath);
+			return false;
+		else
+			return true;
+	}
+	
+	/**
+	 * Ucitava panoramu ukoliko ona nije ucitana
+	 */
+	public void loadPanorama() {
+		if(!isLoaded())
+			panorama = new Panorama();
 	}
 	
 	public boolean isHome() {

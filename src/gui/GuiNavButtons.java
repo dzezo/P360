@@ -106,7 +106,7 @@ public class GuiNavButtons {
 			}
 			
 		};
-		navMap = new GuiButton("/nav/minimap.png", new Vector2f(btnLocation,-0.9f), new Vector2f(btnScaleX, btnScaleY)) {
+		navMap = new GuiButton("/nav/minimap.png", new Vector2f(btnLocation,-btnLocation), new Vector2f(btnScaleX, btnScaleY)) {
 			public void onClick(IButton button) {
 				if(DisplayManager.isFullscreen()) {
 					DisplayManager.setWindowed();

@@ -24,6 +24,7 @@ import org.lwjgl.LWJGLException;
 import glRenderer.AudioManager;
 import glRenderer.DisplayManager;
 import glRenderer.Scene;
+import glRenderer.TourManager;
 import input.Controller;
 import input.Controllers;
 import input.InputManager;
@@ -61,10 +62,6 @@ public class MainFrame extends Frame {
 	private JMenuItem sound_stop = new JMenuItem("Stop");
 	/* gamePadMenu items */
 	private JMenuItem gamePad_scan = new JMenuItem("Scan");
-	
-	/* load */
-	private boolean newImage = false;
-	private boolean newMap = false;
 	/* map gui */
 	private static MapDrawFrame mapEditor = new MapDrawFrame("Create Map");
 	private static MapViewFrame mapView = new MapViewFrame("View Map");
@@ -210,24 +207,6 @@ public class MainFrame extends Frame {
 	public boolean isRunning() {
 		return running;
 	}
-	
-	public boolean isNewImage() {
-		if(newImage) {
-			newImage = false;
-			return true;
-		}
-		else
-			return false;
-	}
-	
-	public boolean isNewMap() {
-		if(newMap) {
-			newMap = false;
-			return true;
-		}
-		else
-			return false;
-	}
 
 	public MapDrawFrame getMapDrawingFrame() {
 		return mapEditor;
@@ -256,8 +235,6 @@ public class MainFrame extends Frame {
 			// set new single panorama
 			PanNode newPanorama = new PanNode(newPath);
 			Scene.setNextActivePanorama(newPanorama);
-			enableFullScreen();
-			newImage = true;
 			enableMapControl(false);
 		}
 	}
@@ -288,8 +265,8 @@ public class MainFrame extends Frame {
 		boolean success = mapEditor.load();
 		
 		if(success) {
-			newMap = true;
-			enableFullScreen();
+			Scene.setNextActivePanorama(PanNode.getHome());
+			TourManager.prepare(PanNode.getHome());
 			enableMapControl(true);
 		}
 	}

@@ -13,6 +13,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JToolBar;
 
+import glRenderer.Scene;
+import glRenderer.TourManager;
 import panorama.PanNode;
 import utils.AutoSave;
 import utils.ChooserUtils;
@@ -331,7 +333,8 @@ public class MapDrawFrame extends MapFrame {
 	
 	private void ok() {
 		if(PanNode.getHome() != null) {
-			updated = true;
+			Scene.setNextActivePanorama(PanNode.getHome());
+			TourManager.prepare(PanNode.getHome());
 			
 			// stop auto save and save once more
             AutoSave.stopSaving();

@@ -70,7 +70,7 @@ public abstract class GuiButton implements IButton {
 	}
 	
 	public void click() {
-		if(mouseOver())
+		if(mouseOver()) 
 			onClick(this);
 	}
 }

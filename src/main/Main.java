@@ -3,8 +3,6 @@ package main;
 import javax.swing.UIManager;
 
 import frames.MainFrame;
-import frames.MapDrawFrame;
-import frames.MapViewFrame;
 import glRenderer.AudioManager;
 import glRenderer.Camera;
 import glRenderer.DisplayManager;
@@ -13,7 +11,10 @@ import glRenderer.Scene;
 import glRenderer.TourManager;
 import gui.GuiNavButtons;
 import gui.GuiRenderer;
+import gui.GuiSprites;
 import input.InputManager;
+import panorama.ImageLoader;
+import panorama.PanNode;
 import shaders.GuiShader;
 import shaders.StaticShader;
 import utils.AutoLoad;
@@ -26,8 +27,6 @@ public class Main {
 		
 		// init
 		MainFrame mainFrame = new MainFrame("P360");
-		MapDrawFrame mapFrame = mainFrame.getMapDrawingFrame();
-		MapViewFrame mapView = mainFrame.getMapViewFrame();
 		
 		Camera camera = new Camera();
 		StaticShader shader = new StaticShader();
@@ -35,48 +34,52 @@ public class Main {
 		
 		Scene.setCamera(camera);
 		GuiNavButtons.init();
+		GuiSprites.init();
 		
 		// load previously used map
 		if(AutoLoad.load()) {
 			mainFrame.enableMapControl(true);
 			mainFrame.enableFullScreen();
 			
-			Scene.loadNewMap();
+			Scene.setNextActivePanorama(PanNode.getHome());
+			TourManager.prepare(PanNode.getHome());
 		}
 		
 		while(mainFrame.isRunning()) {
 			// check for changes
-			if(mainFrame.isNewImage() || mapView.isUpdated()) {
-				Scene.loadNewImage(Scene.getNextActivePanorama());
-			}
-			if(mainFrame.isNewMap() || mapFrame.isUpdated()) {
-				mainFrame.enableFullScreen();
-				
-				AudioManager.stopAudio();
-				Scene.loadNewMap();
-			}
-			if(TourManager.hasPath() && TourManager.nextPano()) {
-				TourManager.goNextPano();
+			if(Scene.getActivePanorama() != Scene.getNextActivePanorama()) {		
+				if(Scene.getNextActivePanorama().isLoaded() || ImageLoader.isLoaded()) {
+					mainFrame.enableFullScreen();
+							
+					Scene.loadNewImage(Scene.getNextActivePanorama());
+					
+					ImageLoader.resetLoader();
+				}
+				else if(!ImageLoader.isLoading()){
+					AudioManager.stopAudio();		
+					ImageLoader.loadImage(Scene.getNextActivePanorama().getPanoramaPath());
+				}		
 			}
 			
-			if(Scene.isReady()) {
-				// read inputs
+			if(Scene.isReady() && !ImageLoader.isLoading()) {
+				// read input
 				InputManager.readInput();
 				
 				// move camera
 				Scene.getCamera().rotateCamera();
 				Scene.getCamera().autoPan();
 				
-				// update gui
+				// update gui buttons
 				GuiNavButtons.update();
 				
 				// render
 				Renderer.prepare();
-				shader.start();
 				Renderer.render(shader);
-				GuiRenderer.render(guiShader);
-				shader.stop();
+				
 			}
+			
+			// render gui
+			GuiRenderer.render(guiShader);
 			
 			// update display
 			DisplayManager.updateDisplay();

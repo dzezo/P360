@@ -87,9 +87,6 @@ public class MapViewPanel extends MapPanel{
 		// set next panorama
 		Scene.setNextActivePanorama(selectedNode1);
 		
-		// set request for changes
-		this.parent.updated = true;
-		
 		// hide map frame
 		this.parent.setVisible(false);
 	}

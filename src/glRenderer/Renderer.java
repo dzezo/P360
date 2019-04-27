@@ -33,13 +33,13 @@ public class Renderer {
 	}
 	
 	public static void render(StaticShader shader) {
+		shader.start();
 		shader.loadViewMatrix(createViewMatrix());
 		if (DisplayManager.wasResized() || newProjection) {
 			DisplayManager.confirmResize();
 			shader.loadProjectionMatrix(createProjectionMatrix());
 			// Request served
-			if(newProjection)
-				newProjection = false;
+			if(newProjection) newProjection = false;
 		}
 		
 		GL30.glBindVertexArray(Scene.getPanorama().getBody().getVaoID());
@@ -55,6 +55,7 @@ public class Renderer {
 		GL20.glDisableVertexAttribArray(0);
 		GL20.glDisableVertexAttribArray(1);
 		GL30.glBindVertexArray(0);
+		shader.stop();
 	}
 
 	private static Matrix4f createProjectionMatrix() {	
