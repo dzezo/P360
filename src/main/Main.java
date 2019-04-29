@@ -61,28 +61,31 @@ public class Main {
 				}		
 			}
 			
-			if(Scene.isReady() && !ImageLoader.isLoading()) {
-				// read input
-				InputManager.readInput();
+			// Prepare renderer
+			Renderer.prepare();
+			
+			if(Scene.isReady()) {
+				if(!ImageLoader.isLoading()) {
+					InputManager.readInput();		
+				}
 				
 				// move camera
-				Scene.getCamera().rotateCamera();
+				Scene.getCamera().rotateCamera();	
 				Scene.getCamera().autoPan();
 				
 				// update gui buttons
 				GuiNavButtons.update();
 				
-				// render
-				Renderer.prepare();
+				// render scene
 				Renderer.render(shader);
-				
 			}
 			
-			// render gui
+			// render gui graphics
 			GuiRenderer.render(guiShader);
 			
 			// update display
 			DisplayManager.updateDisplay();
+			
 		}
 		
 		// stop audio

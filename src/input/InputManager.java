@@ -140,7 +140,7 @@ public class InputManager {
 
 	private static void readMouse() {
 		// detect mouse drag
-		if(Mouse.isButtonDown(0)) {
+		if(Mouse.isButtonDown(0) && !GuiNavButtons.isMouseOver()) {
 			float pitchDelta = Mouse.getDY() * mouseSensitivity;
 			float yawDelta = Mouse.getDX() * mouseSensitivity;
 			

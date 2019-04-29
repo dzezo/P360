@@ -209,6 +209,14 @@ public class GuiNavButtons {
 			return false;
 	}
 	
+	public static boolean isMouseOver() {
+		return navTop.mouseOver() ||
+				navBot.mouseOver() ||
+				navRight.mouseOver() ||
+				navLeft.mouseOver() ||
+				navMap.mouseOver();
+	}
+	
 	public static void click() {
 		navTop.click();
 		navBot.click();

@@ -24,7 +24,6 @@ public class DisplayManager {
 		
 		try{
 			Display.setParent(canvas);
-			Display.setInitialBackground(0.933f,0.933f,0.933f);
 			Display.setTitle("P360");
 			Display.create(new PixelFormat(), attribs);
 		}
