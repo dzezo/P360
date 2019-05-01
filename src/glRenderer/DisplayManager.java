@@ -4,7 +4,9 @@ import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Cursor;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
@@ -19,12 +21,17 @@ public class DisplayManager {
 	
 	private static boolean resized = false;
 	
+	private static boolean cursorVisible = true;
+	private static Cursor nativeCursor;
+	private static Cursor emptyCursor;
+	
 	public static void createDisplay(Canvas canvas) {
 		ContextAttribs attribs = new ContextAttribs(3,2).withForwardCompatible(true).withProfileCore(true);
 		
 		try{
 			Display.setParent(canvas);
 			Display.setTitle("P360");
+			Display.setVSyncEnabled(true);
 			Display.create(new PixelFormat(), attribs);
 		}
 		catch(LWJGLException e){
@@ -33,6 +40,14 @@ public class DisplayManager {
 		
 		// Where to render on display
 		GL11.glViewport(0, 0, WIDTH, HEIGHT);
+		
+		// Set cursor
+		try {
+			nativeCursor = Mouse.getNativeCursor();
+			emptyCursor = new Cursor(1, 1, 0, 0, 1, BufferUtils.createIntBuffer(1), null);
+		} catch (LWJGLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static void updateDisplay(){
@@ -61,7 +76,7 @@ public class DisplayManager {
 		int width = (int) screenSize.getWidth();
 		int height = (int) screenSize.getHeight();
 		try {
-			Display.setFullscreen(true);
+			Display.setDisplayModeAndFullscreen(Display.getDesktopDisplayMode());
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 		}
@@ -103,5 +118,40 @@ public class DisplayManager {
 		float normalizedX = -1.0f + 2.0f * (float)Mouse.getX() / (float)Display.getWidth();
 		float normalizedY = 1.0f - 2.0f * (float)Mouse.getY() / (float)Display.getHeight();
 		return new Vector2f(normalizedX, normalizedY);
+	}
+	
+	/**
+	 * Hides mouse cursor if its shown
+	 */
+	public static void hideMouseCursor() {
+		if(!cursorVisible) return;
+		
+		try {
+			Mouse.setNativeCursor(emptyCursor);
+			cursorVisible = false;
+		} catch (LWJGLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Shows mouse cursor if its hidden
+	 */
+	public static void showMouseCursor() {
+		if(cursorVisible) return;
+		
+		try {
+			Mouse.setNativeCursor(nativeCursor);
+			cursorVisible = true;
+		} catch (LWJGLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Retrieves whether or not the mouse cursor is within the bounds of the window.
+	 */
+	public static boolean isMouseInWindow() {
+		return Mouse.isInsideWindow();
 	}
 }

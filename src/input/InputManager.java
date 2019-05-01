@@ -2,6 +2,7 @@ package input;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.util.vector.Vector2f;
 
 import frames.MainFrame;
 import glRenderer.DisplayManager;
@@ -34,7 +35,14 @@ public class InputManager {
 	public static final int GP_FSCREEN = 6;
 	public static final int GP_PAN = 7;
 	
+	// Mouse controls
+	public static boolean fullscreenRequest = false;
+	
 	// Mouse movement config
+	private static Vector2f prevMouseDisplayPos = new Vector2f(0, 0);
+	private static Vector2f mouseDisplayPos = new Vector2f(0, 0);
+	private static long lastMouseMoveTime;
+	private static long mouseHideLatency = 3000; // in milis
 	private	static final float mouseSensitivity = 0.1f;
 	
 	// Mouse double click
@@ -139,8 +147,16 @@ public class InputManager {
 	}
 
 	private static void readMouse() {
-		// detect mouse drag
+		// Menu bar fullscreen click
+		if(fullscreenRequest) {
+			DisplayManager.setFullscreen();
+			fullscreenRequest = false;
+		}
+		
+		// detect draging
 		if(Mouse.isButtonDown(0) && !GuiNavButtons.isMouseOver()) {
+			DisplayManager.showMouseCursor();
+			
 			float pitchDelta = Mouse.getDY() * mouseSensitivity;
 			float yawDelta = Mouse.getDX() * mouseSensitivity;
 			
@@ -148,6 +164,15 @@ public class InputManager {
 			
 			// Last time user interacted
 			lastInteractTime = System.currentTimeMillis();
+		}
+		// detect movement (if not draging)
+		else if(DisplayManager.isMouseInWindow()) {
+			if(isMouseMoving()){
+				DisplayManager.showMouseCursor();
+			}
+			else if(isMouseIdling() && GuiNavButtons.areHidden()){
+				DisplayManager.hideMouseCursor();
+			}
 		}
 		
 		// detect left click
@@ -255,6 +280,24 @@ public class InputManager {
 				key == K_BPAN ||
 				key == K_PAN ||
 				key == K_MAP;
+	}
+	
+	private static boolean isMouseMoving() {
+		mouseDisplayPos = DisplayManager.getNormalizedMouseCoords();
+		
+		if(mouseDisplayPos.x != prevMouseDisplayPos.x || mouseDisplayPos.y != prevMouseDisplayPos.y) {
+			prevMouseDisplayPos = mouseDisplayPos;
+			lastMouseMoveTime = System.currentTimeMillis();
+			return true;
+		}
+		else {
+			prevMouseDisplayPos = mouseDisplayPos;
+			return false;
+		}
+	}
+	
+	private static boolean isMouseIdling() {
+		return System.currentTimeMillis() > lastMouseMoveTime + mouseHideLatency;
 	}
 	
 }

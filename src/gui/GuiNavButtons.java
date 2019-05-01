@@ -152,8 +152,9 @@ public class GuiNavButtons {
 	}
 	
 	public static void showAll() {
-		lastShowTime = System.currentTimeMillis();
 		if(areHidden) {
+			lastShowTime = System.currentTimeMillis();
+			
 			List<GuiTexture> guis = GuiRenderer.getGuiList();
 			
 			if(navTopAvail)
@@ -197,8 +198,8 @@ public class GuiNavButtons {
 		navLeftAvail = (node.getLeft() != null) ? true : false;
 		navMapAvail = (navLeftAvail || navBotAvail || navRightAvail || navTopAvail) ? true : false;
 		
-		// Nav buttons are initially hidden
-		areHidden = true;
+		// Nav buttons are initially showing
+		areHidden = false;
 	}
 	
 	public static boolean isMouseNear() {

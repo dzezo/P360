@@ -70,7 +70,7 @@ public class Main {
 				}
 				
 				// move camera
-				Scene.getCamera().rotateCamera();	
+				Scene.getCamera().rotateCamera();
 				Scene.getCamera().autoPan();
 				
 				// update gui buttons
