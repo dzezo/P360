@@ -11,6 +11,7 @@ import java.awt.event.MouseMotionAdapter;
 
 import javax.swing.SwingUtilities;
 
+import panorama.PanGraph;
 import panorama.PanMap;
 import panorama.PanNode;
 
@@ -134,11 +135,11 @@ public class MapDrawPanel extends MapPanel {
 		// Drawing grid
 		drawGrid(graphicSettings);
 		
-		// Drawing starts from the head (root), and draw number zero is assigned to it.
-		int drawNum = 0;
-		PanNode start = PanNode.getHead();
+		// Drawing starts from the head (root), and id zero is assigned to it.
+		int id = 0;
+		PanNode start = PanGraph.getHead();
 		while(start != null) {
-			start.setDrawNum(drawNum++);
+			start.setID(id++);
 			PanMap node = start.getMapNode();
 			node.drawNode(graphicSettings, isNodeSelected(node));
 			start = start.getNext();

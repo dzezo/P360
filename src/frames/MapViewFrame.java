@@ -6,8 +6,8 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
-import glRenderer.Scene;
-import panorama.PanNode;
+import panorama.PanGraph;
+import panorama.PanMap;
 
 @SuppressWarnings("serial")
 public class MapViewFrame extends MapFrame {
@@ -26,6 +26,7 @@ public class MapViewFrame extends MapFrame {
 		setAlwaysOnTop(true);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setLocationRelativeTo(null);
+		setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		
 		// add map panel to frame
 		mapPanel.setParent(this);
@@ -51,29 +52,30 @@ public class MapViewFrame extends MapFrame {
         });
 	}
 
-	public void showFrame(String title) {
+	public void showFrame() {
 		// show frame
 		setVisible(true);
-		setTitle(title);
+		setTitle(PanGraph.getName());
 		
 		// setting the origin of a map
 		setOrigin();
 	}
 
 	protected void setOrigin() {
-		PanNode activePan = Scene.getActivePanorama();
-		
-		if(activePan != null) {
-			int x = activePan.getMapNode().x;
-			int y = activePan.getMapNode().y;
+		if(PanGraph.getHome() != null) {
+			// map center
+			int x = PanGraph.getCenterX();
+			int y = PanGraph.getCenterY();
 			
-			int h = (int) (activePan.getMapNode().getHeight() / 2);
-			int w = (int) (activePan.getMapNode().getWidth() / 2);
+			// node size
+			int h = PanMap.HEIGHT / 2;
+			int w = PanMap.WIDTH / 2;
 			
-			int centerX = getWidth() / 2;
-			int centerY = getHeight() / 2;
+			// panel size
+			int centerX = mapPanel.getWidth() / 2;
+			int centerY = mapPanel.getHeight() / 2;
 			
-			mapPanel.setOrigin(x - centerX + w, y - centerY + h);
+			mapPanel.setOrigin((x + w) - centerX, (y + h) - centerY);
 		}
 		else {
 			mapPanel.setOrigin(0,0);

@@ -7,7 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import panorama.PanNode;
+import panorama.PanGraph;
 
 @SuppressWarnings("serial")
 public class AutoLoad implements Serializable {
@@ -28,7 +28,7 @@ public class AutoLoad implements Serializable {
 		}
 		
 		// load last used map
-		return PanNode.loadMap(lastUsedMap);
+		return PanGraph.loadMap(lastUsedMap);
 	}
 	
 	public static void setLastUsedMap(String filePath) {

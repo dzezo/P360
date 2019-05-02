@@ -5,6 +5,7 @@ import java.awt.Graphics;
 
 import javax.swing.JComponent;
 
+import panorama.PanGraph;
 import panorama.PanMap;
 import panorama.PanNode;
 
@@ -32,7 +33,7 @@ public abstract class MapPanel extends JComponent {
 	
 	protected PanNode getSelectedNode(int x,int y) {
 		PanNode selectedNode = null;
-		PanNode start = PanNode.getHead();
+		PanNode start = PanGraph.getHead();
 		while(start != null) {
 			PanMap node = start.getMapNode();
 			if(node.isPressed(x, y, originX, originY)) {

@@ -12,6 +12,9 @@ import frames.MapDrawPanel;
 
 @SuppressWarnings("serial")
 public class PanMap extends Rectangle {
+	public static final int WIDTH = MapDrawPanel.getGridSize() * 16;
+	public static final int HEIGHT = MapDrawPanel.getGridSize() * 8;
+	
 	private PanNode parent;
 	
 	private Color textColor;
@@ -21,9 +24,6 @@ public class PanMap extends Rectangle {
 	private static final Color homeTextColor = new Color(0,255,0);
 	private static final Color activeTextColor = new Color(255,255,0);
 	private static final Color fillColor = new Color(64,64,64);
-	
-	public static int width = MapDrawPanel.getGridSize() * 16;
-	public static int height = MapDrawPanel.getGridSize() * 8;
 	
 	private int pressX;
 	private int pressY;
@@ -54,7 +54,7 @@ public class PanMap extends Rectangle {
 	private boolean selected = false;
 	
 	public PanMap(PanNode parent, int x, int y) {
-		super(x, y, width, height);
+		super(x, y, WIDTH, HEIGHT);
 		this.parent = parent;
 		
 		calculatePorts(x,y);
@@ -105,16 +105,16 @@ public class PanMap extends Rectangle {
 	private void calculatePorts(int x, int y) {
 		// calculating port location
 		portLeft.x = x;
-		portLeft.y = y + height/2;
+		portLeft.y = y + HEIGHT/2;
 		
-		portRight.x = x + width;
-		portRight.y = y + height/2;
+		portRight.x = x + WIDTH;
+		portRight.y = y + HEIGHT/2;
 		
-		portTop.x = x + width/2;
+		portTop.x = x + WIDTH/2;
 		portTop.y = y;
 		
-		portBot.x = x + width/2;
-		portBot.y = y + height;
+		portBot.x = x + WIDTH/2;
+		portBot.y = y + HEIGHT;
 		
 		// assigning arrow location
 		leftArrow.setLocation(portLeft.x, portLeft.y);
@@ -246,19 +246,19 @@ public class PanMap extends Rectangle {
 		g.setColor(lineColor);
 		// Check there are connections
 		// If there are connections check if they've been drawn.
-		if(parent.getLeft() != null && parent.getLeft().getDrawNum() > parent.getDrawNum()) {
+		if(parent.getLeft() != null && parent.getLeft().getID() > parent.getID()) {
 			mNode = parent.getLeft().getMapNode();
 			g.drawLine(portLeft.x, portLeft.y, mNode.getPortRight().x, mNode.getPortRight().y);
 		}
-		if(parent.getRight() != null && parent.getRight().getDrawNum() > parent.getDrawNum()) {
+		if(parent.getRight() != null && parent.getRight().getID() > parent.getID()) {
 			mNode = parent.getRight().getMapNode();
 			g.drawLine(portRight.x, portRight.y, mNode.getPortLeft().x, mNode.getPortLeft().y);
 		}
-		if(parent.getTop() != null && parent.getTop().getDrawNum() > parent.getDrawNum()) {
+		if(parent.getTop() != null && parent.getTop().getID() > parent.getID()) {
 			mNode = parent.getTop().getMapNode();
 			g.drawLine(portTop.x, portTop.y, mNode.getPortBot().x, mNode.getPortBot().y);
 		}
-		if(parent.getBot() != null && parent.getBot().getDrawNum() > parent.getDrawNum()) {
+		if(parent.getBot() != null && parent.getBot().getID() > parent.getID()) {
 			mNode = parent.getBot().getMapNode();
 			g.drawLine(portBot.x, portBot.y, mNode.getPortTop().x, mNode.getPortTop().y);
 		}
@@ -293,7 +293,7 @@ public class PanMap extends Rectangle {
 		g.drawString(tour, this.x + 5, this.y + 15);
 		
 		// cut name text if needed
-		while(g.getFontMetrics().stringWidth(panName) > width-10) {
+		while(g.getFontMetrics().stringWidth(panName) > WIDTH-10) {
 			panName = panName.substring(0, panName.length() - 1);
 		}
 		
@@ -308,7 +308,7 @@ public class PanMap extends Rectangle {
 			g.drawString(panName, x, y);
 			
 			// cut audio text if needed
-			while(g.getFontMetrics().stringWidth(audioName) > width-10) {
+			while(g.getFontMetrics().stringWidth(audioName) > WIDTH-10) {
 				audioName = audioName.substring(0, audioName.length() - 1);
 			}
 			

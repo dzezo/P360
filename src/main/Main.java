@@ -14,7 +14,7 @@ import gui.GuiRenderer;
 import gui.GuiSprites;
 import input.InputManager;
 import panorama.ImageLoader;
-import panorama.PanNode;
+import panorama.PanGraph;
 import shaders.GuiShader;
 import shaders.StaticShader;
 import utils.AutoLoad;
@@ -41,8 +41,8 @@ public class Main {
 			mainFrame.enableMapControl(true);
 			mainFrame.enableFullScreen();
 			
-			Scene.setNextActivePanorama(PanNode.getHome());
-			TourManager.prepare(PanNode.getHome());
+			Scene.setNextActivePanorama(PanGraph.getHome());
+			TourManager.prepare(PanGraph.getHome());
 		}
 		
 		while(mainFrame.isRunning()) {

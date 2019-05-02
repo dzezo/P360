@@ -8,6 +8,8 @@ import java.util.List;
 
 @SuppressWarnings("serial")
 public class TourPath implements Serializable {
+	public static final int WAYPOINT_NOT_FOUND = -1;
+	
 	private List<Waypoint> list1 = new LinkedList<Waypoint>();
 	private List<Waypoint> list2 = new LinkedList<Waypoint>();
 	
@@ -45,7 +47,8 @@ public class TourPath implements Serializable {
 			removeIndex++;
 		}
 		
-		return 0;
+		// PATH NOT FOUND
+		return WAYPOINT_NOT_FOUND;
 	}
 	
 	public boolean hasPath() {
@@ -105,11 +108,28 @@ public class TourPath implements Serializable {
 		list2.clear();
 	}
 	
+	public void updateTourNumbers() {
+		List<Waypoint> path;
+		if(list2.isEmpty())
+			path = list1;
+		else
+			path = list2;
+		
+		int newIndex = 1;
+		
+		Iterator<Waypoint> iterator = path.iterator();
+		while(iterator.hasNext()) {
+			Waypoint nextWaypoint = iterator.next();
+			
+			nextWaypoint.node.tourNum.add(newIndex++);
+		}
+	}
+	
 	public void printPath() {
 		PanNode path[] = this.getPath();
 		
 		for(int i = 0; i < path.length; i++) {
-			System.out.println(path[i].getDrawNum());
+			System.out.println(path[i].getID());
 		}
 		
 		System.out.println();

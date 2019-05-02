@@ -1,5 +1,7 @@
 package frames;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -9,13 +11,17 @@ public abstract class MapFrame extends Frame {
 	protected ScheduledThreadPoolExecutor repaint = new ScheduledThreadPoolExecutor(5);;
 	protected ScheduledFuture<?> repaintTasks;
 	
-	public static int mapWidth = 800;
-	public static int mapHeight = 600;
+	public static int mapWidth;
+	public static int mapHeight;
 	
 	protected MapPanel mapPanel;
 	
 	public MapFrame(String title) {
 		super(title);
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		
+		mapWidth = screenSize.width;
+		mapHeight = screenSize.height;
 	}
 	
 	public MapPanel getMapPanel() {

@@ -4,6 +4,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import panorama.PanGraph;
 import panorama.PanNode;
 
 public class TourManager implements Runnable{
@@ -17,16 +18,17 @@ public class TourManager implements Runnable{
 	private static long timeOfChange;
 	private static long visitedPanTime = 3000;
 	
+	private static boolean skipVisited = false;
 	private static boolean touring = false;
 	
 	/**
 	 * Postavlja stanje TourManager-a
-	 * Ukoliko polazni cvor mape ima putanju pokrece se tura, u suprotnom se zaustavlja
+	 * Ukoliko postoji putanja na mapi pokrece se tura, u suprotnom se zaustavlja
 	 * @param startNode je polazni cvor putanje
 	 */
 	public static void prepare(PanNode startNode) {
-		if(PanNode.tour.hasPath()) {
-			TourManager.init(PanNode.tour.getPath(), startNode);
+		if(PanGraph.hasTour()) {
+			TourManager.init(PanGraph.getTour(), startNode);
 		}
 		else {
 			TourManager.stopTourManager();
@@ -112,7 +114,7 @@ public class TourManager implements Runnable{
 		}
 		
 		// da li je panorama vec posecena, ukoliko jeste ispitaj uslov za prelaz na sledecu
-		if(activePano.visited) {
+		if(skipVisited && activePano.visited) {
 			// na sledecu panoramu se prelazi ukoliko je isteklo dozvoljeno vreme za vec posecenu panoramu
 			long currentTime = System.currentTimeMillis();
 			if((currentTime - timeOfChange) > visitedPanTime) {
@@ -184,5 +186,13 @@ public class TourManager implements Runnable{
 		hasPath = false;
 		if(tourTasks != null)
 			tourTasks.cancel(false);
+	}
+	
+	public static void setSkipVisited(boolean b) {
+		skipVisited = b;
+	}
+	
+	public static boolean getSkipVisited() {
+		return skipVisited;
 	}
 }

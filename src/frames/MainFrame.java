@@ -28,6 +28,7 @@ import glRenderer.TourManager;
 import input.Controller;
 import input.Controllers;
 import input.InputManager;
+import panorama.PanGraph;
 import panorama.PanNode;
 import utils.AutoSave;
 import utils.ChooserUtils;
@@ -57,6 +58,7 @@ public class MainFrame extends Frame {
 	/* viewMenu items */
 	private JMenuItem view_fullScreen = new JMenuItem("Full Screen");
 	private JCheckBoxMenuItem view_autoPan = new JCheckBoxMenuItem("Auto Pan");
+	private JCheckBoxMenuItem view_skipVisited = new JCheckBoxMenuItem("Skip Visited Panoramas");
 	/* soundMenu items */
 	private JMenuItem sound_playPause = new JMenuItem("Play");
 	private JMenuItem sound_stop = new JMenuItem("Stop");
@@ -138,9 +140,11 @@ public class MainFrame extends Frame {
 		
 		// VIEW
 		viewMenu.add(view_autoPan);
+		viewMenu.add(view_skipVisited);
 		viewMenu.addSeparator();
 		viewMenu.add(view_fullScreen);
 		
+		view_skipVisited.setSelected(TourManager.getSkipVisited());
 		view_autoPan.setSelected(true);
 		view_fullScreen.setEnabled(false);
 		
@@ -187,6 +191,9 @@ public class MainFrame extends Frame {
 		view_autoPan.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) { autoPan(); }
 		});
+		view_skipVisited.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) { skipVisited(); }
+		});
 		sound_playPause.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) { soundPlayPause(); }
 		});
@@ -231,7 +238,7 @@ public class MainFrame extends Frame {
 		// then set new active panorama and enable fullscreen mode
 		if(activePanorama == null || !newPath.equals(activePanorama.getPanoramaPath())) {
 			// Remove map if loaded
-			PanNode.removeMap();
+			PanGraph.removeMap();
 			// set new single panorama
 			PanNode newPanorama = new PanNode(newPath);
 			Scene.setNextActivePanorama(newPanorama);
@@ -240,7 +247,7 @@ public class MainFrame extends Frame {
 	}
 	
 	private void newMap() {
-		if(PanNode.getHead() == null) {
+		if(PanGraph.getHead() == null) {
 			// No map loaded
 			AutoSave.resetSavingPath();
 			mapEditor.showFrame();
@@ -250,7 +257,7 @@ public class MainFrame extends Frame {
 			int dialogRes = DialogUtils.showConfirmDialog("Creating new map will overwrite existing one, \nDo you want to continue?", "New Map");
 			if(dialogRes == DialogUtils.YES) {
 				// Remove map if loaded
-				PanNode.removeMap();
+				PanGraph.removeMap();
 				
 				AutoSave.resetSavingPath();
 				mapEditor.showFrame();
@@ -265,8 +272,8 @@ public class MainFrame extends Frame {
 		boolean success = mapEditor.load();
 		
 		if(success) {
-			Scene.setNextActivePanorama(PanNode.getHome());
-			TourManager.prepare(PanNode.getHome());
+			Scene.setNextActivePanorama(PanGraph.getHome());
+			TourManager.prepare(PanGraph.getHome());
 			enableMapControl(true);
 		}
 	}
@@ -280,7 +287,7 @@ public class MainFrame extends Frame {
 	}
 	
 	public static void showMap() { 
-		mapView.showFrame(mapEditor.getTitle());
+		mapView.showFrame();
 	}
 	
 	private void fullscreen() {
@@ -290,6 +297,16 @@ public class MainFrame extends Frame {
 	private void autoPan() {
 		boolean set = Scene.getCamera().setAutoPan();
 		view_autoPan.setSelected(set);
+	}
+	
+	private void skipVisited() {
+		// isSelected() returns state AFTER click
+		boolean newState = view_skipVisited.isSelected();
+		
+		System.out.println(newState);
+		
+		TourManager.setSkipVisited(newState);
+		view_skipVisited.setSelected(newState);
 	}
 	
 	private void soundPlayPause() {

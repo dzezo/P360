@@ -15,6 +15,8 @@ import javax.swing.JToolBar;
 
 import glRenderer.Scene;
 import glRenderer.TourManager;
+import panorama.PanGraph;
+import panorama.PanMap;
 import panorama.PanNode;
 import utils.AutoSave;
 import utils.ChooserUtils;
@@ -131,6 +133,7 @@ public class MapDrawFrame extends MapFrame {
 		setSize(mapWidth, mapHeight);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setLocationRelativeTo(null);
+		setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		
 		// add map panel to frame
 		mapPanel.setParent(this);
@@ -157,6 +160,9 @@ public class MapDrawFrame extends MapFrame {
                 AutoSave.stopSaving();
                 AutoSave.save();
                 
+                // update map size
+                PanGraph.updateMapSize();
+                
             	// hide frame
                 setVisible(false);
             }
@@ -166,24 +172,26 @@ public class MapDrawFrame extends MapFrame {
 	public void showFrame() {
 		// show frame
 		setVisible(true);
-		setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		
 		// setting the origin of a map
 		setOrigin();
 	}
 	
 	protected void setOrigin() {
-		if(PanNode.getHome() != null) {
-			int x = PanNode.getHome().getMapNode().x;
-			int y = PanNode.getHome().getMapNode().y;
+		if(PanGraph.getHome() != null) {
+			// map center
+			int x = PanGraph.getCenterX();
+			int y = PanGraph.getCenterY();
 			
-			int h = (int) (PanNode.getHome().getMapNode().getHeight() / 2);
-			int w = (int) (PanNode.getHome().getMapNode().getWidth() / 2);
+			// node size
+			int h = PanMap.HEIGHT / 2;
+			int w = PanMap.WIDTH / 2;
 			
-			int centerX = getWidth() / 2;
-			int centerY = getHeight() / 2;
+			// panel size
+			int centerX = mapPanel.getWidth() / 2;
+			int centerY = mapPanel.getHeight() / 2;
 			
-			mapPanel.setOrigin(x - centerX + w, y - centerY + h);
+			mapPanel.setOrigin((x + w) - centerX, (y + h) - centerY);
 		}
 		else {
 			mapPanel.setOrigin(0,0);
@@ -200,14 +208,14 @@ public class MapDrawFrame extends MapFrame {
 			offset = i*MapDrawPanel.getGridSize();
 			spawnX = mapPanel.getOriginX() + offset;
 			spawnY = mapPanel.getOriginY() + offset;
-			PanNode.addNode(images[i].getPath(), spawnX, spawnY);
+			PanGraph.addNode(images[i].getPath(), spawnX, spawnY);
 		}
 	}
 	
 	private void remove() {
 		PanNode selectedNode = mapPanel.getSelectedNode1();
 		if(selectedNode != null) {
-			PanNode.deleteNode(selectedNode);
+			PanGraph.deleteNode(selectedNode);
 			mapPanel.deselectNodes();
 		}
 		else
@@ -217,7 +225,7 @@ public class MapDrawFrame extends MapFrame {
 	private void home() {
 		PanNode selectedNode = mapPanel.getSelectedNode1();
 		if(selectedNode != null) {
-			PanNode.setHome(selectedNode);
+			PanGraph.setHome(selectedNode);
 		}
 		else
 			DialogUtils.showMessage(err_noSelection, err_selection);
@@ -227,7 +235,7 @@ public class MapDrawFrame extends MapFrame {
 		PanNode selectedNode1 = mapPanel.getSelectedNode1();
 		PanNode selectedNode2 = mapPanel.getSelectedNode2();
 		if(selectedNode1 != null && selectedNode2 != null) {
-			PanNode.connectNodes(selectedNode1, selectedNode2);
+			PanGraph.connectNodes(selectedNode1, selectedNode2);
 		}
 		else
 			DialogUtils.showMessage(err_noMultipleSelection, err_selection);
@@ -237,7 +245,7 @@ public class MapDrawFrame extends MapFrame {
 		PanNode selectedNode1 = mapPanel.getSelectedNode1();
 		PanNode selectedNode2 = mapPanel.getSelectedNode2();
 		if(selectedNode1 != null && selectedNode2 != null) {
-			PanNode.disconnectNode(selectedNode1, selectedNode2);
+			PanGraph.disconnectNode(selectedNode1, selectedNode2);
 		}
 		else
 			DialogUtils.showMessage(err_noMultipleSelection, err_selection);
@@ -254,7 +262,7 @@ public class MapDrawFrame extends MapFrame {
 		if(audioPath == null) 
 			return;
 		
-		PanNode.addAudio(selectedNode, audioPath);
+		selectedNode.addAudio(audioPath);
 	}
 	
 	private void removeAudio() {
@@ -264,22 +272,22 @@ public class MapDrawFrame extends MapFrame {
 			return;
 		}
 		
-		PanNode.removeAudio(selectedNode);
+		selectedNode.removeAudio();
 	}
 	
 	private void genPath() {
-		PanNode.genPath();
+		PanGraph.genPath();
 	}
 	
 	private void clearPath() {
-		PanNode.clearPath();
+		PanGraph.clearPath();
 	}
 	
 	private void addToPath() {
 		PanNode selectedNode1 = mapPanel.getSelectedNode1();
 		PanNode selectedNode2 = mapPanel.getSelectedNode2();
 		if(selectedNode1 != null && selectedNode2 != null) {
-			PanNode.addToPath(selectedNode1, selectedNode2);
+			PanGraph.addToPath(selectedNode1, selectedNode2);
 		}
 		else
 			DialogUtils.showMessage(err_noMultipleSelection, err_selection);
@@ -289,7 +297,7 @@ public class MapDrawFrame extends MapFrame {
 		PanNode selectedNode1 = mapPanel.getSelectedNode1();
 		PanNode selectedNode2 = mapPanel.getSelectedNode2();
 		if(selectedNode1 != null && selectedNode2 != null) {
-			PanNode.removeFromPath(selectedNode1, selectedNode2);
+			PanGraph.removeFromPath(selectedNode1, selectedNode2);
 		}
 		else
 			DialogUtils.showMessage(err_noMultipleSelection, err_selection);
@@ -301,7 +309,7 @@ public class MapDrawFrame extends MapFrame {
 		if(loadPath == null) return false;
 		
 		// load
-		boolean success = PanNode.loadMap(loadPath);
+		boolean success = PanGraph.loadMap(loadPath);
 		if(success) {
 			// setting the origin of a map
 			setOrigin();
@@ -319,7 +327,7 @@ public class MapDrawFrame extends MapFrame {
 		if(savePath == null) return false;
 		
 		// save
-		boolean success = PanNode.saveMap(savePath);
+		boolean success = PanGraph.saveMap(savePath);
 		if(success) {
 			// display map source as title
 			setTitle(savePath);
@@ -332,13 +340,16 @@ public class MapDrawFrame extends MapFrame {
 	}
 	
 	private void ok() {
-		if(PanNode.getHome() != null) {
-			Scene.setNextActivePanorama(PanNode.getHome());
-			TourManager.prepare(PanNode.getHome());
+		if(PanGraph.getHome() != null) {
+			Scene.setNextActivePanorama(PanGraph.getHome());
+			TourManager.prepare(PanGraph.getHome());
 			
 			// stop auto save and save once more
             AutoSave.stopSaving();
             AutoSave.save();
+            
+            // update map size
+            PanGraph.updateMapSize();
             
             // hide frame
 			setVisible(false);

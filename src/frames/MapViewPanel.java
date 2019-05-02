@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 
 import glRenderer.Scene;
+import panorama.PanGraph;
 import panorama.PanMap;
 import panorama.PanNode;
 
@@ -67,11 +68,11 @@ public class MapViewPanel extends MapPanel{
 		// Translates the origin of the Graphics2D context to the point (x, y) in the current coordinate system.
 		graphicSettings.translate(originX, originY);
 		
-		// Drawing starts from the head (root), and draw number zero is assigned to it.
-		int drawNum = 0;
-		PanNode start = PanNode.getHead();
+		// Drawing starts from the head (root), and id zero is assigned to it.
+		int id = 0;
+		PanNode start = PanGraph.getHead();
 		while(start != null) {
-			start.setDrawNum(drawNum++);
+			start.setID(id++);
 			PanMap node = start.getMapNode();
 			node.drawNode(graphicSettings);
 			start = start.getNext();

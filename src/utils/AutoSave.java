@@ -4,7 +4,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import panorama.PanNode;
+import panorama.PanGraph;
 
 public class AutoSave implements Runnable {
 	private static final String DEFAULT_FILE_PATH = "AutoSave.p360";
@@ -28,13 +28,13 @@ public class AutoSave implements Runnable {
 	
 	public static void save() {
 		// nothing to save
-		if(PanNode.getHead() == null) return;
+		if(PanGraph.getHead() == null) return;
 		
 		// get save path
 		String savePath = (!savingPath.isEmpty()) ? savingPath : DEFAULT_FILE_PATH;
 		
 		// save map
-		PanNode.saveMap(savePath);
+		PanGraph.saveMap(savePath);
 	}
 	
 	public static void startSaving() {
