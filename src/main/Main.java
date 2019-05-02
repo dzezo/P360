@@ -1,5 +1,10 @@
 package main;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import javax.swing.UIManager;
 
 import frames.MainFrame;
@@ -18,12 +23,25 @@ import panorama.PanGraph;
 import shaders.GuiShader;
 import shaders.StaticShader;
 import utils.AutoLoad;
+import utils.ChooserUtils;
 import utils.Loader;
 
 public class Main {
+	public static final File WORKING_DIR = new File("C:\\p360system");
+	
 	public static void main(String[] args) throws Exception {
 		// set system look and feel
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		
+		// create working dir
+		try {
+			Files.createDirectory(Paths.get(WORKING_DIR.getPath()));
+		} catch (IOException e) {
+			System.out.println("Radni direktorijum postoji.");
+		}
+		
+		// set working dir
+		ChooserUtils.setWorkingDir(WORKING_DIR);
 		
 		// init
 		MainFrame mainFrame = new MainFrame("P360");
@@ -42,7 +60,10 @@ public class Main {
 			mainFrame.enableFullScreen();
 			
 			Scene.setNextActivePanorama(PanGraph.getHome());
+			
 			TourManager.prepare(PanGraph.getHome());
+			if(TourManager.hasPath())
+				DisplayManager.setFullscreen();
 		}
 		
 		while(mainFrame.isRunning()) {

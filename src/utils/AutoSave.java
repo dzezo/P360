@@ -4,10 +4,11 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import main.Main;
 import panorama.PanGraph;
 
 public class AutoSave implements Runnable {
-	private static final String DEFAULT_FILE_PATH = "AutoSave.p360";
+	private static final String DEFAULT_FILE_PATH = Main.WORKING_DIR.getPath() + "\\AutoSave.p360";
 	
 	private static ScheduledThreadPoolExecutor autoSave = new ScheduledThreadPoolExecutor(1);
 	private static ScheduledFuture<?> autoSaveTasks;

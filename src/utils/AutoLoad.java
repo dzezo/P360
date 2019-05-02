@@ -7,11 +7,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import main.Main;
 import panorama.PanGraph;
 
 @SuppressWarnings("serial")
 public class AutoLoad implements Serializable {
-	private static final String AUTO_LOAD_CONFIG_PATH = "auto_load.cfg";
+	private static final String AUTO_LOAD_CONFIG_PATH = Main.WORKING_DIR.getPath() + "\\auto_load.cfg";
 	
 	private static String lastUsedMap;
 	

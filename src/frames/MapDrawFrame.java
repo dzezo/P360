@@ -172,6 +172,7 @@ public class MapDrawFrame extends MapFrame {
 	public void showFrame() {
 		// show frame
 		setVisible(true);
+		setTitle(PanGraph.getName());
 		
 		// setting the origin of a map
 		setOrigin();

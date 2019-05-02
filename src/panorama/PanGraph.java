@@ -257,6 +257,9 @@ public class PanGraph {
 			return false;
 		}
 		
+		// set graph name
+		name = savePath;
+		
 		// set autoload destination
 		AutoLoad.setLastUsedMap(savePath);
 		

@@ -261,4 +261,7 @@ public class ChooserUtils {
 		
 	}
 	
+	public static void setWorkingDir(File workingDir) {
+		jfc.setCurrentDirectory(workingDir);
+	}
 }
