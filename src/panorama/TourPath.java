@@ -122,6 +122,9 @@ public class TourPath implements Serializable {
 			Waypoint nextWaypoint = iterator.next();
 			
 			nextWaypoint.node.tourNum.add(newIndex++);
+			
+			// On last waypoint add final tourNum
+			if(!iterator.hasNext()) nextWaypoint.next.tourNum.add(newIndex);
 		}
 	}
 	

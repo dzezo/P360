@@ -189,12 +189,10 @@ public class PanGraph {
 		int waypointIndex2 = tour.remove(new Waypoint(node2, node1));
 		
 		if(waypointIndex1 != TourPath.WAYPOINT_NOT_FOUND) {
-			node1.tourNum.remove((Object)waypointIndex1);
 			// Reset graphics
 			node2.getMapNode().setArrow(node1, false);
 		}
 		if(waypointIndex2 != TourPath.WAYPOINT_NOT_FOUND) {
-			node2.tourNum.remove((Object)waypointIndex2);
 			// Reset graphics
 			node1.getMapNode().setArrow(node2, false);
 		}
@@ -345,10 +343,15 @@ public class PanGraph {
 		for(int i = 1; i < p.length; i++) {
 			next = getNode(p[i]);
 			
+			// Adding to path
 			int tourNum = tour.add(new Waypoint(node, next));
-			node.tourNum.add(tourNum);
 			
-			// set graphics
+			// Add tourNum
+			node.tourNum.add(tourNum);
+			// On last waypoint add final tourNum
+			if(i == p.length - 1) next.tourNum.add(tourNum + 1);
+			
+			// Set graphics
 			next.getMapNode().setArrow(node, true);
 			
 			node = next;
@@ -385,7 +388,11 @@ public class PanGraph {
 		
 		// Adding to path
 		int tourNum = tour.add(new Waypoint(node1, node2));
-		node1.tourNum.add(tourNum);
+		
+		// Add tourNum
+		if(!node1.tourNum.contains((Object) tourNum)) 
+			node1.tourNum.add(tourNum);
+		node2.tourNum.add(tourNum + 1);
 		
 		// Set graphics
 		node2.getMapNode().setArrow(node1, true);
@@ -415,11 +422,21 @@ public class PanGraph {
 		
 		// Removing from path
 		int tourNum = tour.remove(new Waypoint(node1, node2));
-		if(tourNum != TourPath.WAYPOINT_NOT_FOUND)
-			node1.tourNum.remove((Object)tourNum);
-		
-		// Reset graphics
-		node2.getMapNode().setArrow(node1, false);	
+		System.out.println(tourNum);
+		if(tourNum != TourPath.WAYPOINT_NOT_FOUND) {
+			// Reset graphics
+			node2.getMapNode().setArrow(node1, false);	
+			
+			// Reset TourNum on every node
+			PanNode node = head;
+			while(node != null) {
+				node.tourNum.clear();
+				node = node.getNext();
+			}
+			
+			// Assign new TourNum on every node
+			tour.updateTourNumbers();
+		}
 	}
 	
 	/* class related functionality */
