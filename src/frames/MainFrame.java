@@ -168,7 +168,7 @@ public class MainFrame extends Frame {
 		
 		/* Item listeners */
 		file_open.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) { openSingleImage(); }
+			public void actionPerformed(ActionEvent event) { openImage(); }
 		});		
 		map_new.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) { newMap(); }			
@@ -229,43 +229,59 @@ public class MainFrame extends Frame {
 	
 	/* Menubar Actions */
 	
-	private void openSingleImage(){
-		String newPath = ChooserUtils.openImageDialog();
-		if(newPath == null) return;
-		PanNode activePanorama = Scene.getActivePanorama();
-		
-		// If there's no active panorama or selected panorama is not the same as active one
-		// then set new active panorama and enable fullscreen mode
-		if(activePanorama == null || !newPath.equals(activePanorama.getPanoramaPath())) {
-			// Remove map if loaded
-			PanGraph.removeMap();
-			// set new single panorama
-			PanNode newPanorama = new PanNode(newPath);
-			Scene.setNextActivePanorama(newPanorama);
-			enableMapControl(false);
+	private void openImage(){
+		// Map loaded, prompt overwrite
+		if(PanGraph.getHead() != null) {
+			int dialogRes = DialogUtils.showConfirmDialog("This action will discard existing map, \nDo you want to continue?", "New Image");
+			if(dialogRes != DialogUtils.YES) return;
 		}
+		
+		String imagePath = ChooserUtils.openImageDialog();
+		if(imagePath == null) return;
+		
+		// Remove previous map
+		PanGraph.removeMap();
+		AutoSave.resetSavingPath();
+		
+		// Add to new map
+		int spawnX, spawnY;
+		spawnX = mapEditor.getMapPanel().getOriginX();
+		spawnY = mapEditor.getMapPanel().getOriginY();
+		PanGraph.addNode(imagePath, spawnX, spawnY);
+		PanGraph.setName("New Map");
+		
+		// Enable menu bar
+		enableMapControl(true);
+		enableFullScreen();
+		
+		// Queue image for loading
+		Scene.setNextActivePanorama(PanGraph.getHome());
 	}
 	
 	private void newMap() {
+		// No map loaded
 		if(PanGraph.getHead() == null) {
-			// No map loaded
 			AutoSave.resetSavingPath();
+			
 			mapEditor.showFrame();
 		}
+		// Map loaded, prompt overwrite
 		else {
-			// Map loaded, prompt overwrite
 			int dialogRes = DialogUtils.showConfirmDialog("Creating new map will overwrite existing one, \nDo you want to continue?", "New Map");
 			if(dialogRes == DialogUtils.YES) {
+				AutoSave.resetSavingPath();
+				
 				// Remove map if loaded
 				PanGraph.removeMap();
-				
-				AutoSave.resetSavingPath();
 				mapEditor.showFrame();
+			}
+			else {
+				return;
 			}
 		}
 		
 		enableMapControl(true);
-		mapEditor.setTitle("New Map");
+		PanGraph.setName("New Map");
 	}
 	
 	private void loadMap() {

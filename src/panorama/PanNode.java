@@ -33,15 +33,8 @@ public class PanNode implements Serializable {
 	private PanAudio audio;
 	
 	/**
-	 * Konstruktor za panoramu
-	 * @param panoramaPath - file system putanja do panorame
-	 */
-	public PanNode(String panoramaPath) {
-		this.panoramaPath = panoramaPath;
-	}
-	
-	/**
-	 * Konstruktor za panoramu koja ima svoju graficku reprezentaciju na mapi
+	 * Konstruktor
+	 * 
 	 * @param panoramaPath - file system putanja
 	 * @param x, y - koordinate na mapi
 	 */

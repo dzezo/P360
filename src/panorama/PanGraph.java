@@ -515,4 +515,8 @@ public class PanGraph {
 	public static String getName() {
 		return name;
 	}
+
+	public static void setName(String newName) {
+		name = newName;
+	}
 }
