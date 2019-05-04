@@ -79,7 +79,12 @@ public class Main {
 				else if(!ImageLoader.isLoading()){
 					AudioManager.stopAudio();		
 					ImageLoader.loadImage(Scene.getNextActivePanorama().getPanoramaPath());
-				}		
+				}
+				else if(ImageLoader.isCanceled()) {
+					Scene.setNextActivePanorama(Scene.getActivePanorama());
+					
+					ImageLoader.resetLoader();
+				}
 			}
 			
 			// Prepare renderer

@@ -142,6 +142,7 @@ public class ChooserUtils {
 		// show jfc
 		int result = jfc.showOpenDialog(null);
 		
+		// open
 		if(result == JFileChooser.APPROVE_OPTION) {
 			String panPath = jfc.getSelectedFile().getPath();
 			
@@ -187,6 +188,7 @@ public class ChooserUtils {
 		// show jfc
 		int result = jfc.showOpenDialog(null);
 		
+		// open
 		if(result == JFileChooser.APPROVE_OPTION) {
 			File images[] = jfc.getSelectedFiles();
 			

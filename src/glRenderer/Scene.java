@@ -1,8 +1,6 @@
 package glRenderer;
 
 import gui.GuiNavButtons;
-import gui.GuiRenderer;
-import gui.GuiSprites;
 import panorama.PanNode;
 import panorama.Panorama;
 
@@ -51,9 +49,6 @@ public class Scene {
 	}
 	
 	public static void setNextActivePanorama(PanNode nextPanorama) {
-		if(!nextPanorama.isLoaded())
-			GuiSprites.loading.show(GuiRenderer.getGuiList());
-		
 		nextActivePanorama = nextPanorama;
 	}
 	
@@ -98,7 +93,6 @@ public class Scene {
 		activePanorama.loadPanorama();
 		Renderer.setNewProjection();
 		GuiNavButtons.setAvailableNavButtons(activePanorama);
-		GuiSprites.loading.hide(GuiRenderer.getGuiList());
 	}
 	
 }

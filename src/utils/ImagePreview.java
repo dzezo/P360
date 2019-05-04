@@ -111,4 +111,5 @@ public class ImagePreview extends JComponent implements PropertyChangeListener {
             thumbnail.paintIcon(this, g, x, y);
         }
     }
+    
 }
