@@ -314,15 +314,16 @@ public class MapDrawFrame extends MapFrame {
 	
 	private void ok() {
 		if(PanGraph.getHome() != null) {
-			Scene.setNextActivePanorama(PanGraph.getHome());
+			// Queue image for loading
+			Scene.queuePanorama(PanGraph.getHome());
 			TourManager.prepare(PanGraph.getHome());
+			
+			// update map size
+            PanGraph.updateMapSize();
 			
 			// stop auto save and save once more
             AutoSave.stopSaving();
             AutoSave.save();
-            
-            // update map size
-            PanGraph.updateMapSize();
             
             // hide frame
 			setVisible(false);

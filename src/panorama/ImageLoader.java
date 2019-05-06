@@ -23,14 +23,14 @@ public class ImageLoader {
 		isLoading = true;
 		isLoaded = false;
 		
+		GuiSprites.loading.show(GuiRenderer.getGuiList());
+		
 		executor.execute(new Runnable() {
 
 			public void run() {
 				BufferedImage image;
 				int width, height;
 				int[] pixels;
-				
-				//GuiSprites.loading.show(GuiRenderer.getGuiList());
 				
 				try {
 					image = ImageIO.read(new FileInputStream(path));
@@ -50,7 +50,9 @@ public class ImageLoader {
 					try {
 						GuiSprites.loading.hide(GuiRenderer.getGuiList());
 						GuiSprites.cancel.show(GuiRenderer.getGuiList());
+						
 						Thread.sleep(3000);
+						
 						GuiSprites.cancel.hide(GuiRenderer.getGuiList());
 					} catch (InterruptedException ie) {
 						ie.printStackTrace();

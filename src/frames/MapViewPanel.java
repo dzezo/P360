@@ -85,8 +85,8 @@ public class MapViewPanel extends MapPanel{
 	}
 	
 	private void setNextActivePanorama() {
-		// set next panorama
-		Scene.setNextActivePanorama(selectedNode1);
+		// Queue image selected panorama
+		Scene.queuePanorama(selectedNode1);
 		
 		// hide map frame
 		this.parent.setVisible(false);

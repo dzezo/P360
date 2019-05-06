@@ -165,7 +165,7 @@ public class TourManager implements Runnable{
 		}
 		
 		// predji na sledeci cvor
-		Scene.setNextActivePanorama(nextPano);
+		Scene.queuePanorama(nextPano);
 		
 		// resetuj audio menadzer
 		AudioManager.resetAudioPlayed();
@@ -183,6 +183,7 @@ public class TourManager implements Runnable{
 	}
 	
 	public static void stopTourManager() {
+		path = null;
 		hasPath = false;
 		if(tourTasks != null)
 			tourTasks.cancel(false);

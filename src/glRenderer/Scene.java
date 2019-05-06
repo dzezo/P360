@@ -6,7 +6,7 @@ import panorama.Panorama;
 
 public class Scene {
 	private static PanNode activePanorama;
-	private static PanNode nextActivePanorama;
+	private static PanNode queuedPanorama;
 	private static Camera camera;
 	private static boolean ready;
 	
@@ -48,12 +48,18 @@ public class Scene {
 		return activePanorama;
 	}
 	
-	public static void setNextActivePanorama(PanNode nextPanorama) {
-		nextActivePanorama = nextPanorama;
+	public static void queuePanorama(PanNode panorama) {
+		// Queue image for loading
+		queuedPanorama = panorama;
+		GuiNavButtons.setAvailableNavButtons(queuedPanorama);
 	}
 	
-	public static PanNode getNextActivePanorama() {
-		return nextActivePanorama;
+	public static void dequeuePanorama() {
+		queuedPanorama = activePanorama;
+	}
+	
+	public static PanNode getQueuedPanorama() {
+		return queuedPanorama;
 	}
 	
 	/**
@@ -61,25 +67,25 @@ public class Scene {
 	 */
 	public static void goLeft() {
 		if(activePanorama.getLeft() !=null) {
-			setNextActivePanorama(activePanorama.getLeft());
+			queuePanorama(activePanorama.getLeft());
 		}
 	}
 	
 	public static void goRight() {
 		if(activePanorama.getRight() !=null) {
-			setNextActivePanorama(activePanorama.getRight());
+			queuePanorama(activePanorama.getRight());
 		}
 	}
 	
 	public static void goTop() {
 		if(activePanorama.getTop() !=null) {
-			setNextActivePanorama(activePanorama.getTop());
+			queuePanorama(activePanorama.getTop());
 		}
 	}
 	
 	public static void goBot() {
 		if(activePanorama.getBot() !=null) {
-			setNextActivePanorama(activePanorama.getBot());
+			queuePanorama(activePanorama.getBot());
 		}
 	}
 	
@@ -92,7 +98,6 @@ public class Scene {
 		
 		activePanorama.loadPanorama();
 		Renderer.setNewProjection();
-		GuiNavButtons.setAvailableNavButtons(activePanorama);
 	}
 	
 }

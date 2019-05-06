@@ -41,7 +41,7 @@ import java.util.concurrent.Executors;
 @SuppressWarnings("serial")
 public class ImagePreview extends JComponent implements PropertyChangeListener {
 	ExecutorService executor = Executors.newFixedThreadPool(1);
-	
+
     ImageIcon thumbnail = null;
     File file = null;
 

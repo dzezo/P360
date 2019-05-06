@@ -56,27 +56,27 @@ public class Main {
 		
 		// load previously used map
 		if(AutoLoad.load()) {
-			Scene.setNextActivePanorama(PanGraph.getHome());
-			
+			Scene.queuePanorama(PanGraph.getHome());
 			TourManager.prepare(PanGraph.getHome());
+			
 			if(TourManager.hasPath())
 				DisplayManager.setFullscreen();
 		}
 		
 		while(mainFrame.isRunning()) {
 			// check for changes
-			if(Scene.getActivePanorama() != Scene.getNextActivePanorama()) {		
-				if(Scene.getNextActivePanorama().isLoaded() || ImageLoader.isLoaded()) {
-					Scene.loadNewImage(Scene.getNextActivePanorama());
-					
+			if(Scene.getActivePanorama() != Scene.getQueuedPanorama()) {
+				if(Scene.getQueuedPanorama().isLoaded() || ImageLoader.isLoaded()) {
+					Scene.loadNewImage(Scene.getQueuedPanorama());
+	
 					ImageLoader.resetLoader();
 				}
 				else if(!ImageLoader.isLoading()){
 					AudioManager.stopAudio();		
-					ImageLoader.loadImage(Scene.getNextActivePanorama().getPanoramaPath());
+					ImageLoader.loadImage(Scene.getQueuedPanorama().getPanoramaPath());
 				}
 				else if(ImageLoader.isCanceled()) {
-					Scene.setNextActivePanorama(Scene.getActivePanorama());
+					Scene.dequeuePanorama();
 					
 					ImageLoader.resetLoader();
 				}

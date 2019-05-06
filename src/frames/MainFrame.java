@@ -36,10 +36,10 @@ import utils.DialogUtils;
 
 @SuppressWarnings("serial")
 public class MainFrame extends Frame {
-	// FRAME
 	private Canvas displayCanvas = new Canvas();
 	private boolean running = false;
-	// MENUBAR
+	
+	/* MenuBar */
 	private JMenuBar menuBar = new JMenuBar();
 	private JMenu fileMenu = new JMenu("File");
 	private JMenu mapMenu = new JMenu("Map");
@@ -205,7 +205,7 @@ public class MainFrame extends Frame {
 	public boolean isRunning() {
 		return running;
 	}
-
+	
 	public MapDrawFrame getMapDrawingFrame() {
 		return mapEditor;
 	}
@@ -226,9 +226,9 @@ public class MainFrame extends Frame {
 		String imagePath = ChooserUtils.openImageDialog();
 		if(imagePath == null) return;
 		
-		// Remove previous map
-		PanGraph.removeMap();
+		// Set new map flag
 		AutoSave.resetSavingPath();
+		PanGraph.removeMap();
 		
 		// Add to new map
 		int spawnX, spawnY;
@@ -238,7 +238,8 @@ public class MainFrame extends Frame {
 		PanGraph.setName(PanGraph.DEFAULT_NAME);
 		
 		// Queue image for loading
-		Scene.setNextActivePanorama(PanGraph.getHome());
+		Scene.queuePanorama(PanGraph.getHome());
+		TourManager.prepare(PanGraph.getHome());
 	}
 	
 	private void newMap() {
@@ -250,7 +251,7 @@ public class MainFrame extends Frame {
 		}
 		// Map loaded, prompt overwrite
 		else {
-			int dialogRes = DialogUtils.showConfirmDialog("Creating new map will overwrite existing one, \nDo you want to continue?", "New Map");
+			int dialogRes = DialogUtils.showConfirmDialog("Creating new map will discard existing one, \nDo you want to continue?", "New Map");
 			if(dialogRes == DialogUtils.YES) {
 				AutoSave.resetSavingPath();
 				
@@ -270,7 +271,7 @@ public class MainFrame extends Frame {
 		boolean success = mapEditor.load();
 		
 		if(success) {
-			Scene.setNextActivePanorama(PanGraph.getHome());
+			Scene.queuePanorama(PanGraph.getHome());
 			TourManager.prepare(PanGraph.getHome());
 		}
 	}

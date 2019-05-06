@@ -36,7 +36,7 @@ public class InputManager {
 	public static final int GP_FSCREEN = 6;		// L1
 	public static final int GP_PAN = 7; 		// R1
 	public static final int GP_MAP = 4;			// L2
-	public static final int GP_MAP_CONFIRM = 5;	//R2
+	public static final int GP_MAP_CONFIRM = 5;	// R2
 	
 	// Mouse controls
 	public static boolean fullscreenRequest = false;

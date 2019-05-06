@@ -7,6 +7,7 @@ import org.lwjgl.util.vector.Vector2f;
 import frames.MainFrame;
 import glRenderer.DisplayManager;
 import glRenderer.Scene;
+import panorama.PanGraph;
 import panorama.PanNode;
 
 public class GuiNavButtons {
@@ -190,16 +191,17 @@ public class GuiNavButtons {
 		if(navRightAvail) navRight.hide(guis);	
 		if(navLeftAvail) navLeft.hide(guis);
 		if(navMapAvail) navMap.hide(guis);
+		areHidden = true;
 		
 		// Set nav buttons that are available for currently active panorama
 		navTopAvail = (node.getTop() != null) ? true : false;
 		navRightAvail = (node.getRight() != null) ? true : false;
 		navBotAvail = (node.getBot() != null) ? true : false;
 		navLeftAvail = (node.getLeft() != null) ? true : false;
-		navMapAvail = (navLeftAvail || navBotAvail || navRightAvail || navTopAvail) ? true : false;
+		navMapAvail = (PanGraph.isEmpty()) ? false : true;
 		
 		// Nav buttons are initially showing
-		areHidden = false;
+		showAll();
 	}
 	
 	public static boolean isMouseNear() {
