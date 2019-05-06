@@ -136,8 +136,6 @@ public class MainFrame extends Frame {
 		mapMenu.add(map_change);
 		mapMenu.add(map_show);
 		
-		enableMapControl(false);
-		
 		// VIEW
 		viewMenu.add(view_autoPan);
 		viewMenu.add(view_skipVisited);
@@ -146,7 +144,6 @@ public class MainFrame extends Frame {
 		
 		view_skipVisited.setSelected(TourManager.getSkipVisited());
 		view_autoPan.setSelected(true);
-		view_fullScreen.setEnabled(false);
 		
 		// SOUND
 		soundMenu.add(sound_playPause);
@@ -205,12 +202,6 @@ public class MainFrame extends Frame {
 		});
 	}
 
-	public void enableMapControl(boolean status) {
-		map_save.setEnabled(status);
-		map_change.setEnabled(status);
-		map_show.setEnabled(status);
-	}
-	
 	public boolean isRunning() {
 		return running;
 	}
@@ -222,16 +213,12 @@ public class MainFrame extends Frame {
 	public MapViewFrame getMapViewFrame() {
 		return mapView;
 	}
-	
-	public void enableFullScreen() {
-		view_fullScreen.setEnabled(true);
-	}
-	
+
 	/* Menubar Actions */
 	
 	private void openImage(){
 		// Map loaded, prompt overwrite
-		if(PanGraph.getHead() != null) {
+		if(!PanGraph.isEmpty()) {
 			int dialogRes = DialogUtils.showConfirmDialog("This action will discard existing map, \nDo you want to continue?", "New Image");
 			if(dialogRes != DialogUtils.YES) return;
 		}
@@ -248,11 +235,7 @@ public class MainFrame extends Frame {
 		spawnX = mapEditor.getMapPanel().getOriginX();
 		spawnY = mapEditor.getMapPanel().getOriginY();
 		PanGraph.addNode(imagePath, spawnX, spawnY);
-		PanGraph.setName("New Map");
-		
-		// Enable menu bar
-		enableMapControl(true);
-		enableFullScreen();
+		PanGraph.setName(PanGraph.DEFAULT_NAME);
 		
 		// Queue image for loading
 		Scene.setNextActivePanorama(PanGraph.getHome());
@@ -260,7 +243,7 @@ public class MainFrame extends Frame {
 	
 	private void newMap() {
 		// No map loaded
-		if(PanGraph.getHead() == null) {
+		if(PanGraph.isEmpty()) {
 			AutoSave.resetSavingPath();
 			
 			mapEditor.showFrame();
@@ -280,8 +263,7 @@ public class MainFrame extends Frame {
 			}
 		}
 		
-		enableMapControl(true);
-		PanGraph.setName("New Map");
+		PanGraph.setName(PanGraph.DEFAULT_NAME);
 	}
 	
 	private void loadMap() {
@@ -290,7 +272,6 @@ public class MainFrame extends Frame {
 		if(success) {
 			Scene.setNextActivePanorama(PanGraph.getHome());
 			TourManager.prepare(PanGraph.getHome());
-			enableMapControl(true);
 		}
 	}
 	
@@ -299,10 +280,14 @@ public class MainFrame extends Frame {
 	}
 	
 	private void changeMap() {
+		if(PanGraph.isEmpty()) return;
+		
 		mapEditor.showFrame();
 	}
 	
-	public static void showMap() { 
+	private void showMap() {
+		if(PanGraph.isEmpty()) return;
+		
 		mapView.showFrame();
 	}
 	
@@ -391,5 +376,13 @@ public class MainFrame extends Frame {
 			sound_playPause.setText("Play");
 	}
 	
-
+	/* Map GUI */
+	
+	public static MapViewFrame getMap() {
+		return mapView;
+	}
+	
+	public static boolean isMapVisible() {
+		return mapView.isVisible();
+	}
 }

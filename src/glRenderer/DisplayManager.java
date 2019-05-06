@@ -17,7 +17,7 @@ import org.lwjgl.util.vector.Vector2f;
 public class DisplayManager {
 	private static final int WIDTH = 800;
 	private static final int HEIGHT = 600;
-	private static final int FPS_CAP = 30;
+	private static final int FPS_CAP = 50;
 	
 	private static boolean resized = false;
 	

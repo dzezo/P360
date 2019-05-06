@@ -91,5 +91,219 @@ public class MapViewPanel extends MapPanel{
 		// hide map frame
 		this.parent.setVisible(false);
 	}
+	
+	/* Controler Selection */
+	
+	public void selectTop() {
+		if(PanGraph.isEmpty()) return;
+		
+		if(selectedNode1 == null) {
+			setSelectedNode1(Scene.getActivePanorama());
+			return;
+		}
+		
+		PanNode topNode;
+		if(selectedNode1.getTop() == null) {	
+			PanMap selectedNode = selectedNode1.getMapNode();
+			
+			PanMap closestNode = null;
+			double closestDistance = Double.MAX_VALUE;
+			PanNode start = PanGraph.getHead();
+			while(start != null) {
+				PanMap node = start.getMapNode();
+				
+				// if node is above selected
+				if(selectedNode.y > node.y) {
+					double distance = getDistance(selectedNode, node);
+					if(distance < closestDistance) {
+						closestDistance = distance;
+						closestNode = node;
+					}
+				}
+				
+				start = start.getNext();
+			}
+			
+			// result is in closestNode
+			if(closestNode == null) return;
+			
+			topNode = closestNode.getParent();
+		}
+		else {
+			topNode = selectedNode1.getTop();
+		}
+		
+		setSelectedNode1(topNode);
+	}
+	
+	public void selectRight() {
+		if(PanGraph.isEmpty()) return;
+		
+		if(selectedNode1 == null) {
+			setSelectedNode1(Scene.getActivePanorama());
+			return;
+		}
+		
+		PanNode rightNode;
+		if(selectedNode1.getRight() == null) {	
+			PanMap selectedNode = selectedNode1.getMapNode();
+			
+			PanMap closestNode = null;
+			double closestDistance = Double.MAX_VALUE;
+			PanNode start = PanGraph.getHead();
+			while(start != null) {
+				PanMap node = start.getMapNode();
+				
+				// if node is right of selected
+				if(selectedNode.x < node.x) {
+					double distance = getDistance(selectedNode, node);
+					if(distance < closestDistance) {
+						closestDistance = distance;
+						closestNode = node;
+					}
+				}
+				
+				start = start.getNext();
+			}
+			
+			// result is in closestNode
+			if(closestNode == null) return;
+			
+			rightNode = closestNode.getParent();
+		}
+		else {
+			rightNode = selectedNode1.getRight();
+		}
+		
+		setSelectedNode1(rightNode);
+	}
+	
+	public void selectBot() {
+		if(PanGraph.isEmpty()) return;
+		
+		if(selectedNode1 == null) {
+			setSelectedNode1(Scene.getActivePanorama());
+			return;
+		}
+		
+		PanNode botNode;
+		if(selectedNode1.getBot() == null) {	
+			PanMap selectedNode = selectedNode1.getMapNode();
+			
+			PanMap closestNode = null;
+			double closestDistance = Double.MAX_VALUE;
+			PanNode start = PanGraph.getHead();
+			while(start != null) {
+				PanMap node = start.getMapNode();
+				
+				// if node is below selected
+				if(selectedNode.y < node.y) {
+					double distance = getDistance(selectedNode, node);
+					if(distance < closestDistance) {
+						closestDistance = distance;
+						closestNode = node;
+					}
+				}
+				
+				start = start.getNext();
+			}
+			
+			// result is in closestNode
+			if(closestNode == null) return;
+			
+			botNode = closestNode.getParent();
+		}
+		else {
+			botNode = selectedNode1.getBot();
+		}
+		
+		setSelectedNode1(botNode);
+	}
+	
+	public void selectLeft() {
+		if(PanGraph.isEmpty()) return;
+		
+		if(selectedNode1 == null) {
+			setSelectedNode1(Scene.getActivePanorama());
+			return;
+		}
+		
+		PanNode leftNode;
+		if(selectedNode1.getLeft() == null) {	
+			PanMap selectedNode = selectedNode1.getMapNode();
+			
+			PanMap closestNode = null;
+			double closestDistance = Double.MAX_VALUE;
+			PanNode start = PanGraph.getHead();
+			while(start != null) {
+				PanMap node = start.getMapNode();
+				
+				// if node is left of selected
+				if(selectedNode.x > node.x) {
+					double distance = getDistance(selectedNode, node);
+					if(distance < closestDistance) {
+						closestDistance = distance;
+						closestNode = node;
+					}
+				}
+				
+				start = start.getNext();
+			}
+			
+			// result is in closestNode
+			if(closestNode == null) return;
+			
+			leftNode = closestNode.getParent();
+		}
+		else {
+			leftNode = selectedNode1.getLeft();
+		}
+		
+		setSelectedNode1(leftNode);
+	}
+	
+	private double getDistance(PanMap n1, PanMap n2) {
+		int x1 = n1.x;
+		int y1 = n1.y;
+		int x2 = n2.x;
+		int y2 = n2.y;
+		return Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2));
+	}
+	
+	public void confirmSelection() {
+		if(PanGraph.isEmpty()) return;
+		
+		setNextActivePanorama();
+	}
+	
+	private void setSelectedNode1(PanNode selected) {
+		// deselect prev
+		if(selectedNode1 != null) {
+			PanMap prevSelectedNode = selectedNode1.getMapNode();
+			prevSelectedNode.selectNode(false);
+		}
+		
+		// select new
+		selectedNode1 = selected;
+		
+		// show on gui
+		PanMap selectedNode = selected.getMapNode();
+		selectedNode.selectNode(true);
+		
+		// center on selectedNode
+		// node coords
+		int x = selectedNode.x;
+		int y = selectedNode.y;
+		
+		// node size
+		int h = PanMap.HEIGHT / 2;
+		int w = PanMap.WIDTH / 2;
+		
+		// panel size
+		int centerX = getWidth() / 2;
+		int centerY = getHeight() / 2;
+		
+		setOrigin((x + w) - centerX, (y + h) - centerY);
+	}
 
 }

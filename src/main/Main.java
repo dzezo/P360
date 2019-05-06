@@ -56,9 +56,6 @@ public class Main {
 		
 		// load previously used map
 		if(AutoLoad.load()) {
-			mainFrame.enableMapControl(true);
-			mainFrame.enableFullScreen();
-			
 			Scene.setNextActivePanorama(PanGraph.getHome());
 			
 			TourManager.prepare(PanGraph.getHome());
@@ -70,8 +67,6 @@ public class Main {
 			// check for changes
 			if(Scene.getActivePanorama() != Scene.getNextActivePanorama()) {		
 				if(Scene.getNextActivePanorama().isLoaded() || ImageLoader.isLoaded()) {
-					mainFrame.enableFullScreen();
-							
 					Scene.loadNewImage(Scene.getNextActivePanorama());
 					
 					ImageLoader.resetLoader();

@@ -16,7 +16,6 @@ import javax.swing.JToolBar;
 import glRenderer.Scene;
 import glRenderer.TourManager;
 import panorama.PanGraph;
-import panorama.PanMap;
 import panorama.PanNode;
 import utils.AutoSave;
 import utils.ChooserUtils;
@@ -152,10 +151,7 @@ public class MapDrawFrame extends MapFrame {
 				AutoSave.startSaving();
 			}
 			
-            public void windowClosing(WindowEvent we){
-            	// stop frame repaint
-                stopFrameRepaint();
-                
+            public void windowClosing(WindowEvent we){               
                 // stop auto save and save once more
                 AutoSave.stopSaving();
                 AutoSave.save();
@@ -164,39 +160,9 @@ public class MapDrawFrame extends MapFrame {
                 PanGraph.updateMapSize();
                 
             	// hide frame
-                setVisible(false);
+                hideFrame();
             }
         });
-	}
-	
-	public void showFrame() {
-		// show frame
-		setVisible(true);
-		setTitle(PanGraph.getName());
-		
-		// setting the origin of a map
-		setOrigin();
-	}
-	
-	protected void setOrigin() {
-		if(PanGraph.getHome() != null) {
-			// map center
-			int x = PanGraph.getCenterX();
-			int y = PanGraph.getCenterY();
-			
-			// node size
-			int h = PanMap.HEIGHT / 2;
-			int w = PanMap.WIDTH / 2;
-			
-			// panel size
-			int centerX = mapPanel.getWidth() / 2;
-			int centerY = mapPanel.getHeight() / 2;
-			
-			mapPanel.setOrigin((x + w) - centerX, (y + h) - centerY);
-		}
-		else {
-			mapPanel.setOrigin(0,0);
-		}
 	}
 	
 	/* Toolbar Actions */
@@ -323,6 +289,12 @@ public class MapDrawFrame extends MapFrame {
 	}
 	
 	public boolean save() {
+		// nothing to save
+		if(PanGraph.isEmpty()) {
+			DialogUtils.showMessage("Nothing to save!", "Save");
+			return false;
+		}
+		
 		// get path
 		String savePath = ChooserUtils.saveMapDialog();
 		if(savePath == null) return false;

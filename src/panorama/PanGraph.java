@@ -14,6 +14,8 @@ import utils.ChooserUtils;
 import utils.DialogUtils;
 
 public class PanGraph {
+	public static final String DEFAULT_NAME = "New Map";
+	
 	private static PanNode head;
 	private static PanNode home;
 	
@@ -234,12 +236,6 @@ public class PanGraph {
 	}
 	
 	public static boolean saveMap(String savePath) {
-		// can't save empty map
-		if(head == null) {
-			DialogUtils.showMessage("Nothing to save!", "Save");
-			return false;
-		}
-		
 		// Writing to file
 		try {
 			FileOutputStream fs = new FileOutputStream(savePath);
@@ -497,6 +493,8 @@ public class PanGraph {
 	}
 	
 	public static void updateMapSize() {
+		if(isEmpty()) return;
+		
 		PanNode node = head;
 		
 		size.WEST = size.EAST = node.getMapNode().x;
@@ -513,10 +511,16 @@ public class PanGraph {
 	}
 
 	public static String getName() {
+		if(name == null) return DEFAULT_NAME;
+		
 		return name;
 	}
-
+	
 	public static void setName(String newName) {
 		name = newName;
+	}
+	
+	public static boolean isEmpty() {
+		return head == null;
 	}
 }

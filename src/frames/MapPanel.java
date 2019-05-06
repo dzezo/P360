@@ -71,8 +71,15 @@ public abstract class MapPanel extends JComponent {
 	}
 	
 	public void deselectNodes() {
-		selectedNode1 = null;
-		selectedNode2 = null;
+		if(selectedNode1 != null) {
+			selectedNode1.getMapNode().selectNode(false);
+			selectedNode1 = null;
+		}
+		
+		if(selectedNode2 != null) {
+			selectedNode2.getMapNode().selectNode(false);
+			selectedNode2 = null;
+		}
 	}
 	
 	public void setParent(MapFrame parentFrame) {

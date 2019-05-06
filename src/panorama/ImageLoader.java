@@ -30,7 +30,7 @@ public class ImageLoader {
 				int width, height;
 				int[] pixels;
 				
-				GuiSprites.loading.show(GuiRenderer.getGuiList());
+				//GuiSprites.loading.show(GuiRenderer.getGuiList());
 				
 				try {
 					image = ImageIO.read(new FileInputStream(path));

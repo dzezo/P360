@@ -111,7 +111,7 @@ public class GuiNavButtons {
 				if(DisplayManager.isFullscreen()) {
 					DisplayManager.setWindowed();
 				}
-				MainFrame.showMap();
+				MainFrame.getMap().showFrame();
 			}
 
 			public void onStartHover(IButton button) {

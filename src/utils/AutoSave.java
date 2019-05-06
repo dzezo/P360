@@ -29,7 +29,7 @@ public class AutoSave implements Runnable {
 	
 	public static void save() {
 		// nothing to save
-		if(PanGraph.getHead() == null) return;
+		if(PanGraph.isEmpty()) return;
 		
 		// get save path
 		String savePath = (!savingPath.isEmpty()) ? savingPath : DEFAULT_FILE_PATH;

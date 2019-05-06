@@ -6,9 +6,6 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
-import panorama.PanGraph;
-import panorama.PanMap;
-
 @SuppressWarnings("serial")
 public class MapViewFrame extends MapFrame {
 
@@ -43,43 +40,10 @@ public class MapViewFrame extends MapFrame {
 			}
 			
             public void windowClosing(WindowEvent we){
-            	// stop frame repaint
-                stopFrameRepaint();
-                
             	// hide frame
-                setVisible(false);
+            	hideFrame();
             }
         });
-	}
-
-	public void showFrame() {
-		// show frame
-		setVisible(true);
-		setTitle(PanGraph.getName());
-		
-		// setting the origin of a map
-		setOrigin();
-	}
-
-	protected void setOrigin() {
-		if(PanGraph.getHome() != null) {
-			// map center
-			int x = PanGraph.getCenterX();
-			int y = PanGraph.getCenterY();
-			
-			// node size
-			int h = PanMap.HEIGHT / 2;
-			int w = PanMap.WIDTH / 2;
-			
-			// panel size
-			int centerX = mapPanel.getWidth() / 2;
-			int centerY = mapPanel.getHeight() / 2;
-			
-			mapPanel.setOrigin((x + w) - centerX, (y + h) - centerY);
-		}
-		else {
-			mapPanel.setOrigin(0,0);
-		}
 	}
 	
 }

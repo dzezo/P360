@@ -6,6 +6,9 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import panorama.PanGraph;
+import panorama.PanMap;
+
 @SuppressWarnings("serial")
 public abstract class MapFrame extends Frame {
 	protected ScheduledThreadPoolExecutor repaint = new ScheduledThreadPoolExecutor(5);;
@@ -39,5 +42,44 @@ public abstract class MapFrame extends Frame {
 		repaintTasks = null;
 	}
 	
-	protected abstract void setOrigin();
+	public void showFrame() {
+		// show frame
+		setVisible(true);
+		setTitle(PanGraph.getName());
+		
+		// setting the origin of a map
+		setOrigin();
+	}
+	
+	public void hideFrame() {
+		// stop frame repaint
+        stopFrameRepaint();
+        
+        // deselect nodes
+        mapPanel.deselectNodes();
+        
+    	// hide frame
+        setVisible(false);
+	}
+	
+	protected void setOrigin() {
+		if(PanGraph.getHome() != null) {
+			// map center
+			int x = PanGraph.getCenterX();
+			int y = PanGraph.getCenterY();
+			
+			// node size
+			int h = PanMap.HEIGHT / 2;
+			int w = PanMap.WIDTH / 2;
+			
+			// panel size
+			int centerX = mapPanel.getWidth() / 2;
+			int centerY = mapPanel.getHeight() / 2;
+			
+			mapPanel.setOrigin((x + w) - centerX, (y + h) - centerY);
+		}
+		else {
+			mapPanel.setOrigin(0,0);
+		}
+	}
 }

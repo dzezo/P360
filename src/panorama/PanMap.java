@@ -97,6 +97,14 @@ public class PanMap extends Rectangle {
 		}
 	}
 	
+	/**
+	 * Funkcija koja postavlja selected flag
+	 * @param select je true ukoliko zelimo da selektujemo cvor
+	 */
+	public void selectNode(boolean select) {
+		this.selected = select;
+	}
+	
 	public void setNewLocation(int newX, int newY) {
 		this.setLocation(newX, newY);
 		calculatePorts(newX, newY);
@@ -134,6 +142,10 @@ public class PanMap extends Rectangle {
 	}
 	
 	// Getters and Setters
+	
+	public PanNode getParent() {
+		return this.parent;
+	}
 	
 	public Point getPortLeft() {
 		return portLeft;

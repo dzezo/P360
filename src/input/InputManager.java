@@ -5,6 +5,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
 
 import frames.MainFrame;
+import frames.MapViewPanel;
 import glRenderer.DisplayManager;
 import glRenderer.Scene;
 import gui.GuiNavButtons;
@@ -28,12 +29,14 @@ public class InputManager {
 	private static boolean readAxis;
 	public static int GP_YAXIS;
 	public static int GP_XAXIS;
-	public static final int GP_LPAN = 3;
-	public static final int GP_RPAN = 1;
-	public static final int GP_TPAN = 0;
-	public static final int GP_BPAN = 2;
-	public static final int GP_FSCREEN = 6;
-	public static final int GP_PAN = 7;
+	public static final int GP_LPAN = 3;		// Square
+	public static final int GP_RPAN = 1;		// Circle
+	public static final int GP_TPAN = 0;		// Triangle
+	public static final int GP_BPAN = 2;		// Cross
+	public static final int GP_FSCREEN = 6;		// L1
+	public static final int GP_PAN = 7; 		// R1
+	public static final int GP_MAP = 4;			// L2
+	public static final int GP_MAP_CONFIRM = 5;	//R2
 	
 	// Mouse controls
 	public static boolean fullscreenRequest = false;
@@ -58,10 +61,17 @@ public class InputManager {
 	public static long lastInteractTime;
 	
 	public static void readInput() {
+		// Standard
 		readKeyboard();
 		readMouse();
-		if(controller != null)
-			readControler();
+		
+		// Controller
+		if(controller != null) {
+			if(!MainFrame.isMapVisible())
+				readControler();
+			else 
+				readControlerOnMap();
+		}
 	}
 	
 	public static void setController(Controller c) {
@@ -103,44 +113,37 @@ public class InputManager {
 		if(Keyboard.next()) {
 			if(Keyboard.getEventKeyState()) {
 				int key = Keyboard.getEventKey();
-				if(DisplayManager.isFullscreen() && !isInteractKey(key)) {
-					DisplayManager.setWindowed();
-				}
-				else if(!DisplayManager.isFullscreen() && key == K_FSCREEN) {
-					DisplayManager.setFullscreen();
-				}
-				else if(key == K_LPAN) {
-					if(GuiNavButtons.areHidden())
-						GuiNavButtons.showAll();
-					else
-						Scene.goLeft();
-				}
-				else if(key == K_RPAN) {
-					if(GuiNavButtons.areHidden())
-						GuiNavButtons.showAll();
-					else
-						Scene.goRight();
-				}
-				else if(key == K_TPAN) {
-					if(GuiNavButtons.areHidden())
-						GuiNavButtons.showAll();
-					else
-						Scene.goTop();
-				}
-				else if(key == K_BPAN) {
-					if(GuiNavButtons.areHidden())
-						GuiNavButtons.showAll();
-					else
-						Scene.goBot();
-				}
-				else if(key == K_PAN) {
+				switch(key) {
+				case K_FSCREEN:
+					if(!DisplayManager.isFullscreen()) DisplayManager.setFullscreen();
+					else DisplayManager.setWindowed();
+					break;
+				case K_LPAN:
+					if(!GuiNavButtons.areHidden()) Scene.goLeft();
+					else GuiNavButtons.showAll();
+					break;
+				case K_RPAN:
+					if(!GuiNavButtons.areHidden()) Scene.goRight();
+					else GuiNavButtons.showAll();	
+					break;
+				case K_TPAN:
+					if(!GuiNavButtons.areHidden()) Scene.goTop();
+					else GuiNavButtons.showAll();
+					break;
+				case K_BPAN:
+					if (!GuiNavButtons.areHidden()) Scene.goBot();
+					else GuiNavButtons.showAll();
+					break;
+				case K_PAN:
 					Scene.getCamera().setAutoPan();
-				}
-				else if(key == K_MAP) {
-					if(DisplayManager.isFullscreen()) {
-						DisplayManager.setWindowed();
-					}
-					MainFrame.showMap();
+					break;
+				case K_MAP:
+					if (DisplayManager.isFullscreen()) DisplayManager.setWindowed();
+					MainFrame.getMap().showFrame();
+					break;
+				default:
+					if(DisplayManager.isFullscreen()) DisplayManager.setWindowed();
+					break;
 				}
 			}
 		}				
@@ -202,12 +205,15 @@ public class InputManager {
 	}
 	
 	private static void readControler() {
-		float valueY, valueX;
+		// Poll
 		if(!controller.poll()) {
 			controller = null;
 			System.out.println("device disconnected");
 			return;
 		}
+		
+		// Axis
+		float valueY, valueX;
 		if(readAxis) {
 			valueY = controller.getAxisValue(GP_YAXIS);
 			valueX = controller.getAxisValue(GP_XAXIS);
@@ -229,6 +235,8 @@ public class InputManager {
 			lastInteractTime = System.currentTimeMillis();
 			Scene.getCamera().yaw(valueX * yawSpeed);
 		}
+		
+		// Buttons
 		if(Controllers.next() && Controllers.getEventSource() == controller) {
 			if(Controllers.isEventButton() && Controllers.getEventButtonState()) {
 				if(controller.isButtonPressed(GP_LPAN)) {
@@ -264,22 +272,52 @@ public class InputManager {
 				else if(controller.isButtonPressed(GP_PAN)) {
 					Scene.getCamera().setAutoPan();
 				}
+				else if(controller.isButtonPressed(GP_MAP)) {
+					if(DisplayManager.isFullscreen()) {
+						DisplayManager.setWindowed();
+					}
+					MainFrame.getMap().showFrame();
+				}
 			}
 		}
 	}
 	
-	private static boolean isInteractKey(int key) {
-		return 
-				key == K_LEFT || 
-				key == K_RIGHT || 
-				key == K_UP || 
-				key == K_DOWN ||
-				key == K_LPAN || 
-				key == K_RPAN || 
-				key == K_TPAN || 
-				key == K_BPAN ||
-				key == K_PAN ||
-				key == K_MAP;
+	private static void readControlerOnMap() {
+		// Poll
+		if(!controller.poll()) {
+			controller = null;
+			System.out.println("device disconnected");
+			return;
+		}
+		
+		// Buttons
+		if(Controllers.next() && Controllers.getEventSource() == controller) {
+			if(Controllers.isEventButton() && Controllers.getEventButtonState()) {
+				if(controller.isButtonPressed(GP_LPAN)) {
+					MapViewPanel map = (MapViewPanel) MainFrame.getMap().getMapPanel();
+					map.selectLeft();
+				}
+				else if(controller.isButtonPressed(GP_RPAN)) {
+					MapViewPanel map = (MapViewPanel) MainFrame.getMap().getMapPanel();
+					map.selectRight();
+				}
+				else if(controller.isButtonPressed(GP_TPAN)) {
+					MapViewPanel map = (MapViewPanel) MainFrame.getMap().getMapPanel();
+					map.selectTop();
+				}
+				else if(controller.isButtonPressed(GP_BPAN)) {
+					MapViewPanel map = (MapViewPanel) MainFrame.getMap().getMapPanel();
+					map.selectBot();
+				}
+				else if(controller.isButtonPressed(GP_MAP)) {
+					MainFrame.getMap().hideFrame();
+				}
+				else if(controller.isButtonPressed(GP_MAP_CONFIRM)) {
+					MapViewPanel map = (MapViewPanel) MainFrame.getMap().getMapPanel();
+					map.confirmSelection();
+				}
+			}
+		}
 	}
 	
 	private static boolean isMouseMoving() {
