@@ -11,11 +11,11 @@ import panorama.PanGraph;
 import panorama.PanNode;
 
 public class GuiNavButtons {
-	private static GuiButton navTop;
-	private static GuiButton navBot;
-	private static GuiButton navRight;
-	private static GuiButton navLeft;
-	private static GuiButton navMap;
+	public static GuiButton navTop;
+	public static GuiButton navBot;
+	public static GuiButton navRight;
+	public static GuiButton navLeft;
+	public static GuiButton navMap;
 	
 	private static boolean navTopAvail = false;
 	private static boolean navBotAvail = false;
@@ -111,8 +111,11 @@ public class GuiNavButtons {
 			public void onClick(IButton button) {
 				if(DisplayManager.isFullscreen()) {
 					DisplayManager.setWindowed();
+					MainFrame.getMap().showFrame(true);
 				}
-				MainFrame.getMap().showFrame();
+				else {
+					MainFrame.getMap().showFrame(false);
+				}
 			}
 
 			public void onStartHover(IButton button) {

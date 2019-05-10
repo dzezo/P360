@@ -42,26 +42,6 @@ public abstract class MapFrame extends Frame {
 		repaintTasks = null;
 	}
 	
-	public void showFrame() {
-		// show frame
-		setVisible(true);
-		setTitle(PanGraph.getName());
-		
-		// setting the origin of a map
-		setOrigin();
-	}
-	
-	public void hideFrame() {
-		// stop frame repaint
-        stopFrameRepaint();
-        
-        // deselect nodes
-        mapPanel.deselectNodes();
-        
-    	// hide frame
-        setVisible(false);
-	}
-	
 	protected void setOrigin() {
 		if(PanGraph.getHome() != null) {
 			// map center
@@ -82,4 +62,9 @@ public abstract class MapFrame extends Frame {
 			mapPanel.setOrigin(0,0);
 		}
 	}
+	
+	public abstract void showFrame();
+	
+	public abstract void hideFrame();
+	
 }

@@ -165,6 +165,26 @@ public class MapDrawFrame extends MapFrame {
         });
 	}
 	
+	public void showFrame() {
+		// show frame
+		setVisible(true);
+		setTitle(PanGraph.getName());
+		
+		// set origin of a map
+		setOrigin();
+	}
+	
+	public void hideFrame() {
+		// stop frame repaint
+        stopFrameRepaint();
+        
+        // deselect nodes
+        mapPanel.deselectNodes();
+        
+    	// hide frame
+        setVisible(false);
+	}
+	
 	/* Toolbar Actions */
 	private void add() {
 		File images[] = ChooserUtils.openImagesDialog();

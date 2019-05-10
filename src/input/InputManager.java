@@ -38,8 +38,8 @@ public class InputManager {
 	public static final int GP_MAP = 4;			// L2
 	public static final int GP_MAP_CONFIRM = 5;	// R2
 	
-	// Mouse controls
-	public static boolean fullscreenRequest = false;
+	// Requests
+	private static boolean fullscreenRequest = false;
 	
 	// Mouse movement config
 	private static Vector2f prevMouseDisplayPos = new Vector2f(0, 0);
@@ -72,6 +72,9 @@ public class InputManager {
 			else 
 				readControlerOnMap();
 		}
+		
+		// Other Input Requests
+		fullscreenRequest();
 	}
 	
 	public static void setController(Controller c) {
@@ -138,8 +141,7 @@ public class InputManager {
 					Scene.getCamera().setAutoPan();
 					break;
 				case K_MAP:
-					if (DisplayManager.isFullscreen()) DisplayManager.setWindowed();
-					MainFrame.getMap().showFrame();
+					GuiNavButtons.navMap.performAction();
 					break;
 				default:
 					if(DisplayManager.isFullscreen()) DisplayManager.setWindowed();
@@ -150,12 +152,6 @@ public class InputManager {
 	}
 
 	private static void readMouse() {
-		// Menu bar fullscreen click
-		if(fullscreenRequest) {
-			DisplayManager.setFullscreen();
-			fullscreenRequest = false;
-		}
-		
 		// detect draging
 		if(Mouse.isButtonDown(0) && !GuiNavButtons.isMouseOver()) {
 			DisplayManager.showMouseCursor();
@@ -273,10 +269,7 @@ public class InputManager {
 					Scene.getCamera().setAutoPan();
 				}
 				else if(controller.isButtonPressed(GP_MAP)) {
-					if(DisplayManager.isFullscreen()) {
-						DisplayManager.setWindowed();
-					}
-					MainFrame.getMap().showFrame();
+					GuiNavButtons.navMap.performAction();
 				}
 			}
 		}
@@ -338,4 +331,15 @@ public class InputManager {
 		return System.currentTimeMillis() > lastMouseMoveTime + mouseHideLatency;
 	}
 	
+	private static void fullscreenRequest() {
+		if(fullscreenRequest) {
+			DisplayManager.setFullscreen();
+			
+			fullscreenRequest = false;
+		}
+	}
+	
+	public static void requestFullscreen() {
+		fullscreenRequest = true;
+	}
 }

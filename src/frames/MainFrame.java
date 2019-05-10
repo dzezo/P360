@@ -293,7 +293,7 @@ public class MainFrame extends Frame {
 	}
 	
 	private void fullscreen() {
-		InputManager.fullscreenRequest = true;
+		InputManager.requestFullscreen();
 	}
 	
 	private void autoPan() {

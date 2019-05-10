@@ -88,8 +88,8 @@ public class MapViewPanel extends MapPanel{
 		// Queue image selected panorama
 		Scene.queuePanorama(selectedNode1);
 		
-		// hide map frame
-		this.parent.setVisible(false);
+		// Hide map frame
+		this.parent.hideFrame();
 	}
 	
 	/* Controler Selection */
