@@ -15,9 +15,9 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 import glRenderer.Scene;
-import glRenderer.TourManager;
 import panorama.PanGraph;
 import panorama.PanNode;
+import touring.TourManager;
 import utils.AutoSave;
 import utils.ChooserUtils;
 import utils.DialogUtils;
@@ -354,7 +354,9 @@ public class MapDrawFrame extends MapFrame {
 			
 			// stop auto save and save once more
             AutoSave.stopSaving();
+            long time = System.currentTimeMillis();
             AutoSave.save();
+            System.out.println(System.currentTimeMillis() - time);
             
             // hide frame
 			setVisible(false);

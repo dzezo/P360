@@ -1,11 +1,11 @@
-package panorama;
+package utils;
 
-public class Image {
+public class ImageData {
 	private int[] pixels;
 	private int width;
 	private int height;
 	
-	public Image(int[] pixels, int width, int height) {
+	public ImageData(int[] pixels, int width, int height) {
 		this.pixels = pixels;
 		this.width = width;
 		this.height = height;

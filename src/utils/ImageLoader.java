@@ -1,4 +1,4 @@
-package panorama;
+package utils;
 
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
@@ -14,7 +14,7 @@ import gui.GuiSprites;
 public class ImageLoader {
 	private static ExecutorService executor = Executors.newFixedThreadPool(1);
 	
-	private static Image img;
+	private static ImageData img;
 	private static boolean isLoading = false;
 	private static boolean isLoaded = false;
 	private static boolean isCanceled = false;
@@ -39,7 +39,7 @@ public class ImageLoader {
 					pixels = new int[width*height];
 					image.getRGB(0, 0, width, height, pixels, 0, width);
 					
-					img = new Image(pixels, width, height);
+					img = new ImageData(pixels, width, height);
 					
 					isLoaded = true;
 				} catch (IOException e) {
@@ -65,7 +65,7 @@ public class ImageLoader {
 		});
 	}
 	
-	public static Image getImage() {
+	public static ImageData getImageData() {
 		return img;
 	}
 	

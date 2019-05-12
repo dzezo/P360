@@ -1,6 +1,8 @@
-package panorama;
+package touring;
 
 import java.io.Serializable;
+
+import panorama.PanNode;
 
 @SuppressWarnings("serial")
 public class Waypoint implements Serializable{

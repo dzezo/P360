@@ -4,13 +4,15 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import utils.BuffUtils;
+import utils.ImageData;
+import utils.ImageLoader;
 
 public class Texture {
 	protected int textureID;
 	protected int width, height;
 	
 	public Texture() {
-		Image img = ImageLoader.getImage();
+		ImageData img = ImageLoader.getImageData();
 		width = img.getWidth();
 		height = img.getHeight();
 		

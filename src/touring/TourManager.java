@@ -1,9 +1,11 @@
-package glRenderer;
+package touring;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import glRenderer.AudioManager;
+import glRenderer.Scene;
 import panorama.PanGraph;
 import panorama.PanNode;
 

@@ -8,6 +8,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import graph.NodeList;
+import touring.TourPath;
+import touring.Waypoint;
 import utils.AutoLoad;
 import utils.AutoSave;
 import utils.ChooserUtils;

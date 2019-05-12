@@ -13,17 +13,17 @@ import glRenderer.Camera;
 import glRenderer.DisplayManager;
 import glRenderer.Renderer;
 import glRenderer.Scene;
-import glRenderer.TourManager;
 import gui.GuiNavButtons;
 import gui.GuiRenderer;
 import gui.GuiSprites;
 import input.InputManager;
-import panorama.ImageLoader;
 import panorama.PanGraph;
 import shaders.GuiShader;
 import shaders.StaticShader;
+import touring.TourManager;
 import utils.AutoLoad;
 import utils.ChooserUtils;
+import utils.ImageLoader;
 import utils.Loader;
 
 public class Main {

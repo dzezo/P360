@@ -2,6 +2,7 @@ package glRenderer;
 
 import frames.MainFrame;
 import panorama.PanNode;
+import touring.TourManager;
 
 public class AudioManager implements Runnable {
 	private MainFrame mainFrame;
