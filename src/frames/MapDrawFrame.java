@@ -11,6 +11,7 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 import glRenderer.Scene;
@@ -36,6 +37,7 @@ public class MapDrawFrame extends MapFrame {
 	private JButton b_clearPath = new JButton(new ImageIcon(Class.class.getResource("/toolbar/clearPath.png")));
 	private JButton b_addToPath = new JButton(new ImageIcon(Class.class.getResource("/toolbar/addToPath.png")));
 	private JButton b_removeFromPath = new JButton(new ImageIcon(Class.class.getResource("/toolbar/removeFromPath.png")));
+	private JToggleButton b_textMode = new JToggleButton(new ImageIcon(Class.class.getResource("/toolbar/text.png")));
 	private JButton b_load = new JButton(new ImageIcon(Class.class.getResource("/toolbar/load.png")));
 	private JButton b_save = new JButton(new ImageIcon(Class.class.getResource("/toolbar/save.png")));
 	private JButton b_ok = new JButton(new ImageIcon(Class.class.getResource("/toolbar/ok.png")));
@@ -90,6 +92,9 @@ public class MapDrawFrame extends MapFrame {
 		b_removeFromPath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) { removeFromPath(); }
 		});
+		b_textMode.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) { setTextMode(); }
+		});
 		b_load.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) { load(); }
 		});
@@ -118,6 +123,8 @@ public class MapDrawFrame extends MapFrame {
 		toolbar.add(b_removeFromPath);
 		// Add some glue so subsequent items are pushed to the right
 		toolbar.add(Box.createHorizontalGlue());
+		toolbar.add(b_textMode);
+		toolbar.addSeparator();
 		toolbar.add(b_load);
 		toolbar.add(b_save);
 		toolbar.addSeparator();
@@ -288,6 +295,10 @@ public class MapDrawFrame extends MapFrame {
 		}
 		else
 			DialogUtils.showMessage(err_noMultipleSelection, err_selection);
+	}
+	
+	public void setTextMode() {
+		PanGraph.setTextMode(b_textMode.isSelected());
 	}
 	
 	public boolean load() {

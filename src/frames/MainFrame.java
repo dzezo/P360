@@ -36,6 +36,7 @@ import utils.DialogUtils;
 
 @SuppressWarnings("serial")
 public class MainFrame extends Frame {
+	private JPanel mainPanel = new JPanel(new BorderLayout());
 	private Canvas displayCanvas = new Canvas();
 	private boolean running = false;
 	
@@ -94,17 +95,17 @@ public class MainFrame extends Frame {
 			}
 		});
 		
-		JPanel mainPanel = new JPanel(new BorderLayout());
 		mainPanel.add(displayCanvas, BorderLayout.CENTER);
 		
-		add(mainPanel);
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		setVisible(true);
-		pack();
-		setLocationRelativeTo(null);
+		this.add(mainPanel);
+		
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		this.setVisible(true);
+		this.pack();
+		this.setLocationRelativeTo(null);
 		
 		// Frame Listener
-		addWindowListener(new WindowAdapter() 
+		this.addWindowListener(new WindowAdapter() 
 		{
             public void windowClosing(WindowEvent we){
             	// Break main loop

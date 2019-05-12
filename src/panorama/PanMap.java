@@ -12,26 +12,33 @@ import frames.MapDrawPanel;
 
 @SuppressWarnings("serial")
 public class PanMap extends Rectangle {
+	/* Dimensions */
 	public static final int WIDTH = MapDrawPanel.getGridSize() * 16;
 	public static final int HEIGHT = MapDrawPanel.getGridSize() * 8;
+	public static final float BORDER_SIZE = 2.0f;
+	public static final float CONNECTION_SIZE = 1.5f;
 	
 	private PanNode parent;
 	
-	private Color textColor;
-	private static final Color lineColor = new Color(0,0,0);
-	private static final Color normalTextColor = new Color(255,255,255);
-	private static final Color selectedTextColor = new Color(0,191,255);
-	private static final Color homeTextColor = new Color(0,255,0);
-	private static final Color activeTextColor = new Color(255,255,0);
-	private static final Color fillColor = new Color(64,64,64);
-	
-	private int pressX;
-	private int pressY;
-	
 	protected String panName;
 	protected String audioName;
+	protected PanMapIcon icon;
+	
+	/* Fonts */
 	private static Font panNameFont = new Font("Arial", Font.BOLD, 15);
 	private static Font audioNameFont = new Font("Arial", Font.PLAIN, 15);
+	
+	/* Colors */
+	private static final Color normalColor = new Color(255,255,255);
+	private static final Color selectedColor = new Color(0,191,255);
+	private static final Color homeColor = new Color(0,255,0);
+	private static final Color activeColor = new Color(255,255,0);
+	/* Connection Color */
+	private static final Color lineColor = new Color(0,0,0);
+	/* Rectangle Color */
+	private static final Color fillColor = new Color(64,64,64);
+	private Color borderColor;
+	private Color textColor;
 	
 	/* port position */
 	private Point portLeft = new Point();
@@ -51,15 +58,18 @@ public class PanMap extends Rectangle {
 	private boolean b_topArrow = false;
 	private boolean b_bottomArrow = false;
 	
+	private int pressX;
+	private int pressY;
+	
 	private boolean selected = false;
 	
 	public PanMap(PanNode parent, int x, int y) {
 		super(x, y, WIDTH, HEIGHT);
 		this.parent = parent;
+		this.panName = setNameFromPath(parent.getPanoramaPath());
+		this.icon = new PanMapIcon(this, parent.getPanoramaPath());
 		
-		calculatePorts(x,y);
-		
-		panName = setNameFromPath(parent.getPanoramaPath());
+		calculatePorts(x,y);       
 	}
 	
 	public String setNameFromPath(String path) {
@@ -162,7 +172,7 @@ public class PanMap extends Rectangle {
 	public Point getPortBot() {
 		return portBot;
 	}
-
+	
 	/* Arrows */
 	public void setArrow(PanNode neighbour, boolean set) {
 		if(parent.getTop() != null 
@@ -216,45 +226,41 @@ public class PanMap extends Rectangle {
 	/* Drawing */
 	
 	/**
-	 * Funkcija koja iscrtava cvor na mapi na kojoj vise cvorova mogu biti selektovana
+	 * Funkcija koja iscrtava cvor na editoru
 	 * @param selected - daje informaciju koji cvor je selektovan na mapi
 	 */
 	public void drawNode(Graphics2D g, boolean selected) {
+		setColorsForEditor(selected);
+		
 		drawArrow(g);	
 		drawConnections(g);
-		
 		drawShape(g);
 		
-		// draw text
-		textColor = normalTextColor;
-		if(selected)
-			textColor = selectedTextColor;
-		else if(parent.isHome())
-			textColor = homeTextColor;
-		drawText(g);
+		if(PanGraph.isTextMode() || !icon.isLoaded())
+			drawText(g);
+		else
+			icon.drawIcon(g);
 	}
 	
 	/**
 	 * Funkcija koja iscrtava cvor na mini mapi
 	 */
 	public void drawNode(Graphics2D g) {
+		setColorsForMinimap();
+		
 		drawArrow(g);
 		drawConnections(g);
-		
 		drawShape(g);
 		
-		// draw text
-		textColor = normalTextColor;
-		if(this.selected)
-			textColor = selectedTextColor;
-		else if(parent.isActive())
-			textColor = activeTextColor;
-		drawText(g);
+		if(PanGraph.isTextMode() || !icon.isLoaded())
+			drawText(g);
+		else
+			icon.drawIcon(g);
 	}
 	
 	private void drawConnections(Graphics2D g) {
 		PanMap mNode;
-		g.setStroke(new BasicStroke(1.5f));
+		g.setStroke(new BasicStroke(CONNECTION_SIZE));
 		g.setColor(lineColor);
 		// Check there are connections
 		// If there are connections check if they've been drawn.
@@ -279,8 +285,8 @@ public class PanMap extends Rectangle {
 	private void drawShape(Graphics2D g) {
 		g.setColor(fillColor);
 		g.fill(this);
-		g.setStroke(new BasicStroke(1.5f));
-		g.setColor(lineColor);
+		g.setStroke(new BasicStroke(BORDER_SIZE));
+		g.setColor(borderColor);
 		g.draw(this);
 	}
 	
@@ -301,9 +307,9 @@ public class PanMap extends Rectangle {
 				tour = tour.concat(String.valueOf(tourNum) + ", ");
 			}
 		}
-		
 		g.drawString(tour, this.x + 5, this.y + 15);
 		
+		// draw name text
 		// cut name text if needed
 		while(g.getFontMetrics().stringWidth(panName) > WIDTH-10) {
 			panName = panName.substring(0, panName.length() - 1);
@@ -333,7 +339,7 @@ public class PanMap extends Rectangle {
 	}
 	
 	private void drawArrow(Graphics2D g) {
-		g.setStroke(new BasicStroke(1.5f));
+		g.setStroke(new BasicStroke(CONNECTION_SIZE));
 		g.setColor(lineColor);
 		if(b_leftArrow && parent.getLeft() != null) {
 			g.drawLine(leftArrow.x, leftArrow.y, leftArrow.x - 6, leftArrow.y + 3);
@@ -354,6 +360,34 @@ public class PanMap extends Rectangle {
 			g.drawLine(botArrow.x, botArrow.y, botArrow.x + 3, botArrow.y + 6);
 			g.drawLine(botArrow.x, botArrow.y, botArrow.x, botArrow.y + MapDrawPanel.getGridSize());
 			g.drawLine(botArrow.x, botArrow.y, botArrow.x - 3, botArrow.y + 6);
+		}
+	}
+	
+	private void setColorsForEditor(boolean selected) {
+		textColor = normalColor;
+		borderColor = lineColor;
+		
+		if(selected) {
+			textColor = selectedColor;
+			borderColor = selectedColor;
+		}
+		else if(parent.isHome()) {
+			textColor = homeColor;
+			borderColor = homeColor;
+		}
+	}
+	
+	private void setColorsForMinimap() {
+		textColor = normalColor;
+		borderColor = lineColor;
+		
+		if(this.selected) {
+			textColor = selectedColor;
+			borderColor = selectedColor;
+		}
+		else if(parent.isActive()) {
+			textColor = activeColor;
+			borderColor = activeColor;
 		}
 	}
 	

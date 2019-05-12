@@ -73,6 +73,9 @@ public class ImagePreview extends JComponent implements PropertyChangeListener {
 	                thumbnail = new ImageIcon(tmpIcon.getImage().
 	                                          getScaledInstance(w, h, Image.SCALE_DEFAULT));
 	                
+	                tmpIcon.getImage().flush();
+	                tmpIcon = null;
+	                
 	                repaint();
 	            }
 			}

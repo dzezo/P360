@@ -24,6 +24,8 @@ public class PanGraph {
 	
 	private static TourPath tour = new TourPath();
 	
+	private static boolean textMode = false;
+	
 	/* map creation functionality */
 	
 	public static void addNode(String panoramaPath, int originX, int originY) {
@@ -435,6 +437,10 @@ public class PanGraph {
 		}
 	}
 	
+	public static void setTextMode(boolean b) {
+		textMode = b;
+	}
+	
 	/* class related functionality */
 	
 	public static PanNode getHead() {
@@ -522,5 +528,9 @@ public class PanGraph {
 	
 	public static boolean isEmpty() {
 		return head == null;
+	}
+
+	public static boolean isTextMode() {
+		return textMode;
 	}
 }
