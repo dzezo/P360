@@ -240,6 +240,8 @@ public class PanGraph {
 	}
 	
 	public static boolean saveMap(String savePath) {
+		DialogUtils.showKeyInputDialog();
+		
 		// Writing to file
 		try {
 			FileOutputStream fs = new FileOutputStream(savePath);
