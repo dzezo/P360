@@ -1,12 +1,12 @@
 package utils;
 
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 import gui.GuiRenderer;
 import gui.GuiSprites;
@@ -28,12 +28,13 @@ public class ImageLoader {
 		executor.execute(new Runnable() {
 
 			public void run() {
-				BufferedImage image;
+				BufferedImage image = null;
 				int width, height;
 				int[] pixels;
 				
 				try {
-					image = ImageIO.read(new FileInputStream(path));
+					//image = ImageIO.read(new FileInputStream(path));
+					image = loadBufferedImage(path);
 					width = image.getWidth();
 					height = image.getHeight();
 					pixels = new int[width*height];
@@ -42,11 +43,18 @@ public class ImageLoader {
 					img = new ImageData(pixels, width, height);
 					
 					isLoaded = true;
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (OutOfMemoryError e) {
+				} catch (OutOfMemoryError | Exception e) {
+					// release memory
+					if(image != null) {
+						image.flush();
+						image = null;
+						pixels = null;
+					}
+					
+					// set cancel flag
 					isCanceled = true;
 					
+					// display cancel sprite
 					try {
 						GuiSprites.loading.hide(GuiRenderer.getGuiList());
 						GuiSprites.cancel.show(GuiRenderer.getGuiList());
@@ -63,6 +71,24 @@ public class ImageLoader {
 			}
 			
 		});
+	}
+	
+	private static BufferedImage loadBufferedImage(String path) throws Exception {
+		Image image;
+		if(ImageCipher.isEncrypted(path))
+			image = new ImageIcon(ImageCipher.imageDecrypt(path, DialogUtils.showKeyInputDialog())).getImage();
+		else
+			image = new ImageIcon(path).getImage();
+		
+		BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);
+        Graphics g = bufferedImage.getGraphics();
+        g.drawImage(image, 0, 0, null);
+        g.dispose();
+		
+        image.flush();
+        image = null;
+        
+		return bufferedImage;
 	}
 	
 	public static ImageData getImageData() {

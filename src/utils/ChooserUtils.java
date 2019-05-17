@@ -17,10 +17,12 @@ public class ChooserUtils {
 				return true;
 			String fileName = file.getName();
 			fileName = fileName.toLowerCase();
-			return (fileName.endsWith(".jpg") || fileName.endsWith(".tif"));
+			return (fileName.endsWith(".jpg") 
+					|| fileName.endsWith(".tif"))
+					|| fileName.endsWith(".pimg");
 		}
 		public String getDescription() {
-			return "*.jpg, *.tif";
+			return "*.jpg, *.tif, *.pimg";
 		}
 	};
 	private static FileFilter ff_map = new FileFilter() {
@@ -151,7 +153,8 @@ public class ChooserUtils {
 			
 			// check file type
 			if(!(panPath.toLowerCase().endsWith(".jpg") 
-					|| panPath.toLowerCase().endsWith(".tif"))) {
+					|| panPath.toLowerCase().endsWith(".tif")
+					|| panPath.toLowerCase().endsWith(".pimg"))) {
 				// show error msg and leave
 				DialogUtils.showMessage("File type not supported", "Load Image");
 				return null;

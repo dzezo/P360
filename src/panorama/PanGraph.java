@@ -14,16 +14,17 @@ import utils.AutoLoad;
 import utils.AutoSave;
 import utils.ChooserUtils;
 import utils.DialogUtils;
+import utils.ImageCipher;
 
 public class PanGraph {
 	public static final String DEFAULT_NAME = "New Map";
 	
 	private static PanNode head;
 	private static PanNode home;
-	
 	private static String name;
-	private static PanGraphSize size = new PanGraphSize();
+	private static String key;
 	
+	private static PanGraphSize size = new PanGraphSize();
 	private static TourPath tour = new TourPath();
 	
 	private static boolean textMode = false;
@@ -240,8 +241,6 @@ public class PanGraph {
 	}
 	
 	public static boolean saveMap(String savePath) {
-		DialogUtils.showKeyInputDialog();
-		
 		// Writing to file
 		try {
 			FileOutputStream fs = new FileOutputStream(savePath);
@@ -445,6 +444,34 @@ public class PanGraph {
 		textMode = b;
 	}
 	
+	public static void encryptMap(String k) {
+		// encryption canceled
+		if(k == null) return;
+		
+		if(key == null) {
+			key = k;
+		}
+		else if(!k.equals(key)) {
+			int result = DialogUtils.showConfirmDialog(
+					"Key " + k + " does not match the existing one." + "\nDo you want to reset key?", 
+					"Key Mismatch");
+			
+			if (result == DialogUtils.NO) return;
+			
+			// encrypt with new key
+			key = k;
+		}
+		
+		// encrypt map
+		PanNode node = head;
+		while(node != null) {
+			String newPanPath = ImageCipher.imageEncrypt(node.getPanoramaPath(), key);
+			node.setPanoramaPath(newPanPath);
+			
+			node = node.getNext();
+		}
+	}
+	
 	/* class related functionality */
 	
 	public static PanNode getHead() {
@@ -520,20 +547,23 @@ public class PanGraph {
 		}
 	}
 
+	
 	public static String getName() {
 		if(name == null) return DEFAULT_NAME;
 		
 		return name;
 	}
 	
+	
 	public static void setName(String newName) {
 		name = newName;
-	}
+	}	
 	
 	public static boolean isEmpty() {
 		return head == null;
 	}
 
+	
 	public static boolean isTextMode() {
 		return textMode;
 	}

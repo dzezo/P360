@@ -11,6 +11,11 @@ public class PanMapIcon implements Serializable {
 	private PanMap parent;
 	private ImageIcon icon;
 	
+	public PanMapIcon() {
+		parent = null;
+		icon = null;
+	}
+	
 	public PanMapIcon(PanMap parent, String iconPath) {
 		this.parent = parent;
 		

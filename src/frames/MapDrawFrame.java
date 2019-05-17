@@ -38,6 +38,7 @@ public class MapDrawFrame extends MapFrame {
 	private JButton b_addToPath = new JButton(new ImageIcon(Class.class.getResource("/toolbar/addToPath.png")));
 	private JButton b_removeFromPath = new JButton(new ImageIcon(Class.class.getResource("/toolbar/removeFromPath.png")));
 	private JToggleButton b_textMode = new JToggleButton(new ImageIcon(Class.class.getResource("/toolbar/text.png")));
+	private JButton b_encrypt = new JButton(new ImageIcon(Class.class.getResource("/toolbar/encrypt.png")));
 	private JButton b_load = new JButton(new ImageIcon(Class.class.getResource("/toolbar/load.png")));
 	private JButton b_save = new JButton(new ImageIcon(Class.class.getResource("/toolbar/save.png")));
 	private JButton b_ok = new JButton(new ImageIcon(Class.class.getResource("/toolbar/ok.png")));
@@ -95,6 +96,9 @@ public class MapDrawFrame extends MapFrame {
 		b_textMode.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) { setTextMode(); }
 		});
+		b_encrypt.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) { encrypt(); }
+		});
 		b_load.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) { load(); }
 		});
@@ -121,9 +125,11 @@ public class MapDrawFrame extends MapFrame {
 		toolbar.addSeparator();
 		toolbar.add(b_addToPath);
 		toolbar.add(b_removeFromPath);
+		toolbar.addSeparator();
+		toolbar.add(b_textMode);
 		// Add some glue so subsequent items are pushed to the right
 		toolbar.add(Box.createHorizontalGlue());
-		toolbar.add(b_textMode);
+		toolbar.add(b_encrypt);
 		toolbar.addSeparator();
 		toolbar.add(b_load);
 		toolbar.add(b_save);
@@ -297,8 +303,18 @@ public class MapDrawFrame extends MapFrame {
 			DialogUtils.showMessage(err_noMultipleSelection, err_selection);
 	}
 	
-	public void setTextMode() {
+	private void setTextMode() {
 		PanGraph.setTextMode(b_textMode.isSelected());
+	}
+	
+	private void encrypt() {
+		if(PanGraph.isEmpty()) {
+			DialogUtils.showMessage("Nothing to encrypt!", "Encrypt");
+			return;
+		}
+		
+		// get key
+		PanGraph.encryptMap(DialogUtils.showKeyInputDialog());
 	}
 	
 	public boolean load() {
@@ -354,9 +370,7 @@ public class MapDrawFrame extends MapFrame {
 			
 			// stop auto save and save once more
             AutoSave.stopSaving();
-            long time = System.currentTimeMillis();
             AutoSave.save();
-            System.out.println(System.currentTimeMillis() - time);
             
             // hide frame
 			setVisible(false);

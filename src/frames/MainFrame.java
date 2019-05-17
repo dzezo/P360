@@ -247,7 +247,8 @@ public class MainFrame extends Frame {
 		// No map loaded
 		if(PanGraph.isEmpty()) {
 			AutoSave.resetSavingPath();
-			
+			// Open new frame
+			PanGraph.setName(PanGraph.DEFAULT_NAME);
 			mapEditor.showFrame();
 		}
 		// Map loaded, prompt overwrite
@@ -255,17 +256,16 @@ public class MainFrame extends Frame {
 			int dialogRes = DialogUtils.showConfirmDialog("Creating new map will discard existing one, \nDo you want to continue?", "New Map");
 			if(dialogRes == DialogUtils.YES) {
 				AutoSave.resetSavingPath();
-				
 				// Remove map if loaded
 				PanGraph.removeMap();
+				// Open new frame
+				PanGraph.setName(PanGraph.DEFAULT_NAME);
 				mapEditor.showFrame();
 			}
 			else {
 				return;
 			}
 		}
-		
-		PanGraph.setName(PanGraph.DEFAULT_NAME);
 	}
 	
 	private void loadMap() {

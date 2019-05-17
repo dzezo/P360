@@ -67,7 +67,8 @@ public class PanMap extends Rectangle {
 		super(x, y, WIDTH, HEIGHT);
 		this.parent = parent;
 		this.panName = setNameFromPath(parent.getPanoramaPath());
-		this.icon = new PanMapIcon(this, parent.getPanoramaPath());
+		//this.icon = new PanMapIcon(this, parent.getPanoramaPath());
+		this.icon = new PanMapIcon();
 		
 		calculatePorts(x,y);       
 	}

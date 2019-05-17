@@ -45,10 +45,9 @@ public class DialogUtils {
 		}
 	}
 	
-	public static void showKeyInputDialog() {
+	public static String showKeyInputDialog() {
 		InputDialog inputDialog = new InputDialog();
-		String key = inputDialog.showInputDialog("Enter encryption key <8-32>: ", "Enter key");
-		System.out.println(key);
+		return inputDialog.showInputDialog("Enter encryption key <8-32>: ", "Enter key");
 	}
 	
 }
