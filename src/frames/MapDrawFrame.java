@@ -314,7 +314,10 @@ public class MapDrawFrame extends MapFrame {
 		}
 		
 		// get key
-		PanGraph.encryptMap(DialogUtils.showKeyInputDialog());
+		boolean success = PanGraph.encryptMap(DialogUtils.showKeyInputDialog());
+		if(success) {
+			DialogUtils.showMessage("Encryption is successfull", "Encryption");
+		}
 	}
 	
 	public boolean load() {

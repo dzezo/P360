@@ -10,6 +10,7 @@ import javax.swing.ImageIcon;
 
 import gui.GuiRenderer;
 import gui.GuiSprites;
+import panorama.PanGraph;
 
 public class ImageLoader {
 	private static ExecutorService executor = Executors.newFixedThreadPool(1);
@@ -74,20 +75,29 @@ public class ImageLoader {
 	}
 	
 	private static BufferedImage loadBufferedImage(String path) throws Exception {
+		// load image
 		Image image;
-		if(ImageCipher.isEncrypted(path))
-			image = new ImageIcon(ImageCipher.imageDecrypt(path, DialogUtils.showKeyInputDialog())).getImage();
-		else
+		// image is .pimg
+		if(ImageCipher.isEncrypted(path)) {
+			String key = (PanGraph.getKey() == null) ? DialogUtils.showKeyInputDialog() : PanGraph.getKey();
+			image = new ImageIcon(ImageCipher.imageDecrypt(path, key)).getImage();
+		}
+		// image is not encrypted
+		else {
 			image = new ImageIcon(path).getImage();
+		}
 		
+		// create bufferedImage
 		BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);
         Graphics g = bufferedImage.getGraphics();
         g.drawImage(image, 0, 0, null);
         g.dispose();
 		
+        // release memory
         image.flush();
         image = null;
         
+        // return buffered image
 		return bufferedImage;
 	}
 	

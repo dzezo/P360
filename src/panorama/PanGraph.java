@@ -248,8 +248,11 @@ public class PanGraph {
 			oos.writeObject(head);
 			oos.writeObject(home);
 			oos.writeObject(name);
+			oos.writeObject(key);
+			
 			oos.writeObject(size);
 			oos.writeObject(tour);
+			
 			oos.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -276,8 +279,11 @@ public class PanGraph {
 			head = (PanNode) ois.readObject();
 			home = (PanNode) ois.readObject();
 			name = (String) ois.readObject();
+			key = (String) ois.readObject();
+			
 			size = (PanGraphSize) ois.readObject();
 			tour = (TourPath) ois.readObject();
+			
 			ois.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -444,9 +450,9 @@ public class PanGraph {
 		textMode = b;
 	}
 	
-	public static void encryptMap(String k) {
+	public static boolean encryptMap(String k) {
 		// encryption canceled
-		if(k == null) return;
+		if(k == null) return false;
 		
 		if(key == null) {
 			key = k;
@@ -456,7 +462,7 @@ public class PanGraph {
 					"Key " + k + " does not match the existing one." + "\nDo you want to reset key?", 
 					"Key Mismatch");
 			
-			if (result == DialogUtils.NO) return;
+			if (result == DialogUtils.NO) return false;
 			
 			// encrypt with new key
 			key = k;
@@ -465,11 +471,29 @@ public class PanGraph {
 		// encrypt map
 		PanNode node = head;
 		while(node != null) {
-			String newPanPath = ImageCipher.imageEncrypt(node.getPanoramaPath(), key);
-			node.setPanoramaPath(newPanPath);
+			// check node encryption status
+			// node is of type .pimg and is NOT encrypted with the same map key
+			if(ImageCipher.isEncrypted(node.getPanoramaPath()) && node.getEncryptionKey().equals(key)) {
+				// decrypt node with old key
+				// encrypt node with new key
+			}
+			// node is not yet encrypted
+			else if (!ImageCipher.isEncrypted(node.getPanoramaPath())){
+				// encrypt node
+				String newPanPath = ImageCipher.imageEncrypt(node.getPanoramaPath(), key);
+				// encryption failed (abort)
+				if (newPanPath == null) return false;
+				// update encrypted node
+				node.setPanoramaPath(newPanPath);
+				node.setEncryptionKey(key);
+			}
 			
+			// get next node
 			node = node.getNext();
 		}
+		
+		// map encrypted
+		return true;
 	}
 	
 	/* class related functionality */
@@ -547,13 +571,11 @@ public class PanGraph {
 		}
 	}
 
-	
 	public static String getName() {
 		if(name == null) return DEFAULT_NAME;
 		
 		return name;
 	}
-	
 	
 	public static void setName(String newName) {
 		name = newName;
@@ -563,8 +585,11 @@ public class PanGraph {
 		return head == null;
 	}
 
-	
 	public static boolean isTextMode() {
 		return textMode;
+	}
+
+	public static String getKey() {
+		return key;
 	}
 }

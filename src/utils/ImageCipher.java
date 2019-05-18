@@ -24,7 +24,7 @@ public class ImageCipher {
 	 * Vrsi enkripciju slike, tako sto XOR-uje svaki bajt slike sa jednim karakterom iz kljuca.
 	 * @param imagePath - putanja do slike koju treba enkriptovati
 	 * @param key - kljuc za enkripciju
-	 * @return - putanja do enkriptovane slike
+	 * @return - putanja do enkriptovane slike, u slucaju IOException vraca null
 	 */
 	public static String imageEncrypt(String imagePath, String key) {
 		if(key == null) return null;
