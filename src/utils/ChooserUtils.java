@@ -154,7 +154,8 @@ public class ChooserUtils {
 			// check file type
 			if(!(panPath.toLowerCase().endsWith(".jpg") 
 					|| panPath.toLowerCase().endsWith(".tif")
-					|| panPath.toLowerCase().endsWith(".pimg"))) {
+					|| panPath.toLowerCase().endsWith(".pimg"))) 
+			{
 				// show error msg and leave
 				DialogUtils.showMessage("File type not supported", "Load Image");
 				return null;
@@ -202,7 +203,9 @@ public class ChooserUtils {
 			for(File image : images) {
 				// check file type
 				if(!(image.getPath().toLowerCase().endsWith(".jpg") 
-						|| image.getPath().toLowerCase().endsWith(".tif"))) {
+						|| image.getPath().toLowerCase().endsWith(".tif")
+						|| image.getPath().toLowerCase().endsWith(".pimg"))) 
+				{
 					// show error msg and leave
 					DialogUtils.showMessage("File type not supported", "Load Image");
 					return null;

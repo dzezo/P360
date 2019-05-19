@@ -32,7 +32,12 @@ public class PanGraph {
 	/* map creation functionality */
 	
 	public static void addNode(String panoramaPath, int originX, int originY) {
+		// Create node
 		PanNode newNode = new PanNode(panoramaPath, originX, originY);
+		// Fetch encryption key (if pano is encrypted)
+		if(ImageCipher.isEncrypted(panoramaPath))
+			newNode.setEncryptionKey(DialogUtils.showKeyInputDialog());
+		
 		// Incase there is no home(starting) panorama set;
 		if(home == null)
 			setHome(newNode);
@@ -44,6 +49,7 @@ public class PanGraph {
 		}
 		else
 			setHead(newNode);
+		
 		// Update map size
 		updateMapSize();
 	}
@@ -469,27 +475,34 @@ public class PanGraph {
 		}
 		
 		// encrypt map
-		PanNode node = head;
-		while(node != null) {
-			// check node encryption status
-			// node is of type .pimg and is NOT encrypted with the same map key
-			if(ImageCipher.isEncrypted(node.getPanoramaPath()) && node.getEncryptionKey().equals(key)) {
-				// decrypt node with old key
-				// encrypt node with new key
+		try {
+			PanNode node = head;
+			while(node != null) {
+				// check node encryption status
+				// node is of type .pimg and is NOT encrypted with the same map key
+				if(ImageCipher.isEncrypted(node.getPanoramaPath()) && !node.getEncryptionKey().equals(key)) {
+					// decrypt node with old key
+					// encrypt node with new key
+					ImageCipher.imageReEncrypt(node.getPanoramaPath(), node.getEncryptionKey(), key);
+					// update encrypted node
+					node.setEncryptionKey(key);
+				}
+				// node is not yet encrypted
+				else if (!ImageCipher.isEncrypted(node.getPanoramaPath())){
+					// encrypt node
+					String newPanPath = ImageCipher.imageEncrypt(node.getPanoramaPath(), key);
+					// update encrypted node
+					node.setPanoramaPath(newPanPath);
+					node.setEncryptionKey(key);
+				}
+				
+				// get next node
+				node = node.getNext();
 			}
-			// node is not yet encrypted
-			else if (!ImageCipher.isEncrypted(node.getPanoramaPath())){
-				// encrypt node
-				String newPanPath = ImageCipher.imageEncrypt(node.getPanoramaPath(), key);
-				// encryption failed (abort)
-				if (newPanPath == null) return false;
-				// update encrypted node
-				node.setPanoramaPath(newPanPath);
-				node.setEncryptionKey(key);
-			}
-			
-			// get next node
-			node = node.getNext();
+		} catch (Exception e) {
+			// encryption failed (abort)
+			e.printStackTrace();
+			return false;
 		}
 		
 		// map encrypted
@@ -522,6 +535,8 @@ public class PanGraph {
 	public static void removeMap() {
 		head = null;
 		home = null;
+		name = DEFAULT_NAME;
+		key = null;
 		
 		tour = new TourPath();
 		size = new PanGraphSize();

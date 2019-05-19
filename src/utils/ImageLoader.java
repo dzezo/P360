@@ -45,6 +45,8 @@ public class ImageLoader {
 					
 					isLoaded = true;
 				} catch (OutOfMemoryError | Exception e) {
+					e.printStackTrace();
+					
 					// release memory
 					if(image != null) {
 						image.flush();
@@ -68,6 +70,7 @@ public class ImageLoader {
 					}
 				}
 				
+				// loading is done
 				GuiSprites.loading.hide(GuiRenderer.getGuiList());
 			}
 			

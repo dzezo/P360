@@ -259,7 +259,6 @@ public class MainFrame extends Frame {
 				// Remove map if loaded
 				PanGraph.removeMap();
 				// Open new frame
-				PanGraph.setName(PanGraph.DEFAULT_NAME);
 				mapEditor.showFrame();
 			}
 			else {
