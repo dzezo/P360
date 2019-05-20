@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import javax.swing.JProgressBar;
+import javax.swing.SwingUtilities;
+
 import graph.NodeList;
 import touring.TourPath;
 import touring.Waypoint;
@@ -23,20 +26,38 @@ public class PanGraph {
 	private static PanNode home;
 	private static String name;
 	private static String key;
+	private static int nodeCount = 0;
+	private static int encryptedCount;
 	
+	// graph scale
 	private static PanGraphSize size = new PanGraphSize();
+	
+	// graph path
 	private static TourPath tour = new TourPath();
 	
+	// graph display mode
 	private static boolean textMode = false;
 	
 	/* map creation functionality */
 	
 	public static void addNode(String panoramaPath, int originX, int originY) {
-		// Create node
-		PanNode newNode = new PanNode(panoramaPath, originX, originY);
+		PanNode newNode;
 		// Fetch encryption key (if pano is encrypted)
-		if(ImageCipher.isEncrypted(panoramaPath))
-			newNode.setEncryptionKey(DialogUtils.showKeyInputDialog());
+		if(ImageCipher.isEncrypted(panoramaPath)) {
+			// Fetch key
+			String encryptionKey = DialogUtils.showKeyInputDialog(panoramaPath);
+			
+			// If input dialog is canceled, cancel node creation
+			if(encryptionKey == null) return;
+			
+			// Create node
+			newNode = new PanNode(panoramaPath, originX, originY);
+			newNode.setEncryptionKey(encryptionKey);
+		}
+		else {
+			// Create node
+			newNode = new PanNode(panoramaPath, originX, originY);
+		}
 		
 		// Incase there is no home(starting) panorama set;
 		if(home == null)
@@ -49,6 +70,9 @@ public class PanGraph {
 		}
 		else
 			setHead(newNode);
+		
+		// Update node count
+		nodeCount++;
 		
 		// Update map size
 		updateMapSize();
@@ -96,6 +120,10 @@ public class PanGraph {
 			else
 				home = null;
 		}
+		
+		// Update node count
+		nodeCount--;
+		
 		// Update map size
 		updateMapSize();
 	}
@@ -255,6 +283,7 @@ public class PanGraph {
 			oos.writeObject(home);
 			oos.writeObject(name);
 			oos.writeObject(key);
+			oos.writeObject(nodeCount);
 			
 			oos.writeObject(size);
 			oos.writeObject(tour);
@@ -286,6 +315,7 @@ public class PanGraph {
 			home = (PanNode) ois.readObject();
 			name = (String) ois.readObject();
 			key = (String) ois.readObject();
+			nodeCount = (int) ois.readObject();
 			
 			size = (PanGraphSize) ois.readObject();
 			tour = (TourPath) ois.readObject();
@@ -456,7 +486,7 @@ public class PanGraph {
 		textMode = b;
 	}
 	
-	public static boolean encryptMap(String k) {
+	public static boolean encryptMap(String k, JProgressBar progressBar) {
 		// encryption canceled
 		if(k == null) return false;
 		
@@ -475,6 +505,7 @@ public class PanGraph {
 		}
 		
 		// encrypt map
+		encryptedCount = 1;
 		try {
 			PanNode node = head;
 			while(node != null) {
@@ -495,6 +526,13 @@ public class PanGraph {
 					node.setPanoramaPath(newPanPath);
 					node.setEncryptionKey(key);
 				}
+				
+				// update progressBar
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						progressBar.setValue(encryptedCount++);
+					}
+				});
 				
 				// get next node
 				node = node.getNext();
@@ -537,6 +575,7 @@ public class PanGraph {
 		home = null;
 		name = DEFAULT_NAME;
 		key = null;
+		nodeCount = 0;
 		
 		tour = new TourPath();
 		size = new PanGraphSize();
@@ -606,5 +645,9 @@ public class PanGraph {
 
 	public static String getKey() {
 		return key;
+	}
+
+	public static int getNodeCount() {
+		return nodeCount;
 	}
 }

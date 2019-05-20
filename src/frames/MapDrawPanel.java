@@ -141,7 +141,7 @@ public class MapDrawPanel extends MapPanel {
 		while(start != null) {
 			start.setID(id++);
 			PanMap node = start.getMapNode();
-			node.drawNode(graphicSettings, isNodeSelected(node));
+			node.drawNodeOnEditor(graphicSettings, isNodeSelected(node));
 			start = start.getNext();
 		}
 	}

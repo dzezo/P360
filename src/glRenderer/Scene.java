@@ -17,6 +17,9 @@ public class Scene {
 		// prepare renderer
 		initScene(newImage);
 		
+		// set available nav buttons
+		GuiNavButtons.setAvailableNavButtons(activePanorama);
+		
 		// set ready flag
 		ready = true;
 	}
@@ -51,7 +54,6 @@ public class Scene {
 	public static void queuePanorama(PanNode panorama) {
 		// Queue image for loading
 		queuedPanorama = panorama;
-		GuiNavButtons.setAvailableNavButtons(queuedPanorama);
 	}
 	
 	public static void dequeuePanorama() {

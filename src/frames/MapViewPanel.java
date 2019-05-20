@@ -74,7 +74,7 @@ public class MapViewPanel extends MapPanel{
 		while(start != null) {
 			start.setID(id++);
 			PanMap node = start.getMapNode();
-			node.drawNode(graphicSettings);
+			node.drawNodeOnMinimap(graphicSettings, isNodeSelected(node));
 			start = start.getNext();
 		}
 	}

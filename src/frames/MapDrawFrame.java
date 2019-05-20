@@ -11,6 +11,7 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JProgressBar;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
@@ -43,6 +44,9 @@ public class MapDrawFrame extends MapFrame {
 	private JButton b_save = new JButton(new ImageIcon(Class.class.getResource("/toolbar/save.png")));
 	private JButton b_ok = new JButton(new ImageIcon(Class.class.getResource("/toolbar/ok.png")));
 	
+	// ProgressBar
+	private JProgressBar progressBar;
+	
 	// Error messages
 	private final String err_selection = "No Selection Found";
 	private final String err_noSelection = "Left click to select panorama";
@@ -56,6 +60,7 @@ public class MapDrawFrame extends MapFrame {
 		// create frame
 		createToolBar();
 		createFrame();
+		createProgressBar(12);
 	}
 
 	private void createToolBar() {
@@ -176,6 +181,17 @@ public class MapDrawFrame extends MapFrame {
                 hideFrame();
             }
         });
+	}
+	
+	private void createProgressBar(int maxVal) {
+		progressBar = new JProgressBar(0, maxVal);
+		progressBar.setValue(0);
+		progressBar.setStringPainted(true);
+		getContentPane().add(progressBar, BorderLayout.SOUTH);
+	}
+	
+	private void destroyProgressBar() {
+		getContentPane().remove(progressBar);
 	}
 	
 	public void showFrame() {
@@ -313,11 +329,21 @@ public class MapDrawFrame extends MapFrame {
 			return;
 		}
 		
+		// create progress bar
+		//createProgressBar(PanGraph.getNodeCount());
+		progressBar.setValue(0);
+		
 		// get key
-		boolean success = PanGraph.encryptMap(DialogUtils.showKeyInputDialog());
+		boolean success = PanGraph.encryptMap(DialogUtils.showKeyInputDialog(), progressBar);
 		if(success) {
-			DialogUtils.showMessage("Encryption is successfull", "Encryption");
+			DialogUtils.showMessage("Encryption is successfull!", "Encryption");
 		}
+		else {
+			DialogUtils.showMessage("Encryption failed!", "Encryption");
+		}
+		
+		// destroy progress bar
+		//destroyProgressBar();
 	}
 	
 	public boolean load() {

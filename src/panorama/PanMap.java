@@ -230,29 +230,29 @@ public class PanMap extends Rectangle {
 	 * Funkcija koja iscrtava cvor na editoru
 	 * @param selected - daje informaciju koji cvor je selektovan na mapi
 	 */
-	public void drawNode(Graphics2D g, boolean selected) {
+	public void drawNodeOnEditor(Graphics2D g, boolean selected) {
 		setColorsForEditor(selected);
-		
-		drawArrow(g);	
-		drawConnections(g);
-		drawShape(g);
-		
-		if(PanGraph.isTextMode() || !icon.isLoaded())
-			drawText(g);
-		else
-			icon.drawIcon(g);
+		drawNode(g);
 	}
 	
 	/**
 	 * Funkcija koja iscrtava cvor na mini mapi
+	 * @param selected - daje informaciju koji cvor je selektovan na mapi
 	 */
-	public void drawNode(Graphics2D g) {
-		setColorsForMinimap();
-		
+	public void drawNodeOnMinimap(Graphics2D g, boolean selected) {
+		setColorsForMinimap(selected);
+		drawNode(g);
+	}
+	
+	private void drawNode(Graphics2D g) {
+		// lines
 		drawArrow(g);
 		drawConnections(g);
+		
+		// rect
 		drawShape(g);
 		
+		// fill
 		if(PanGraph.isTextMode() || !icon.isLoaded())
 			drawText(g);
 		else
@@ -378,11 +378,11 @@ public class PanMap extends Rectangle {
 		}
 	}
 	
-	private void setColorsForMinimap() {
+	private void setColorsForMinimap(boolean selected) {
 		textColor = normalColor;
 		borderColor = lineColor;
 		
-		if(this.selected) {
+		if(selected) {
 			textColor = selectedColor;
 			borderColor = selectedColor;
 		}

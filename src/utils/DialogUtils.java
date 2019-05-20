@@ -45,9 +45,28 @@ public class DialogUtils {
 		}
 	}
 	
+	/**
+	 * Otvara dijalog za unos kljuca za enkripciju/dekripciju MAPE
+	 * @param imagePath - putanja do slike
+	 * @return uneti kljuc
+	 */
 	public static String showKeyInputDialog() {
 		InputDialog inputDialog = new InputDialog();
-		return inputDialog.showInputDialog("Enter encryption key <8-32>: ", "Enter key");
+		return inputDialog.showInputDialog(
+				"Please enter encryption key <8-32>: ", 
+				"Enter key");
+	}
+	
+	/**
+	 * Otvara dijalog za unos kljuca za enkripciju/dekripciju SLIKE
+	 * @param imagePath - putanja do slike
+	 * @return uneti kljuc
+	 */
+	public static String showKeyInputDialog(String imagePath) {
+		InputDialog inputDialog = new InputDialog();
+		return inputDialog.showInputDialog(
+				"<html><body width='200px'>Image: " + imagePath + " requires a key!<br>" + "Please enter encryption key <8-32>: </body></html>", 
+				"Enter key");
 	}
 	
 }

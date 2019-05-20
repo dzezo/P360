@@ -44,7 +44,9 @@ public class AutoSave implements Runnable {
 	}
 	
 	public static void stopSaving() {
-		autoSaveTasks.cancel(false);
-		autoSaveTasks = null;
+		if(autoSaveTasks != null) {
+			autoSaveTasks.cancel(false);
+			autoSaveTasks = null;
+		}
 	}
 }
