@@ -43,22 +43,23 @@ public class ImageCipher {
 		int byteNum;
 		
 		// write key
-		outBuffer = new byte[32];
-		for(int i = 0; i < outBuffer.length; i++) {
+		byte[] encryptionKey = new byte[32];
+		for(int i = 0; i < encryptionKey.length; i++) {
 			if(i < key.length()) {
-				outBuffer[i] = (byte) (key.charAt(i) & 0x00FF); // ASCII support
+				encryptionKey[i] = (byte) (key.charAt(i) & 0x00FF); // ASCII support
 			}
 			else {
-				outBuffer[i] = 0;
+				encryptionKey[i] = 0;
 			}
 		}
+		outStream.write(encryptionKey);
 		
 		// write encrypted bytes
 		while((byteNum = inStream.read(buffer)) != -1) {
 			outBuffer = new byte[byteNum];
 			for(int i=0; i < byteNum; i++) {
-				outBuffer[i] = (byte) (buffer[i] ^ key.charAt(keyItr));
-				keyItr = (keyItr + 1) % key.length();
+				outBuffer[i] = (byte) (buffer[i] ^ encryptionKey[keyItr]);
+				keyItr = (keyItr + 1) % encryptionKey.length;
 			}
 			outStream.write(outBuffer);
 		}
@@ -73,11 +74,10 @@ public class ImageCipher {
 	/**
 	 * Vrsi dekripciju slike, tako sto XOR-uje svaki bajt slike sa jednim karakterom iz kljuca.
 	 * @param imagePath - putanja do slike koju treba dekriptovati
-	 * @param key - kljuc za dekripciju
 	 * @return dekriptovane bajtove slike
 	 * @throws Exception IOException
 	 */
-	public static byte[] imageDecrypt(String imagePath, String key) throws Exception {
+	public static byte[] imageDecrypt(String imagePath) throws Exception {
 		FileInputStream inStream = new FileInputStream(imagePath);
 		File image = new File(imagePath);
 		
@@ -88,10 +88,15 @@ public class ImageCipher {
 		int buffItr = 0;
 		int byteNum;
 		
+		// read key
+		byte[] key = new byte[32];
+		inStream.read(key, 0, key.length);
+		
+		// read image bytes
 		while((byteNum = inStream.read(buffer)) != -1) {
 			for(int i=0; i < byteNum; i++) {
-				outBuffer[buffItr++] = (byte) (buffer[i] ^ key.charAt(keyItr));
-				keyItr = (keyItr + 1) % key.length();
+				outBuffer[buffItr++] = (byte) (buffer[i] ^ key[keyItr]);
+				keyItr = (keyItr + 1) % key.length;
 			}
 		}
 		
@@ -102,13 +107,11 @@ public class ImageCipher {
 	/**
 	 * Vrsi re-enkripciju sliku
 	 * @param imagePath - putanja do slike koju treba re-enkriptovati
-	 * @param oldKey - kljuc za enkripciju
-	 * @param newKey - novi kljuc za enkripciju
+	 * @param key - novi kljuc za enkripciju
 	 * @throws Exception IOException / KeyNotFound
 	 */
-	public static void imageReEncrypt(String imagePath, String oldKey, String newKey) throws Exception {
-		if(oldKey == null) throw new Exception("Old encryption key not found.");
-		if(newKey == null) throw new Exception("New encryption key not found.");
+	public static void imageReEncrypt(String imagePath, String key) throws Exception {
+		if(key == null) throw new Exception("New encryption key not found.");
 		
 		// Decrypted data is at working_dir\tmp.pimg
 		
@@ -125,12 +128,17 @@ public class ImageCipher {
 		int newKeyItr = 0;
 		int byteNum;
 		
+		// Read oldKey
+		byte[] oldKey = new byte[32];
+		inStream.read(oldKey, 0, oldKey.length);
+		
+		// Decrypt with old key
 		while((byteNum = inStream.read(buffer)) != -1) {
 			outBuffer = new byte[byteNum];
 			for(int i=0; i < byteNum; i++) {
-				outBuffer[i] = (byte) (buffer[i] ^ oldKey.charAt(oldKeyItr));
+				outBuffer[i] = (byte) (buffer[i] ^ oldKey[oldKeyItr]);
 				
-				oldKeyItr = (oldKeyItr + 1) % oldKey.length();
+				oldKeyItr = (oldKeyItr + 1) % oldKey.length;
 			}
 			
 			outStream.write(outBuffer);
@@ -144,12 +152,25 @@ public class ImageCipher {
 		inStream = new FileInputStream(strDstImage);
 		outStream = new FileOutputStream(strSrcImage);
 		
+		// Generate and write new key
+		byte[] newKey = new byte[32];
+		for(int i = 0; i < newKey.length; i++) {
+			if(i < key.length()) {
+				newKey[i] = (byte) (key.charAt(i) & 0x00FF); // ASCII support
+			}
+			else {
+				newKey[i] = 0;
+			}
+		}
+		outStream.write(newKey);
+		
+		// Encrypt with new key
 		while((byteNum = inStream.read(buffer)) != -1) {
 			outBuffer = new byte[byteNum];
 			for(int i=0; i < byteNum; i++) {
-				outBuffer[i] = (byte) (buffer[i] ^ newKey.charAt(newKeyItr));
+				outBuffer[i] = (byte) (buffer[i] ^ newKey[newKeyItr]);
 				
-				newKeyItr = (newKeyItr + 1) % newKey.length();
+				newKeyItr = (newKeyItr + 1) % newKey.length;
 			}
 			
 			outStream.write(outBuffer);

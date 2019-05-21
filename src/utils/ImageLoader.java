@@ -10,7 +10,6 @@ import javax.swing.ImageIcon;
 
 import gui.GuiRenderer;
 import gui.GuiSprites;
-import panorama.PanGraph;
 
 public class ImageLoader {
 	private static ExecutorService executor = Executors.newFixedThreadPool(1);
@@ -82,8 +81,7 @@ public class ImageLoader {
 		Image image;
 		// image is .pimg
 		if(ImageCipher.isEncrypted(path)) {
-			String key = (PanGraph.getKey() == null) ? DialogUtils.showKeyInputDialog(path) : PanGraph.getKey();
-			image = new ImageIcon(ImageCipher.imageDecrypt(path, key)).getImage();
+			image = new ImageIcon(ImageCipher.imageDecrypt(path)).getImage();
 		}
 		// image is not encrypted
 		else {

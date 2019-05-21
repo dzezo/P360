@@ -8,7 +8,7 @@ import main.Main;
 import panorama.PanGraph;
 
 public class AutoSave implements Runnable {
-	private static final String DEFAULT_FILE_PATH = Main.WORKING_DIR.getPath() + "\\AutoSave.p360";
+	private static final String DEFAULT_FILE_PATH = Main.WORKING_DIR.getPath() + "\\AutoSave.pmap";
 	
 	private static ScheduledThreadPoolExecutor autoSave = new ScheduledThreadPoolExecutor(1);
 	private static ScheduledFuture<?> autoSaveTasks;

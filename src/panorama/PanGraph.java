@@ -27,7 +27,6 @@ public class PanGraph {
 	private static PanNode head;
 	private static PanNode home;
 	private static String name;
-	private static String key;
 	private static int nodeCount = 0;
 	
 	// graph scale
@@ -42,23 +41,8 @@ public class PanGraph {
 	/* map creation functionality */
 	
 	public static void addNode(String panoramaPath, int originX, int originY) {
-		PanNode newNode;
-		// Fetch encryption key (if pano is encrypted)
-		if(ImageCipher.isEncrypted(panoramaPath)) {
-			// Fetch key
-			String encryptionKey = DialogUtils.showKeyInputDialog(panoramaPath);
-			
-			// If input dialog is canceled, cancel node creation
-			if(encryptionKey == null) return;
-			
-			// Create node
-			newNode = new PanNode(panoramaPath, originX, originY);
-			newNode.setEncryptionKey(encryptionKey);
-		}
-		else {
-			// Create node
-			newNode = new PanNode(panoramaPath, originX, originY);
-		}
+		// Create node
+		PanNode newNode = new PanNode(panoramaPath, originX, originY);
 		
 		// Incase there is no home(starting) panorama set;
 		if(home == null)
@@ -283,7 +267,6 @@ public class PanGraph {
 			oos.writeObject(head);
 			oos.writeObject(home);
 			oos.writeObject(name);
-			oos.writeObject(key);
 			oos.writeObject(nodeCount);
 			
 			oos.writeObject(size);
@@ -315,7 +298,6 @@ public class PanGraph {
 			head = (PanNode) ois.readObject();
 			home = (PanNode) ois.readObject();
 			name = (String) ois.readObject();
-			key = (String) ois.readObject();
 			nodeCount = (int) ois.readObject();
 			
 			size = (PanGraphSize) ois.readObject();
@@ -487,23 +469,9 @@ public class PanGraph {
 		textMode = b;
 	}
 	
-	public static void encryptMap(String k, JProgressBar progressBar) {
+	public static void encryptMap(String key, JProgressBar progressBar) {
 		// encryption canceled
-		if(k == null) return;
-		
-		if(key == null) {
-			key = k;
-		}
-		else if(!k.equals(key)) {
-			int result = DialogUtils.showConfirmDialog(
-					"Key " + k + " does not match the existing one." + "\nDo you want to reset key?", 
-					"Key Mismatch");
-			
-			if (result == DialogUtils.NO) return;
-			
-			// encrypt with new key
-			key = k;
-		}
+		if(key == null) return;
 		
 		// defining background thread for encryption
 		SwingWorker<Boolean, Integer> encryptMap = new SwingWorker<Boolean, Integer>(){
@@ -514,21 +482,17 @@ public class PanGraph {
 					PanNode node = head;
 					while(node != null) {
 						// check node encryption status
-						// node is of type .pimg and is NOT encrypted with the same map key
-						if(ImageCipher.isEncrypted(node.getPanoramaPath()) && !node.getEncryptionKey().equals(key)) {
-							// decrypt node with old key
-							// encrypt node with new key
-							ImageCipher.imageReEncrypt(node.getPanoramaPath(), node.getEncryptionKey(), key);
-							// update encrypted node
-							node.setEncryptionKey(key);
+						// node is of type .pimg
+						if(ImageCipher.isEncrypted(node.getPanoramaPath())) {
+							// re-encrypt node with new key
+							ImageCipher.imageReEncrypt(node.getPanoramaPath(), key);
 						}
 						// node is not yet encrypted
 						else if (!ImageCipher.isEncrypted(node.getPanoramaPath())){
 							// encrypt node
 							String newPanPath = ImageCipher.imageEncrypt(node.getPanoramaPath(), key);
-							// update encrypted node
+							// update path to encrypted image path
 							node.setPanoramaPath(newPanPath);
-							node.setEncryptionKey(key);
 						}
 						
 						// update progress
@@ -606,7 +570,6 @@ public class PanGraph {
 		head = null;
 		home = null;
 		name = DEFAULT_NAME;
-		key = null;
 		nodeCount = 0;
 		
 		tour = new TourPath();
@@ -673,10 +636,6 @@ public class PanGraph {
 
 	public static boolean isTextMode() {
 		return textMode;
-	}
-
-	public static String getKey() {
-		return key;
 	}
 
 	public static int getNodeCount() {

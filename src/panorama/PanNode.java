@@ -25,9 +25,6 @@ public class PanNode implements Serializable {
 	private transient Panorama panorama;
 	private String panoramaPath;
 	
-	// kljuc enkripcije (moze da se razlikuje od kljuca enkripcije mape)
-	private String encryptionKey;
-	
 	// pozicije cvora na putanji
 	public List<Integer> tourNum = new ArrayList<Integer>();
 	public transient boolean visited = false;
@@ -153,14 +150,6 @@ public class PanNode implements Serializable {
 	public void setPanoramaPath(String panoramaPath) {
 		this.panoramaPath = panoramaPath;
 		mapNode.panName = mapNode.setNameFromPath(panoramaPath);
-	}
-	
-	public String getEncryptionKey() {
-		return this.encryptionKey;
-	}
-	
-	public void setEncryptionKey(String key) {
-		this.encryptionKey = key;
 	}
 	
 	/* susedi cvora */
