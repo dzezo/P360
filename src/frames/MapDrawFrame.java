@@ -48,9 +48,12 @@ public class MapDrawFrame extends MapFrame {
 	private JProgressBar progressBar;
 	
 	// Error messages
-	private final String err_selection = "No Selection Found";
-	private final String err_noSelection = "Left click to select panorama";
-	private final String err_noMultipleSelection = "You need to select both panoramas to run this function.\nYou can use ctrl+click or left and right mouse click to do so.";
+	private final String err_selection = 
+			"No Selection Found";
+	private final String err_noSelection = 
+			"Left click to select panorama";
+	private final String err_noMultipleSelection = 
+			"You need to select both panoramas to run this function.\nYou can use ctrl+click or left and right mouse click to do so.";
 
 	public MapDrawFrame(String title) {
 		super(title);
@@ -60,7 +63,7 @@ public class MapDrawFrame extends MapFrame {
 		// create frame
 		createToolBar();
 		createFrame();
-		createProgressBar(12);
+		createProgressBar();
 	}
 
 	private void createToolBar() {
@@ -183,15 +186,12 @@ public class MapDrawFrame extends MapFrame {
         });
 	}
 	
-	private void createProgressBar(int maxVal) {
-		progressBar = new JProgressBar(0, maxVal);
+	private void createProgressBar() {
+		progressBar = new JProgressBar();
 		progressBar.setValue(0);
 		progressBar.setStringPainted(true);
+		progressBar.setVisible(false);
 		getContentPane().add(progressBar, BorderLayout.SOUTH);
-	}
-	
-	private void destroyProgressBar() {
-		getContentPane().remove(progressBar);
 	}
 	
 	public void showFrame() {
@@ -329,21 +329,17 @@ public class MapDrawFrame extends MapFrame {
 			return;
 		}
 		
-		// create progress bar
-		//createProgressBar(PanGraph.getNodeCount());
-		progressBar.setValue(0);
-		
 		// get key
-		boolean success = PanGraph.encryptMap(DialogUtils.showKeyInputDialog(), progressBar);
-		if(success) {
-			DialogUtils.showMessage("Encryption is successfull!", "Encryption");
-		}
-		else {
-			DialogUtils.showMessage("Encryption failed!", "Encryption");
-		}
+		String encryptionKey = DialogUtils.showKeyInputDialog();
+		if(encryptionKey == null) return;
 		
-		// destroy progress bar
-		//destroyProgressBar();
+		// show progress bar
+		progressBar.setVisible(true);
+		progressBar.setValue(0);
+		progressBar.setMaximum(PanGraph.getNodeCount());
+		
+		// encrypt map
+		PanGraph.encryptMap(encryptionKey, progressBar);
 	}
 	
 	public boolean load() {

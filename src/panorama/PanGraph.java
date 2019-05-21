@@ -6,9 +6,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 import graph.NodeList;
 import touring.TourPath;
@@ -27,7 +29,6 @@ public class PanGraph {
 	private static String name;
 	private static String key;
 	private static int nodeCount = 0;
-	private static int encryptedCount;
 	
 	// graph scale
 	private static PanGraphSize size = new PanGraphSize();
@@ -486,9 +487,9 @@ public class PanGraph {
 		textMode = b;
 	}
 	
-	public static boolean encryptMap(String k, JProgressBar progressBar) {
+	public static void encryptMap(String k, JProgressBar progressBar) {
 		// encryption canceled
-		if(k == null) return false;
+		if(k == null) return;
 		
 		if(key == null) {
 			key = k;
@@ -498,53 +499,84 @@ public class PanGraph {
 					"Key " + k + " does not match the existing one." + "\nDo you want to reset key?", 
 					"Key Mismatch");
 			
-			if (result == DialogUtils.NO) return false;
+			if (result == DialogUtils.NO) return;
 			
 			// encrypt with new key
 			key = k;
 		}
 		
-		// encrypt map
-		encryptedCount = 1;
-		try {
-			PanNode node = head;
-			while(node != null) {
-				// check node encryption status
-				// node is of type .pimg and is NOT encrypted with the same map key
-				if(ImageCipher.isEncrypted(node.getPanoramaPath()) && !node.getEncryptionKey().equals(key)) {
-					// decrypt node with old key
-					// encrypt node with new key
-					ImageCipher.imageReEncrypt(node.getPanoramaPath(), node.getEncryptionKey(), key);
-					// update encrypted node
-					node.setEncryptionKey(key);
-				}
-				// node is not yet encrypted
-				else if (!ImageCipher.isEncrypted(node.getPanoramaPath())){
-					// encrypt node
-					String newPanPath = ImageCipher.imageEncrypt(node.getPanoramaPath(), key);
-					// update encrypted node
-					node.setPanoramaPath(newPanPath);
-					node.setEncryptionKey(key);
-				}
-				
-				// update progressBar
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						progressBar.setValue(encryptedCount++);
+		// defining background thread for encryption
+		SwingWorker<Boolean, Integer> encryptMap = new SwingWorker<Boolean, Integer>(){
+			// encryption logic
+			protected Boolean doInBackground() throws Exception {
+				int progress = 1;
+				try {
+					PanNode node = head;
+					while(node != null) {
+						// check node encryption status
+						// node is of type .pimg and is NOT encrypted with the same map key
+						if(ImageCipher.isEncrypted(node.getPanoramaPath()) && !node.getEncryptionKey().equals(key)) {
+							// decrypt node with old key
+							// encrypt node with new key
+							ImageCipher.imageReEncrypt(node.getPanoramaPath(), node.getEncryptionKey(), key);
+							// update encrypted node
+							node.setEncryptionKey(key);
+						}
+						// node is not yet encrypted
+						else if (!ImageCipher.isEncrypted(node.getPanoramaPath())){
+							// encrypt node
+							String newPanPath = ImageCipher.imageEncrypt(node.getPanoramaPath(), key);
+							// update encrypted node
+							node.setPanoramaPath(newPanPath);
+							node.setEncryptionKey(key);
+						}
+						
+						// update progress
+						publish(progress++);
+						
+						// get next node
+						node = node.getNext();
 					}
-				});
+				} catch (Exception e) {
+					// encryption failed (abort)
+					e.printStackTrace();
+					return false;
+				}
 				
-				// get next node
-				node = node.getNext();
+				// map encrypted
+				return true;
 			}
-		} catch (Exception e) {
-			// encryption failed (abort)
-			e.printStackTrace();
-			return false;
-		}
+			
+			// updates progress bar
+			protected void process(List<Integer> encryptedCount) {
+				int latestCount = encryptedCount.get(encryptedCount.size() - 1);
+				progressBar.setValue(latestCount);
+			}
+			
+			// code that runs after doInBackground is finished
+			protected void done() {
+				try {
+					// get encryption result
+					boolean success = get();
+					
+					// display message
+					if(success) 
+						DialogUtils.showMessage("Encryption is successfull!", "Encryption");
+					else 
+						DialogUtils.showMessage("Encryption failed!", "Encryption");
+					
+					// hide progress bar
+					progressBar.setVisible(false);
+				} 
+				catch (InterruptedException ignore) {}
+				catch (ExecutionException e) {
+					e.printStackTrace();
+				}
+			}
+		};
 		
-		// map encrypted
-		return true;
+		// encrypt map
+		encryptMap.execute();
 	}
 	
 	/* class related functionality */

@@ -42,6 +42,18 @@ public class ImageCipher {
 		int keyItr = 0;
 		int byteNum;
 		
+		// write key
+		outBuffer = new byte[32];
+		for(int i = 0; i < outBuffer.length; i++) {
+			if(i < key.length()) {
+				outBuffer[i] = (byte) (key.charAt(i) & 0x00FF); // ASCII support
+			}
+			else {
+				outBuffer[i] = 0;
+			}
+		}
+		
+		// write encrypted bytes
 		while((byteNum = inStream.read(buffer)) != -1) {
 			outBuffer = new byte[byteNum];
 			for(int i=0; i < byteNum; i++) {

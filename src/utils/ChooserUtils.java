@@ -30,10 +30,10 @@ public class ChooserUtils {
 			if(file.isDirectory())
 				return true;
 			String fileName = file.getName();
-			return (fileName.endsWith(".p360"));
+			return (fileName.endsWith(".pmap"));
 		}
 		public String getDescription() {
-			return "*.p360";
+			return "*.pmap";
 		}
 	};
 	private static FileFilter ff_audio = new FileFilter() {
@@ -66,8 +66,8 @@ public class ChooserUtils {
 			jfc.setSelectedFile(new File(""));
 			
 			// attach extension if there is not any
-			if(!loadPath.endsWith(".p360"))
-				loadPath = loadPath.concat(".p360");
+			if(!loadPath.endsWith(".pmap"))
+				loadPath = loadPath.concat(".pmap");
 			
 			// check if file exists
 			File file = new File(loadPath);
@@ -109,8 +109,8 @@ public class ChooserUtils {
 			jfc.setSelectedFile(new File(""));
 			
 			// attach extension if there is not any
-			if(!savePath.endsWith(".p360"))
-				savePath = savePath.concat(".p360");
+			if(!savePath.endsWith(".pmap"))
+				savePath = savePath.concat(".pmap");
 			
 			// check if file exists
 			File saveFile = new File(savePath);
