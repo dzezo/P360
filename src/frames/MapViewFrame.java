@@ -6,13 +6,10 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
-import input.InputManager;
 import panorama.PanGraph;
 
 @SuppressWarnings("serial")
 public class MapViewFrame extends MapFrame {
-
-	private boolean fullscreenViewMode;
 
 	public MapViewFrame(String title) {
 		super(title);
@@ -60,21 +57,6 @@ public class MapViewFrame extends MapFrame {
 		setOrigin();
 	}
 	
-	/**
-	 * @param fullscreen - indicates display mode prior to this call
-	 */
-	public void showFrame(boolean fullscreen) {
-		// show frame
-		setVisible(true);
-		setTitle(PanGraph.getName());
-		
-		// set origin of a map
-		setOrigin();
-		
-		// set fullscreen view mode
-		fullscreenViewMode = fullscreen;
-	}
-	
 	public void hideFrame() {
 		// stop frame repaint
         stopFrameRepaint();
@@ -84,9 +66,5 @@ public class MapViewFrame extends MapFrame {
         
     	// hide frame
         setVisible(false);
-        
-        // set fullscreen view mode
-        if(fullscreenViewMode)
-        	InputManager.requestFullscreen();
 	}
 }

@@ -72,7 +72,7 @@ public class Main {
 					ImageLoader.resetLoader();
 				}
 				else if(!ImageLoader.isLoading()){
-					AudioManager.stopAudio();		
+					AudioManager.stopAudio();
 					ImageLoader.loadImage(Scene.getQueuedPanorama().getPanoramaPath());
 				}
 				else if(ImageLoader.isCanceled()) {
@@ -102,6 +102,7 @@ public class Main {
 			}
 			
 			// render gui graphics
+			GuiSprites.update();
 			GuiRenderer.render(guiShader);
 			
 			// update display

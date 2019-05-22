@@ -16,4 +16,5 @@ public interface ISprite {
 	 * @param guiTextureList
 	 */
 	public void hide(List<GuiTexture> guiTextureList);
+	
 }

@@ -8,7 +8,6 @@ import java.util.concurrent.Executors;
 
 import javax.swing.ImageIcon;
 
-import gui.GuiRenderer;
 import gui.GuiSprites;
 
 public class ImageLoader {
@@ -20,20 +19,21 @@ public class ImageLoader {
 	private static boolean isCanceled = false;
 	
 	public static void loadImage(String path) {
+		// Set loader
 		isLoading = true;
 		isLoaded = false;
 		
-		GuiSprites.loading.show(GuiRenderer.getGuiList());
+		// Show loading sprite
+		GuiSprites.showLoadingSprite(true);
 		
+		// Execute loading
 		executor.execute(new Runnable() {
-
 			public void run() {
 				BufferedImage image = null;
 				int width, height;
 				int[] pixels;
 				
 				try {
-					//image = ImageIO.read(new FileInputStream(path));
 					image = loadBufferedImage(path);
 					width = image.getWidth();
 					height = image.getHeight();
@@ -55,24 +55,8 @@ public class ImageLoader {
 					
 					// set cancel flag
 					isCanceled = true;
-					
-					// display cancel sprite
-					try {
-						GuiSprites.loading.hide(GuiRenderer.getGuiList());
-						GuiSprites.cancel.show(GuiRenderer.getGuiList());
-						
-						Thread.sleep(3000);
-						
-						GuiSprites.cancel.hide(GuiRenderer.getGuiList());
-					} catch (InterruptedException ie) {
-						ie.printStackTrace();
-					}
 				}
-				
-				// loading is done
-				GuiSprites.loading.hide(GuiRenderer.getGuiList());
-			}
-			
+			}		
 		});
 	}
 	
@@ -115,13 +99,22 @@ public class ImageLoader {
 	}
 	
 	public static boolean isCanceled() {
+		// Show cancel sprite if loading is canceled
+		if(isCanceled)
+			GuiSprites.showCancelSprite(true);
+		
+		// Return cancel flag
 		return isCanceled;
 	}
 	
 	public static void resetLoader() {
+		// Reset loader
 		img = null;
 		isLoading = false;
 		isLoaded = false;
 		isCanceled = false;
+		
+		// Hide loading sprite
+		GuiSprites.showLoadingSprite(false);
 	}
 }

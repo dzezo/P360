@@ -109,13 +109,13 @@ public class GuiNavButtons {
 		};
 		navMap = new GuiButton("/nav/minimap.png", new Vector2f(btnLocation,-btnLocation), new Vector2f(btnScaleX, btnScaleY)) {
 			public void onClick(IButton button) {
+				// Minimize if dislay is in fullscreen
 				if(DisplayManager.isFullscreen()) {
 					DisplayManager.setWindowed();
-					MainFrame.getMap().showFrame(true);
 				}
-				else {
-					MainFrame.getMap().showFrame(false);
-				}
+				
+				// Show map
+				MainFrame.getMap().showFrame();
 			}
 
 			public void onStartHover(IButton button) {

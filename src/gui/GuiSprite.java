@@ -27,4 +27,8 @@ public abstract class GuiSprite implements ISprite {
 			isHidden = true;
 		}
 	}
+	
+	public boolean isHidden() {
+		return isHidden;
+	}
 }
