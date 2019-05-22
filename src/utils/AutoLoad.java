@@ -7,8 +7,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import javax.swing.SwingWorker;
+
+import glRenderer.DisplayManager;
+import glRenderer.Scene;
 import main.Main;
 import panorama.PanGraph;
+import touring.TourManager;
 
 @SuppressWarnings("serial")
 public class AutoLoad implements Serializable {
@@ -16,7 +21,31 @@ public class AutoLoad implements Serializable {
 	
 	private static String lastUsedMap;
 	
-	public static boolean load() {
+	public static void load() {
+		// Defining background thread for map loading
+		SwingWorker<Void, Void> load = new SwingWorker<Void, Void>() {
+			protected Void doInBackground() throws Exception {
+				// Load previously used map
+				if(loadMapFile()) {
+					// Set scene if loading is a success
+					Scene.queuePanorama(PanGraph.getHome());
+					TourManager.prepare(PanGraph.getHome());
+					
+					// Set fullscreen if path exists
+					if(TourManager.hasPath())
+						DisplayManager.setFullscreen();
+				}
+				
+				// loading complete
+				return null;
+			}
+		};
+		
+		// Load map
+		load.execute();
+	}
+	
+	private static boolean loadMapFile() {
 		// get file path of the last map
 		try {
 			FileInputStream fin = new FileInputStream(AUTO_LOAD_CONFIG_PATH);

@@ -17,10 +17,8 @@ import gui.GuiNavButtons;
 import gui.GuiRenderer;
 import gui.GuiSprites;
 import input.InputManager;
-import panorama.PanGraph;
 import shaders.GuiShader;
 import shaders.StaticShader;
-import touring.TourManager;
 import utils.AutoLoad;
 import utils.ChooserUtils;
 import utils.ImageLoader;
@@ -55,13 +53,7 @@ public class Main {
 		GuiSprites.init();
 		
 		// load previously used map
-		if(AutoLoad.load()) {
-			Scene.queuePanorama(PanGraph.getHome());
-			TourManager.prepare(PanGraph.getHome());
-			
-			if(TourManager.hasPath())
-				DisplayManager.setFullscreen();
-		}
+		AutoLoad.load();
 		
 		while(mainFrame.isRunning()) {
 			// check for changes
