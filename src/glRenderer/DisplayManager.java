@@ -25,13 +25,14 @@ public class DisplayManager {
 	private static Cursor nativeCursor;
 	private static Cursor emptyCursor;
 	
+	private static boolean toFullscreen = false;
+	
 	public static void createDisplay(Canvas canvas) {
 		ContextAttribs attribs = new ContextAttribs(3,2).withForwardCompatible(true).withProfileCore(true);
 		
 		try{
 			Display.setParent(canvas);
 			Display.setTitle("P360");
-			Display.setVSyncEnabled(true);
 			Display.create(new PixelFormat(), attribs);
 		}
 		catch(LWJGLException e){
@@ -104,6 +105,26 @@ public class DisplayManager {
 		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
 		// Inform about resizing
 		resized = true;
+	}
+	
+	/**
+	 * Sets request to return to fullscreen mode when possible
+	 */
+	public static void setReturnToFullscreen() {
+		toFullscreen = true;
+	}
+	
+	/**
+	 * Checks for a fullscreen request
+	 * @return true if request was set
+	 */
+	public static boolean returnToFullscreen() {
+		if(toFullscreen) {
+			toFullscreen = false;
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public static boolean wasResized() {

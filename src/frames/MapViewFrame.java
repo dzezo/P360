@@ -6,6 +6,8 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
+import glRenderer.DisplayManager;
+import input.InputManager;
 import panorama.PanGraph;
 
 @SuppressWarnings("serial")
@@ -66,5 +68,10 @@ public class MapViewFrame extends MapFrame {
         
     	// hide frame
         setVisible(false);
+        
+        // set fullscreen if necessary
+        if(DisplayManager.returnToFullscreen()) {
+        	InputManager.requestFullscreen();
+        }
 	}
 }

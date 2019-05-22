@@ -9,8 +9,8 @@ import java.io.Serializable;
 
 import javax.swing.SwingWorker;
 
-import glRenderer.DisplayManager;
 import glRenderer.Scene;
+import input.InputManager;
 import main.Main;
 import panorama.PanGraph;
 import touring.TourManager;
@@ -33,7 +33,7 @@ public class AutoLoad implements Serializable {
 					
 					// Set fullscreen if path exists
 					if(TourManager.hasPath())
-						DisplayManager.setFullscreen();
+						InputManager.requestFullscreen();
 				}
 				
 				// loading complete

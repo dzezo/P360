@@ -114,6 +114,7 @@ public class GuiNavButtons {
 				// Minimize if dislay is in fullscreen
 				if(DisplayManager.isFullscreen()) {
 					DisplayManager.setWindowed();
+					DisplayManager.setReturnToFullscreen();
 				}
 				
 				// Show map
