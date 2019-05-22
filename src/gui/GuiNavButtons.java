@@ -2,6 +2,8 @@ package gui;
 
 import java.util.List;
 
+import javax.swing.SwingUtilities;
+
 import org.lwjgl.util.vector.Vector2f;
 
 import frames.MainFrame;
@@ -115,7 +117,13 @@ public class GuiNavButtons {
 				}
 				
 				// Show map
-				MainFrame.getMap().showFrame();
+				// onClick is called from initial thread therefore GUI needs to be set using
+				// SwingUtilities.invokeLater or SwingUtilities.invokeAndWait
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						MainFrame.getMap().showFrame();
+					}	
+				});
 			}
 
 			public void onStartHover(IButton button) {
