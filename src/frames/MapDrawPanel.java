@@ -132,6 +132,9 @@ public class MapDrawPanel extends MapPanel {
 		// Translates the origin of the Graphics2D context to the point (x, y) in the current coordinate system.
 		graphicSettings.translate(originX, originY);
 		
+		// Calculating drawing panel dimensions
+		panelRect.setBounds(-originX, -originY, this.getWidth(), this.getHeight());
+		
 		// Drawing grid
 		drawGrid(graphicSettings);
 		
@@ -141,7 +144,7 @@ public class MapDrawPanel extends MapPanel {
 		while(start != null) {
 			start.setID(id++);
 			PanMap node = start.getMapNode();
-			node.drawNodeOnEditor(graphicSettings, isNodeSelected(node));
+			node.drawNodeOnEditor(graphicSettings, panelRect, isNodeSelected(node));
 			start = start.getNext();
 		}
 	}

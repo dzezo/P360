@@ -68,13 +68,16 @@ public class MapViewPanel extends MapPanel{
 		// Translates the origin of the Graphics2D context to the point (x, y) in the current coordinate system.
 		graphicSettings.translate(originX, originY);
 		
+		// Calculating drawing panel dimensions
+		panelRect.setBounds(-originX, -originY, this.getWidth(), this.getHeight());
+		
 		// Drawing starts from the head (root), and id zero is assigned to it.
 		int id = 0;
 		PanNode start = PanGraph.getHead();
 		while(start != null) {
 			start.setID(id++);
 			PanMap node = start.getMapNode();
-			node.drawNodeOnMinimap(graphicSettings, isNodeSelected(node));
+			node.drawNodeOnMinimap(graphicSettings, panelRect, isNodeSelected(node));
 			start = start.getNext();
 		}
 	}

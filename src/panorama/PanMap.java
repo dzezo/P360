@@ -22,7 +22,7 @@ public class PanMap extends Rectangle {
 	
 	protected String panName;
 	protected String audioName;
-	protected PanMapIcon icon;
+	protected transient PanMapIcon icon;
 	
 	/* Fonts */
 	private static Font panNameFont = new Font("Arial", Font.BOLD, 15);
@@ -67,8 +67,6 @@ public class PanMap extends Rectangle {
 		super(x, y, WIDTH, HEIGHT);
 		this.parent = parent;
 		this.panName = setNameFromPath(parent.getPanoramaPath());
-		//this.icon = new PanMapIcon(this, parent.getPanoramaPath());
-		this.icon = new PanMapIcon();
 		
 		calculatePorts(x,y);       
 	}
@@ -227,36 +225,55 @@ public class PanMap extends Rectangle {
 	/* Drawing */
 	
 	/**
-	 * Funkcija koja iscrtava cvor na editoru
-	 * @param selected - daje informaciju koji cvor je selektovan na mapi
+	 * Funkcija koja iscrtava cvor na editoru, ukoliko se cvor nalazi unutar panela za iscrtavanje
+	 * @param g - graficka podesavanja
+	 * @param panelRect - panel za iscrtavanje
+	 * @param selected - daje informaciju o tome da li je cvor selektovan
 	 */
-	public void drawNodeOnEditor(Graphics2D g, boolean selected) {
+	public void drawNodeOnEditor(Graphics2D g, Rectangle panelRect, boolean selected) {
 		setColorsForEditor(selected);
-		drawNode(g);
+		drawNode(g, panelRect);
 	}
 	
 	/**
-	 * Funkcija koja iscrtava cvor na mini mapi
-	 * @param selected - daje informaciju koji cvor je selektovan na mapi
+	 * Funkcija koja iscrtava cvor na mini mapi, ukoliko se cvor nalazi unutar panela za iscrtavanje
+	 * @param g - graficka podesavanja
+	 * @param panelRect - panel za iscrtavanje
+	 * @param selected - daje informaciju o tome da li je cvor selektovan
 	 */
-	public void drawNodeOnMinimap(Graphics2D g, boolean selected) {
+	public void drawNodeOnMinimap(Graphics2D g, Rectangle panelRect, boolean selected) {
 		setColorsForMinimap(selected);
-		drawNode(g);
+		drawNode(g, panelRect);
 	}
 	
-	private void drawNode(Graphics2D g) {
-		// lines
+	/**
+	 * Funkcija za iscrtavanje cvora
+	 * @param g - graficka podesavanja
+	 * @param panelRect - panel za iscrtavanje
+	 */
+	private void drawNode(Graphics2D g, Rectangle panelRect) {
+		// draw lines
 		drawArrow(g);
 		drawConnections(g);
 		
-		// rect
+		// draw rect
 		drawShape(g);
 		
-		// fill
-		if(PanGraph.isTextMode() || !icon.isLoaded())
+		// don't fill rect if it's not visible on the panel
+		if(!panelRect.intersects(this)) return;
+		
+		// draw fill
+		// create icon if non exists
+		if(icon == null) {
+			icon = new PanMapIcon(this);
+		}
+		// draw icon/text
+		if(PanGraph.isTextMode() || !icon.isLoaded()) {
 			drawText(g);
-		else
+		}
+		else{
 			icon.drawIcon(g);
+		}
 	}
 	
 	private void drawConnections(Graphics2D g) {

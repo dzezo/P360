@@ -42,6 +42,7 @@ public class ImageLoader {
 					
 					img = new ImageData(pixels, width, height);
 					
+					// loading completed
 					isLoaded = true;
 				} catch (OutOfMemoryError | Exception e) {
 					e.printStackTrace();

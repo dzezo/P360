@@ -2,6 +2,7 @@ package frames;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 
 import javax.swing.JComponent;
 
@@ -19,6 +20,8 @@ public abstract class MapPanel extends JComponent {
 	protected int originY = 0;
 	protected int mouseX;
 	protected int mouseY;
+	
+	protected Rectangle panelRect = new Rectangle();
 	
 	protected PanNode selectedNode1;
 	protected PanNode selectedNode2;

@@ -54,10 +54,21 @@ public class Scene {
 	public static void queuePanorama(PanNode panorama) {
 		// Queue image for loading
 		queuedPanorama = panorama;
+		
+		// If loaded, there is no need to stop the scene
+		if(queuedPanorama.isLoaded()) return;
+		
+		// Loading started
+		// Stop displaying active panorama
+		ready = false;
 	}
 	
 	public static void dequeuePanorama() {
 		queuedPanorama = activePanorama;
+		
+		// Loading canceled
+		// Start displaying active panorama
+		ready = true;
 	}
 	
 	public static PanNode getQueuedPanorama() {
