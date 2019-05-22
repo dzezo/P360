@@ -91,6 +91,10 @@ public class ImageLoader {
 		return img;
 	}
 	
+	public static void clearImageData() {
+		img.clearImageData();
+	}
+	
 	public static boolean isLoading() {
 		return isLoading;
 	}

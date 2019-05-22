@@ -13,6 +13,7 @@ public class Texture {
 	
 	public Texture() {
 		ImageData img = ImageLoader.getImageData();
+		
 		width = img.getWidth();
 		height = img.getHeight();
 		
@@ -30,6 +31,8 @@ public class Texture {
 				BuffUtils.storeInIntBuffer(img.getPixels()));
 
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		
+		ImageLoader.clearImageData();
 	}
 
 	public int getTextureID() {

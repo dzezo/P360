@@ -22,4 +22,8 @@ public class ImageData {
 	public int getHeight() {
 		return height;
 	}
+	
+	public void clearImageData() {
+		pixels = null;
+	}
  }
