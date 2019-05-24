@@ -83,6 +83,27 @@ public class PanNode implements Serializable {
 			return false;
 	}
 	
+	/**
+	 * Proverava da li su cvorovi konektovani
+	 * @param node - drugi cvor
+	 * @return true - kada postoji konekcija izmedju cvorova
+	 */
+	public boolean isConnectedTo(PanNode node) {
+		if(node == null) return false;
+		
+		if(node.equals(top) 
+				|| node.equals(bot)
+				|| node.equals(left)
+				|| node.equals(right)) 
+		{
+			return true;
+		}
+		else 
+		{
+			return false;
+		}
+	}
+	
 	/* audio kontrola */
 	
 	public void playAudio() {

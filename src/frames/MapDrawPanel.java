@@ -42,9 +42,20 @@ public class MapDrawPanel extends MapPanel {
 				}
 				// right click
 				else if(press.getButton() == MouseEvent.BUTTON3) {
+					// read right click location
+					PanNode prevSelected = selectedNode2;
 					selectedNode2 = getSelectedNode(mouseX,mouseY);
+					
+					// if left and right click where on the same node, reset right click selection
 					if(selectedNode1 != null && selectedNode1.equals(selectedNode2))
 						selectedNode2 = null;
+					
+					// if second right click was on the same node as first one, connect/disconnect nodes
+					if(doubleRightClickEvent(prevSelected))
+						if(selectedNode1.isConnectedTo(selectedNode2))
+							PanGraph.disconnectNode(selectedNode1, selectedNode2);
+						else
+							PanGraph.connectNodes(selectedNode1, selectedNode2);
 				}
 				// left click
 				else if(press.getButton() == MouseEvent.BUTTON1) {
@@ -157,4 +168,21 @@ public class MapDrawPanel extends MapPanel {
 		originY = centerOnGrid(originY);
 	}
 
+	/**
+	 * Funkcija koja proverava da li se desni klik desio dva puta uzastopno na istom cvoru
+	 * @param prevSelected - prethodni desni klik
+	 * @return true - desni klik je registrovan dva puta na istom cvoru
+	 */
+	private boolean doubleRightClickEvent(PanNode prevSelected) {
+		if(selectedNode1 == null 
+				|| prevSelected == null 
+				|| !prevSelected.equals(selectedNode2)) 
+		{
+			return false;
+		}
+		else 
+		{
+			return true;
+		}
+	}
 }
