@@ -486,13 +486,24 @@ public class PanGraph {
 		}
 		
 		// Adding to path
-		int tourNum = tour.add(new Waypoint(node1, node2));
+		boolean success = tour.addWithCheck(new Waypoint(node1, node2));
 		
-		// Add tourNum
-		if(!node1.tourNum.contains((Object) tourNum)) 
-			node1.tourNum.add(tourNum);
-		node2.tourNum.add(tourNum + 1);
+		// Path already exists
+		if(!success) {
+			DialogUtils.showMessage("Path between selected nodes already exist.", "Path Creation Aborted");
+			return;
+		}
 		
+		// Reset TourNum on every node
+		PanNode node = head;
+		while(node != null) {
+			node.tourNum.clear();
+			node = node.getNext();
+		}
+		
+		// Assign new TourNum on every node
+		tour.updateTourNumbers();
+
 		// Set graphics
 		node2.getMapNode().setArrow(node1, true);
 	}
@@ -521,7 +532,6 @@ public class PanGraph {
 		
 		// Removing from path
 		int tourNum = tour.remove(new Waypoint(node1, node2));
-		System.out.println(tourNum);
 		if(tourNum != TourPath.WAYPOINT_NOT_FOUND) {
 			// Reset graphics
 			node2.getMapNode().setArrow(node1, false);	
