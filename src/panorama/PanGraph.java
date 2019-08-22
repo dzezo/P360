@@ -431,7 +431,7 @@ public class PanGraph {
 		if(tour.hasPath()) clearPath();
 		
 		// generate id path
-		NodeList graph = new NodeList(head, home);
+		NodeList graph = new NodeList(home);
 		int p[] = graph.generatePath();
 		
 		// create tour and set graphics

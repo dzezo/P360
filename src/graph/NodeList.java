@@ -24,12 +24,12 @@ public class NodeList {
 	private int pathLength;
 	private boolean pathFound;
 	
-	public NodeList(PanNode firstNode, PanNode rootNode) {
+	public NodeList(PanNode rootNode) {
 		this.rootID = rootNode.getID();
 		this.reducedNodeCount = 0;
 		this.totalNodeCount = 0;
 		// napravi graf
-		createNode(firstNode);
+		createNode(rootNode);
 		// redukuj graf
 		boolean simplification = false;
 		boolean reduction = false;
