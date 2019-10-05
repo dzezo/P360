@@ -28,7 +28,7 @@ public class GuiRenderer {
 		for(GuiTexture gui : guis) {
 			GL13.glActiveTexture(GL13.GL_TEXTURE0);
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, gui.getTexture());
-			Matrix4f matrix = createTransformationMatrix(gui.getPosition(), gui.getScale());
+			Matrix4f matrix = createTransformationMatrix(gui.getPosition(), gui.getRotation(), gui.getScale());
 			shader.loadTransformation(matrix);
 			GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, quad.getVertexCount());
 		}
@@ -42,10 +42,13 @@ public class GuiRenderer {
 		return guis;
 	}
 	
-	private static Matrix4f createTransformationMatrix(Vector2f translation, Vector2f scale) {
+	private static Matrix4f createTransformationMatrix(Vector2f translation, Vector3f rotation, Vector2f scale) {
 		Matrix4f matrix = new Matrix4f();
 		matrix.setIdentity();
 		Matrix4f.translate(translation, matrix, matrix);
+		Matrix4f.rotate((float) Math.toRadians(rotation.x), new Vector3f(1,0,0), matrix, matrix);
+		Matrix4f.rotate((float) Math.toRadians(rotation.y), new Vector3f(0,1,0), matrix, matrix);
+		Matrix4f.rotate((float) Math.toRadians(rotation.z), new Vector3f(0,0,1), matrix, matrix);
 		Matrix4f.scale(new Vector3f(scale.x, scale.y, 1f), matrix, matrix);
 		return matrix;
 	}

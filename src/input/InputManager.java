@@ -122,19 +122,19 @@ public class InputManager {
 					else DisplayManager.setWindowed();
 					break;
 				case K_LPAN:
-					if(!GuiNavButtons.areHidden()) Scene.goLeft();
+					if(!GuiNavButtons.areHidden()) Scene.goSide(3);
 					else GuiNavButtons.showAll();
 					break;
 				case K_RPAN:
-					if(!GuiNavButtons.areHidden()) Scene.goRight();
+					if(!GuiNavButtons.areHidden()) Scene.goSide(1);
 					else GuiNavButtons.showAll();	
 					break;
 				case K_TPAN:
-					if(!GuiNavButtons.areHidden()) Scene.goTop();
+					if(!GuiNavButtons.areHidden()) Scene.goSide(0);
 					else GuiNavButtons.showAll();
 					break;
 				case K_BPAN:
-					if (!GuiNavButtons.areHidden()) Scene.goBot();
+					if (!GuiNavButtons.areHidden()) Scene.goSide(2);
 					else GuiNavButtons.showAll();
 					break;
 				case K_PAN:
@@ -244,25 +244,25 @@ public class InputManager {
 					if(GuiNavButtons.areHidden())
 						GuiNavButtons.showAll();
 					else
-						Scene.goLeft();
+						Scene.goSide(3);
 				}
 				else if(controller.isButtonPressed(GP_RPAN)) {
 					if(GuiNavButtons.areHidden())
 						GuiNavButtons.showAll();
 					else
-						Scene.goRight();
+						Scene.goSide(1);
 				}
 				else if(controller.isButtonPressed(GP_TPAN)) {
 					if(GuiNavButtons.areHidden())
 						GuiNavButtons.showAll();
 					else
-						Scene.goTop();
+						Scene.goSide(0);
 				}
 				else if(controller.isButtonPressed(GP_BPAN)) {
 					if(GuiNavButtons.areHidden())
 						GuiNavButtons.showAll();
 					else
-						Scene.goBot();
+						Scene.goSide(2);
 				}
 				else if(controller.isButtonPressed(GP_FSCREEN)) {
 					if(DisplayManager.isFullscreen())
