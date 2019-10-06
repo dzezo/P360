@@ -96,7 +96,6 @@ public class Scene {
 		
 		while(!(camAngle>refAngle) && refAngle>0) {
 			actualSide--;
-			System.out.println("actualSide: " + actualSide);
 			refAngle -= 90;
 		}
 		
