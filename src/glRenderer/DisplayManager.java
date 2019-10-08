@@ -33,6 +33,7 @@ public class DisplayManager {
 		try{
 			Display.setParent(canvas);
 			Display.setTitle("P360");
+			Display.setVSyncEnabled(true);
 			Display.create(new PixelFormat(), attribs);
 		}
 		catch(LWJGLException e){
@@ -56,8 +57,8 @@ public class DisplayManager {
 			glViewport(0, 0, Display.getWidth(), Display.getHeight());
 		}
 		
-		Display.sync(FPS_CAP);
 		Display.update();
+		Display.sync(FPS_CAP);
 	}
 	
 	public static void closeDisplay(){
