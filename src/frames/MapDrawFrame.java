@@ -173,9 +173,8 @@ public class MapDrawFrame extends MapFrame {
 			}
 			
             public void windowClosing(WindowEvent we){               
-                // stop auto save and save once more
+                // stop auto save
                 AutoSave.stopSaving();
-                AutoSave.save();
                 
                 // update map size
                 PanGraph.updateMapSize();
@@ -338,8 +337,11 @@ public class MapDrawFrame extends MapFrame {
 		progressBar.setValue(0);
 		progressBar.setMaximum(PanGraph.getNodeCount());
 		
+		// disable actions
+		enableActions(false);
+		
 		// encrypt map
-		PanGraph.encryptMap(encryptionKey, progressBar);
+		PanGraph.encryptMap(encryptionKey, this);
 	}
 	
 	public boolean load() {
@@ -387,19 +389,43 @@ public class MapDrawFrame extends MapFrame {
 	private void ok() {
 		if(PanGraph.getHome() != null) {
 			// Queue image for loading
-			Scene.queuePanorama(PanGraph.getHome());
+			if(Scene.getActivePanorama() == PanGraph.getHome())
+				Scene.refreshInterface();
+			else
+				Scene.queuePanorama(PanGraph.getHome());
 			TourManager.prepare(PanGraph.getHome());
 			
 			// update map size
             PanGraph.updateMapSize();
 			
-			// stop auto save and save once more
+			// stop auto save
             AutoSave.stopSaving();
-            AutoSave.save();
             
             // hide frame
 			setVisible(false);
 		}
 	}
 	
+	public void enableActions(boolean enable) {
+		b_add.setEnabled(enable);
+		b_remove.setEnabled(enable);
+		b_home.setEnabled(enable);
+		b_connect.setEnabled(enable);
+		b_disconnect.setEnabled(enable);
+		b_addSound.setEnabled(enable);
+		b_removeSound.setEnabled(enable);
+		b_genPath.setEnabled(enable);
+		b_clearPath.setEnabled(enable);
+		b_addToPath.setEnabled(enable);
+		b_removeFromPath.setEnabled(enable);
+		b_textMode.setEnabled(enable);
+		b_encrypt.setEnabled(enable);
+		b_load.setEnabled(enable);
+		b_save.setEnabled(enable);
+		b_ok.setEnabled(enable);
+	}
+	
+	public JProgressBar getProgressBar() {
+		return this.progressBar;
+	}
 }

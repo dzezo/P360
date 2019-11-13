@@ -1,7 +1,3 @@
-/glRenderer/
-/gui/
-/input/
 /frames/
+/glRenderer/
 /panorama/
-/shaders/
-/utils/

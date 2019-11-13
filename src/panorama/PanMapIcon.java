@@ -2,6 +2,7 @@ package panorama;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.io.Serializable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -9,29 +10,27 @@ import javax.swing.ImageIcon;
 
 import utils.ImageCipher;
 
-public class PanMapIcon {
-	private ExecutorService iconLoaderThread = Executors.newFixedThreadPool(1);
+public class PanMapIcon implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
+	private transient ExecutorService iconLoaderThread;
 	
 	private PanMap parent;
 	private ImageIcon icon;
 	private boolean isLoaded;
+	
+	private transient boolean reloadRequested = false;
 	
 	public PanMapIcon(PanMap parent) {
 		this.parent = parent;
 		this.icon = null;
 		this.isLoaded = false;
 		
-		iconLoaderThread.execute(() -> {
-			// Load icon
-			try {
-				loadIcon(parent.getParent().getPanoramaPath());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			// Terminate thread
-			iconLoaderThread.shutdown();
-		});
+		try {
+			loadIcon(parent.getParent().getPanoramaPath());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void drawIcon(Graphics2D g) {
@@ -46,28 +45,57 @@ public class PanMapIcon {
 		return isLoaded;
 	}
 	
-	private void loadIcon(String iconPath) throws Exception {
-		// load image
-		Image image;
-		// image is .pimg
-		if(ImageCipher.isEncrypted(iconPath)) {
-			image = new ImageIcon(ImageCipher.imageDecrypt(iconPath)).getImage();
-		}
-		// image is not encrypted
-		else {
-			image = new ImageIcon(iconPath).getImage();
+	public void reloadIcon() {
+		synchronized(this) {
+			if(reloadRequested)
+				return;
+			
+			reloadRequested = true;
 		}
 		
-		// Create icon from image
-        if (image != null) {
-        	icon = new ImageIcon(image.getScaledInstance(PanMap.WIDTH, PanMap.HEIGHT, Image.SCALE_DEFAULT));
-        	
-        	// free memory
-        	image.flush();
-           	image = null;
-            
-            // load completed
-            isLoaded = true;
-        }
+		try {
+			loadIcon(parent.getParent().getPanoramaPath());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private void loadIcon(String iconPath) throws Exception {
+		iconLoaderThread = Executors.newFixedThreadPool(1);
+		iconLoaderThread.execute(() -> {
+			try {
+				// Load icon
+				Image image;
+				// image is .pimg
+				if(ImageCipher.isEncrypted(iconPath)) {
+					image = new ImageIcon(ImageCipher.imageDecrypt(iconPath)).getImage();
+				}
+				// image is not encrypted
+				else {
+					image = new ImageIcon(iconPath).getImage();
+				}
+				
+				// Create icon from image
+		        if (image != null) {
+		        	icon = new ImageIcon(image.getScaledInstance(PanMap.WIDTH, PanMap.HEIGHT, Image.SCALE_DEFAULT));
+		        	
+		        	// free memory
+		        	image.flush();
+		           	image = null;
+		            
+		            // load completed
+		            isLoaded = true;
+		        }
+				
+				// Request served
+				reloadRequested = false;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			// Terminate thread
+			iconLoaderThread.shutdown();
+		});
 	}
 }

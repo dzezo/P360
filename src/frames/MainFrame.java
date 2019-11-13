@@ -52,9 +52,8 @@ public class MainFrame extends Frame {
 	private JMenuItem file_open = new JMenuItem("Open Image");
 	/* mapMenu items */
 	private JMenuItem map_new = new JMenuItem("New Map");
-	private JMenuItem map_load = new JMenuItem("Load Map");
-	private JMenuItem map_save = new JMenuItem("Save Map");
-	private JMenuItem map_change = new JMenuItem("Change Map");
+	private JMenuItem map_open = new JMenuItem("Open Map");
+	private JMenuItem map_edit = new JMenuItem("Edit Map");
 	private JMenuItem map_show = new JMenuItem("Show Map");
 	/* viewMenu items */
 	private JMenuItem view_fullScreen = new JMenuItem("Full Screen");
@@ -131,10 +130,9 @@ public class MainFrame extends Frame {
 		
 		// MAP
 		mapMenu.add(map_new);
-		mapMenu.add(map_load);
-		mapMenu.add(map_save);
+		mapMenu.add(map_open);
 		mapMenu.addSeparator();
-		mapMenu.add(map_change);
+		mapMenu.add(map_edit);
 		mapMenu.add(map_show);
 		
 		// VIEW
@@ -171,14 +169,11 @@ public class MainFrame extends Frame {
 		map_new.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) { newMap(); }			
 		});		
-		map_load.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) { loadMap(); }
-		});		
-		map_save.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) { saveMap(); }
-		});		
-		map_change.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) { changeMap(); }
+		map_open.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) { openMap(); }
+		});
+		map_edit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) { editMap(); }
 		});
 		map_show.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) { showMap(); }
@@ -267,7 +262,7 @@ public class MainFrame extends Frame {
 		}
 	}
 	
-	private void loadMap() {
+	private void openMap() {
 		boolean success = mapEditor.load();
 		
 		if(success) {
@@ -276,11 +271,7 @@ public class MainFrame extends Frame {
 		}
 	}
 	
-	private void saveMap() {
-		mapEditor.save();
-	}
-	
-	private void changeMap() {
+	private void editMap() {
 		if(PanGraph.isEmpty()) return;
 		
 		mapEditor.showFrame();
@@ -332,20 +323,22 @@ public class MainFrame extends Frame {
 		// Clear dropdown menu
 		for(int i=gamePadMenu.getItemCount()-1; i>1; i--)
 			gamePadMenu.remove(i);
+		
 		// Rescan hardware
 		try {
 			Controllers.destroy();
 			Controllers.create();
 		} catch (LWJGLException e) {
 			e.printStackTrace();
+			return;
 		}
+		
 		// Add controllers to menu
 		for(int i=0; i<Controllers.getControllerCount(); i++) {
 			String controllerName = Controllers.getController(i).getName();
 			JMenuItem controller = new JMenuItem(controllerName);
 			controller.addActionListener(new ActionListener() {
 
-				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					// Get name of selected controller and compare it to all available controllers
 					String selectedControllerName = controller.getText();

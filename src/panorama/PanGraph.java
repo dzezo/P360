@@ -9,9 +9,9 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
+import frames.MapDrawFrame;
 import graph.NodeList;
 import touring.TourPath;
 import touring.Waypoint;
@@ -262,8 +262,8 @@ public class PanGraph {
 	public static boolean saveMap(String savePath) {
 		// Writing to file
 		try {
-			FileOutputStream fs = new FileOutputStream(savePath);
-			ObjectOutputStream oos = new ObjectOutputStream(fs);
+			FileOutputStream fos = new FileOutputStream(savePath);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(head);
 			oos.writeObject(home);
 			oos.writeObject(name);
@@ -273,6 +273,7 @@ public class PanGraph {
 			oos.writeObject(tour);
 			
 			oos.close();
+			fos.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
@@ -309,6 +310,7 @@ public class PanGraph {
 			gTour = (TourPath) ois.readObject();
 			
 			ois.close();
+			fin.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -552,7 +554,7 @@ public class PanGraph {
 		textMode = b;
 	}
 	
-	public static void encryptMap(String key, JProgressBar progressBar) {
+	public static void encryptMap(String key, MapDrawFrame mapEditor) {
 		// encryption canceled
 		if(key == null) return;
 		
@@ -597,7 +599,7 @@ public class PanGraph {
 			// updates progress bar
 			protected void process(List<Integer> encryptedCount) {
 				int latestCount = encryptedCount.get(encryptedCount.size() - 1);
-				progressBar.setValue(latestCount);
+				mapEditor.getProgressBar().setValue(latestCount);
 			}
 			
 			// code that runs after doInBackground is finished
@@ -613,7 +615,10 @@ public class PanGraph {
 						DialogUtils.showMessage("Encryption failed!", "Encryption");
 					
 					// hide progress bar
-					progressBar.setVisible(false);
+					mapEditor.getProgressBar().setVisible(false);
+					
+					// enable actions
+					mapEditor.enableActions(true);
 				} 
 				catch (InterruptedException ignore) {}
 				catch (ExecutionException e) {

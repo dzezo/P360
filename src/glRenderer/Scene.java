@@ -155,4 +155,11 @@ public class Scene {
 		Renderer.setNewProjection();
 	}
 	
+	/**
+	 * Updates GUI buttons
+	 */
+	public static void refreshInterface() {
+		GuiNavButtons.setAvailableNavButtons(activePanorama);
+	}
+	
 }
