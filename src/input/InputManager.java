@@ -24,6 +24,11 @@ public class InputManager {
 	public static final int K_PAN = Keyboard.KEY_P;
 	public static final int K_MAP = Keyboard.KEY_M;
 	
+	// Controllers
+	private static ControllerItem activeCI;
+	private static ControllerItem nextCI;
+	private static boolean changeController = false;
+	
 	// Gamepad controls
 	private static Controller controller;
 	private static boolean readAxis;
@@ -66,6 +71,20 @@ public class InputManager {
 		readMouse();
 		
 		// Controller
+		if(changeController) {
+			if(nextCI != null) {
+				activeCI.setSelected(false);
+				activeCI = nextCI;
+				
+				controller = activeCI.getController();
+			}
+			else {
+				controller = null;
+			}
+			
+			changeController = false;
+		}
+		
 		if(controller != null) {
 			if(!MainFrame.isMapVisible())
 				readControler();
@@ -77,8 +96,9 @@ public class InputManager {
 		fullscreenRequest();
 	}
 	
-	public static void setController(Controller c) {
-		controller = c;
+	public static void setController(ControllerItem ci) {
+		activeCI = ci;
+		controller = ci.getController();
 		if(controller.getAxisCount() != 0) {
 			for(int i=0; i<controller.getAxisCount(); i++) {
 				String axisName = controller.getAxisName(i);
@@ -91,6 +111,15 @@ public class InputManager {
 		}
 		else
 			readAxis = false;
+	}
+	
+	public static Controller getController() {
+		return controller;
+	}
+	
+	public static void changeController(ControllerItem ci) {
+		nextCI = ci;
+		changeController = true;
 	}
 	
 	private static void readKeyboard() {
