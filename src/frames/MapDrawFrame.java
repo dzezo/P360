@@ -64,6 +64,9 @@ public class MapDrawFrame extends MapFrame {
 		createToolBar();
 		createFrame();
 		createProgressBar();
+		
+		// init AutoSave
+		AutoSave.init(this);
 	}
 
 	private void createToolBar() {
@@ -332,14 +335,6 @@ public class MapDrawFrame extends MapFrame {
 		String encryptionKey = DialogUtils.showKeyInputDialog();
 		if(encryptionKey == null) return;
 		
-		// show progress bar
-		progressBar.setVisible(true);
-		progressBar.setValue(0);
-		progressBar.setMaximum(PanGraph.getNodeCount());
-		
-		// disable actions
-		enableActions(false);
-		
 		// encrypt map
 		PanGraph.encryptMap(encryptionKey, this);
 	}
@@ -362,37 +357,24 @@ public class MapDrawFrame extends MapFrame {
 		return success;
 	}
 	
-	public boolean save() {
+	public void save() {
 		// nothing to save
 		if(PanGraph.isEmpty()) {
 			DialogUtils.showMessage("Nothing to save!", "Save");
-			return false;
+			return;
 		}
 		
 		// get path
 		String savePath = ChooserUtils.saveMapDialog();
-		if(savePath == null) return false;
+		if(savePath == null) return;
 		
 		// save
-		boolean success = PanGraph.saveMap(savePath);
-		if(success) {
-			// display map source as title
-			setTitle(savePath);
-			
-			// show message
-			DialogUtils.showMessage("Saved!", "Save");
-		}
-		
-		return success;
+		PanGraph.saveMap(savePath, this, false);
 	}
 	
 	private void ok() {
 		if(PanGraph.getHome() != null) {
-			// Queue image for loading
-			if(Scene.getActivePanorama() == PanGraph.getHome())
-				Scene.refreshInterface();
-			else
-				Scene.queuePanorama(PanGraph.getHome());
+			Scene.refreshScene(PanGraph.getHome());
 			TourManager.prepare(PanGraph.getHome());
 			
 			// update map size

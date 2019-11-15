@@ -57,7 +57,7 @@ public class Main {
 		
 		while(mainFrame.isRunning()) {
 			// check for changes
-			if(Scene.getActivePanorama() != Scene.getQueuedPanorama()) {
+			if(Scene.changeRequested()) {
 				if(Scene.getQueuedPanorama().isLoaded() || ImageLoader.isLoaded()) {
 					Scene.loadNewImage(Scene.getQueuedPanorama());
 	
@@ -69,6 +69,7 @@ public class Main {
 				}
 				else if(ImageLoader.isCanceled()) {
 					Scene.dequeuePanorama();
+					Scene.setReady(false);
 					
 					ImageLoader.resetLoader();
 				}

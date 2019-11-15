@@ -8,7 +8,8 @@ public class Scene {
 	private static PanNode activePanorama;
 	private static PanNode queuedPanorama;
 	private static Camera camera;
-	private static boolean ready;
+	private static boolean ready = false;
+	private static boolean refreshScene = false;
 	
 	public static void loadNewImage(PanNode newImage) {
 		// reset ready flag
@@ -155,11 +156,20 @@ public class Scene {
 		Renderer.setNewProjection();
 	}
 	
-	/**
-	 * Updates GUI buttons
-	 */
-	public static void refreshInterface() {
-		GuiNavButtons.setAvailableNavButtons(activePanorama);
+	public static boolean changeRequested() {
+		if(refreshScene) {
+			GuiNavButtons.setAvailableNavButtons(activePanorama);
+			refreshScene = false;
+		}
+		
+		return activePanorama != queuedPanorama;
+	}
+	
+	public static void refreshScene(PanNode panorama) {
+		if(activePanorama == panorama)
+			refreshScene = true;
+		else
+			queuePanorama(panorama);
 	}
 	
 }

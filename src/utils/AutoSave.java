@@ -4,6 +4,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import frames.MapDrawFrame;
 import main.Main;
 import panorama.PanGraph;
 
@@ -14,6 +15,11 @@ public class AutoSave implements Runnable {
 	private static ScheduledFuture<?> autoSaveTasks;
 	
 	private static String savingPath = new String();
+	private static MapDrawFrame mapEditor;
+	
+	public static void init(MapDrawFrame mdf) {
+		mapEditor = mdf;
+	}
 	
 	public void run() {
 		save();
@@ -35,10 +41,10 @@ public class AutoSave implements Runnable {
 		String savePath = (!savingPath.isEmpty()) ? savingPath : DEFAULT_FILE_PATH;
 		
 		// save map
-		PanGraph.saveMap(savePath);
+		PanGraph.saveMap(savePath, mapEditor, true);
 	}
 	
-	public static void startSaving() {
+	public static void startSaving() {	
 		if(autoSaveTasks == null)
 			autoSaveTasks = autoSave.scheduleAtFixedRate(new AutoSave(), 1, 1, TimeUnit.MINUTES);
 	}

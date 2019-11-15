@@ -2,10 +2,14 @@ package panorama;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 import utils.ImageCipher;
@@ -16,7 +20,8 @@ public class PanMapIcon implements Serializable {
 	private transient ExecutorService iconLoaderThread;
 	
 	private PanMap parent;
-	private ImageIcon icon;
+	
+	private transient ImageIcon icon;
 	private boolean isLoaded;
 	
 	private transient boolean reloadRequested = false;
@@ -97,5 +102,46 @@ public class PanMapIcon implements Serializable {
 			// Terminate thread
 			iconLoaderThread.shutdown();
 		});
+	}
+	
+	public void init(byte[] data) {
+		if(isLoaded)
+			icon = new ImageIcon(data);
+	}
+	
+	public byte[] getByteArray() {
+		if(!isLoaded)
+			return new byte[1];
+		
+		try {
+			BufferedImage icon = getBufferedImageOfIcon();
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write(icon, "jpg", baos);
+			
+			baos.flush();
+			byte[] data = baos.toByteArray();
+			baos.close();
+			
+			return data;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new byte[1];
+		}
+	}
+	
+	private BufferedImage getBufferedImageOfIcon() {
+		// Get image from icon
+		Image icon = this.icon.getImage();
+		
+		// Create a buffered image with transparency
+	    BufferedImage bimage = new BufferedImage(icon.getWidth(null), icon.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+
+	    // Draw the image on to the buffered image
+	    Graphics2D bGr = bimage.createGraphics();
+	    bGr.drawImage(icon, 0, 0, null);
+	    bGr.dispose();
+
+	    // Return the buffered image
+	    return bimage;
 	}
 }

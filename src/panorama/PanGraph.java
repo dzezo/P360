@@ -259,37 +259,89 @@ public class PanGraph {
 		}
 	}
 	
-	public static boolean saveMap(String savePath) {
-		// Writing to file
-		try {
-			FileOutputStream fos = new FileOutputStream(savePath);
-			ObjectOutputStream oos = new ObjectOutputStream(fos);
-			oos.writeObject(head);
-			oos.writeObject(home);
-			oos.writeObject(name);
-			oos.writeObject(nodeCount);
+	public static void saveMap(String savePath, MapDrawFrame mapEditor, boolean auto) {
+		// Background saving thread
+		SwingWorker<Boolean, Integer> savingMap = new SwingWorker<Boolean, Integer>(){
+			protected Boolean doInBackground() throws Exception {
+				try {
+					// show progress bar
+					mapEditor.getProgressBar().setVisible(true);
+					mapEditor.getProgressBar().setValue(0);
+					mapEditor.getProgressBar().setMaximum(PanGraph.getNodeCount());
+					// disable actions
+					mapEditor.enableActions(false);
+					// disable autosave
+					AutoSave.stopSaving();
+					
+					// save
+					FileOutputStream fos = new FileOutputStream(savePath);
+					ObjectOutputStream out = new ObjectOutputStream(fos);
+					
+					// saving logic
+					out.writeObject(head);
+					out.writeObject(home);
+					out.writeObject(name);
+					out.writeObject(nodeCount);
+					out.writeObject(size);
+					out.writeObject(tour);
+					
+					// saving icons
+					int progress = 1;
+					PanNode node = head;
+					while(node != null) {
+						out.writeObject(node.getMapNode().icon.getByteArray());
+						node = node.getNext();
+						publish(progress++);
+					}
+					
+					// closing stream
+					out.close();
+					fos.close();
+					
+					return true;
+				} catch (IOException e) {
+					e.printStackTrace();
+					return false;
+				}
+			}
 			
-			oos.writeObject(size);
-			oos.writeObject(tour);
+			protected void process(List<Integer> progressData) {
+				int latestData = progressData.get(progressData.size() - 1);
+				mapEditor.getProgressBar().setValue(latestData);
+			}
 			
-			oos.close();
-			fos.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
+			// code that runs after doInBackground is finished
+			protected void done() {
+				try {
+					if(!get()) {
+						DialogUtils.showMessage("Could not save!", "Save");
+						return;
+					}	
+					// update editor
+					mapEditor.setTitle(savePath);
+					mapEditor.enableActions(true);
+					mapEditor.getProgressBar().setVisible(false);
+					// set graph name
+					name = savePath;
+					
+					// set autoload destination
+					AutoLoad.setLastUsedMap(savePath);
+					// set autosave destination
+					AutoSave.setSavingPath(savePath);
+					// start autosave
+					AutoSave.startSaving();
+					
+					if(!auto)
+						DialogUtils.showMessage("Saved!", "Save");
+				} 
+				catch (InterruptedException ignore) {}
+				catch (ExecutionException e) {
+					e.printStackTrace();
+				}
+			}
+		};
 		
-		// set graph name
-		name = savePath;
-		
-		// set autoload destination
-		AutoLoad.setLastUsedMap(savePath);
-		
-		// set autosave destination
-		AutoSave.setSavingPath(savePath);
-		
-		// success
-		return true;
+		savingMap.execute();
 	}
 	
 	public static boolean loadMap(String loadPath) {
@@ -308,6 +360,14 @@ public class PanGraph {
 			
 			gSize = (PanGraphSize) ois.readObject();
 			gTour = (TourPath) ois.readObject();
+			
+			PanNode node = gHead;
+			while(node != null) {
+				byte[] iconData = (byte[]) ois.readObject();
+				node.getMapNode().icon.init(iconData);
+				node = node.getNext();
+			}
+			
 			
 			ois.close();
 			fin.close();
@@ -562,8 +622,17 @@ public class PanGraph {
 		SwingWorker<Boolean, Integer> encryptMap = new SwingWorker<Boolean, Integer>(){
 			// encryption logic
 			protected Boolean doInBackground() throws Exception {
-				int progress = 1;
 				try {
+					// show progress bar
+					mapEditor.getProgressBar().setVisible(true);
+					mapEditor.getProgressBar().setValue(0);
+					mapEditor.getProgressBar().setMaximum(PanGraph.getNodeCount());
+					int progress = 1;
+					// disable actions
+					mapEditor.enableActions(false);
+					// disable autosave
+					AutoSave.stopSaving();
+					
 					PanNode node = head;
 					while(node != null) {
 						// check node encryption status
@@ -614,11 +683,11 @@ public class PanGraph {
 					else 
 						DialogUtils.showMessage("Encryption failed!", "Encryption");
 					
-					// hide progress bar
+					// udate editor
 					mapEditor.getProgressBar().setVisible(false);
-					
-					// enable actions
 					mapEditor.enableActions(true);
+					// start autosave
+					AutoSave.startSaving();
 				} 
 				catch (InterruptedException ignore) {}
 				catch (ExecutionException e) {
