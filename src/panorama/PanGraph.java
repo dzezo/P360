@@ -15,9 +15,9 @@ import frames.MapDrawFrame;
 import graph.NodeList;
 import touring.TourPath;
 import touring.Waypoint;
-import utils.AutoLoad;
 import utils.AutoSave;
 import utils.ChooserUtils;
+import utils.ConfigData;
 import utils.DialogUtils;
 import utils.ImageCipher;
 
@@ -325,7 +325,7 @@ public class PanGraph {
 					name = savePath;
 					
 					// set autoload destination
-					AutoLoad.setLastUsedMap(savePath);
+					ConfigData.setLastUsedMap(savePath);
 					// set autosave destination
 					AutoSave.setSavingPath(savePath);
 					// start autosave
@@ -469,7 +469,7 @@ public class PanGraph {
 		}
 		
 		// set autoload destination
-		AutoLoad.setLastUsedMap(loadPath);
+		ConfigData.setLastUsedMap(loadPath);
 				
 		// set autosave destination
 		AutoSave.setSavingPath(loadPath);

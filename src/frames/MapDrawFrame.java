@@ -25,6 +25,16 @@ import utils.DialogUtils;
 
 @SuppressWarnings("serial")
 public class MapDrawFrame extends MapFrame {
+	private static volatile MapDrawFrame instance = null;
+	
+	public static synchronized MapDrawFrame getInstance() {
+		if(instance == null) {
+			instance = new MapDrawFrame();
+		}
+		
+		return instance;
+	}
+	
 	// ToolBar
 	private JToolBar toolbar = new JToolBar();
 	private JButton b_add = new JButton(new ImageIcon(Class.class.getResource("/toolbar/add.png")));
@@ -53,10 +63,11 @@ public class MapDrawFrame extends MapFrame {
 	private final String err_noSelection = 
 			"Left click to select panorama";
 	private final String err_noMultipleSelection = 
-			"You need to select both panoramas to run this function.\nYou can use ctrl+click or left and right mouse click to do so.";
+			"You need to select both panoramas to run this function.\n"
+			+ "You can use ctrl+click or left and right mouse click to do so.";
 
-	public MapDrawFrame(String title) {
-		super(title);
+	private MapDrawFrame() {
+		super("P360");
 		// instantiate map panel
 		mapPanel = new MapDrawPanel();
 		

@@ -12,9 +12,18 @@ import panorama.PanGraph;
 
 @SuppressWarnings("serial")
 public class MapViewFrame extends MapFrame {
-
-	public MapViewFrame(String title) {
-		super(title);
+	private static volatile MapViewFrame instance = null;
+	
+	public static synchronized MapViewFrame getInstance() {
+		if(instance == null) {
+			instance = new MapViewFrame();
+		}
+		
+		return instance;
+	}
+	
+	private MapViewFrame() {
+		super("P360");
 		// instantiate map panel
 		mapPanel = new MapViewPanel();
 		

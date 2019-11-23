@@ -4,11 +4,12 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
 
-import frames.MainFrame;
+import frames.MapViewFrame;
 import frames.MapViewPanel;
 import glRenderer.DisplayManager;
 import glRenderer.Scene;
 import gui.GuiNavButtons;
+import utils.ConfigData;
 
 public class InputManager {
 	// Keyboard controls
@@ -63,7 +64,7 @@ public class InputManager {
 	private static final float pitchSpeed = 0.25f;
 	
 	// time of last interaction in milis
-	public static long lastInteractTime;
+	private static long lastInteractTime;
 	
 	public static void readInput() {
 		// Standard
@@ -86,7 +87,7 @@ public class InputManager {
 		}
 		
 		if(controller != null) {
-			if(!MainFrame.isMapVisible())
+			if(!MapViewFrame.getInstance().isVisible())
 				readControler();
 			else 
 				readControlerOnMap();
@@ -167,7 +168,8 @@ public class InputManager {
 					else GuiNavButtons.showAll();
 					break;
 				case K_PAN:
-					Scene.getCamera().setAutoPan();
+					ConfigData.setPanFlag();
+					lastInteractTime ^= lastInteractTime;
 					break;
 				case K_MAP:
 					GuiNavButtons.navMap.performAction();
@@ -300,7 +302,8 @@ public class InputManager {
 						DisplayManager.setFullscreen();
 				}
 				else if(controller.isButtonPressed(GP_PAN)) {
-					Scene.getCamera().setAutoPan();
+					ConfigData.setPanFlag();
+					lastInteractTime ^= lastInteractTime;
 				}
 				else if(controller.isButtonPressed(GP_MAP)) {
 					GuiNavButtons.navMap.performAction();
@@ -321,26 +324,26 @@ public class InputManager {
 		if(Controllers.next() && Controllers.getEventSource() == controller) {
 			if(Controllers.isEventButton() && Controllers.getEventButtonState()) {
 				if(controller.isButtonPressed(GP_LPAN)) {
-					MapViewPanel map = (MapViewPanel) MainFrame.getMap().getMapPanel();
+					MapViewPanel map = (MapViewPanel) MapViewFrame.getInstance().getMapPanel();
 					map.selectLeft();
 				}
 				else if(controller.isButtonPressed(GP_RPAN)) {
-					MapViewPanel map = (MapViewPanel) MainFrame.getMap().getMapPanel();
+					MapViewPanel map = (MapViewPanel) MapViewFrame.getInstance().getMapPanel();
 					map.selectRight();
 				}
 				else if(controller.isButtonPressed(GP_TPAN)) {
-					MapViewPanel map = (MapViewPanel) MainFrame.getMap().getMapPanel();
+					MapViewPanel map = (MapViewPanel) MapViewFrame.getInstance().getMapPanel();
 					map.selectTop();
 				}
 				else if(controller.isButtonPressed(GP_BPAN)) {
-					MapViewPanel map = (MapViewPanel) MainFrame.getMap().getMapPanel();
+					MapViewPanel map = (MapViewPanel) MapViewFrame.getInstance().getMapPanel();
 					map.selectBot();
 				}
 				else if(controller.isButtonPressed(GP_MAP)) {
-					MainFrame.getMap().hideFrame();
+					MapViewFrame.getInstance().hideFrame();
 				}
 				else if(controller.isButtonPressed(GP_MAP_CONFIRM)) {
-					MapViewPanel map = (MapViewPanel) MainFrame.getMap().getMapPanel();
+					MapViewPanel map = (MapViewPanel) MapViewFrame.getInstance().getMapPanel();
 					map.confirmSelection();
 				}
 			}
@@ -375,5 +378,13 @@ public class InputManager {
 	
 	public static void requestFullscreen() {
 		fullscreenRequest = true;
+	}
+
+	public static long getLastInteractTime() {
+		return lastInteractTime;
+	}
+	
+	public static void setLastInteractTime(long time) {
+		lastInteractTime = time;
 	}
 }

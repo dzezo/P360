@@ -29,10 +29,21 @@ import panorama.PanNode;
 import touring.TourManager;
 import utils.AutoSave;
 import utils.ChooserUtils;
+import utils.ConfigData;
 import utils.DialogUtils;
 
 @SuppressWarnings("serial")
 public class MainFrame extends Frame {
+	private static volatile MainFrame instance = null;
+	
+	public static synchronized MainFrame getInstance() {
+		if(instance == null) {
+			instance = new MainFrame();
+		}
+		
+		return instance;
+	}
+	
 	/* Display */
 	private JPanel mainPanel = new JPanel(new BorderLayout());
 	private Canvas displayCanvas = new Canvas();
@@ -54,20 +65,18 @@ public class MainFrame extends Frame {
 	private JMenuItem map_show = new JMenuItem("Show Map");
 	/* viewMenu items */
 	private JMenuItem view_fullScreen = new JMenuItem("Full Screen");
-	private JCheckBoxMenuItem view_autoPan = new JCheckBoxMenuItem("Auto Pan");
-	private JCheckBoxMenuItem view_skipVisited = new JCheckBoxMenuItem("Skip Visited Panoramas");
+	public JCheckBoxMenuItem view_autoPan = new JCheckBoxMenuItem("Auto Pan");
+	public JCheckBoxMenuItem view_skipVisited = new JCheckBoxMenuItem("Skip Visited Panoramas");
+	public JCheckBoxMenuItem view_fixGUI = new JCheckBoxMenuItem("Fix Navigation Buttons");
 	/* soundMenu items */
 	private JMenuItem sound_playPause = new JMenuItem("Play");
 	private JMenuItem sound_stop = new JMenuItem("Stop");
 	/* gamePadMenu items */
 	private JMenuItem gamePad_scan = new JMenuItem("Scan");
 	private ControllerScanner controllerScanner = new ControllerScanner(gamePadMenu);
-	/* map gui */
-	private static MapDrawFrame mapEditor = new MapDrawFrame("Create Map");
-	private static MapViewFrame mapView = new MapViewFrame("View Map");
 	
-	public MainFrame(String title) {
-		super(title);
+	private MainFrame() {
+		super("P360");
 		// create gui
 		createMenuBar();
 		createFrame();
@@ -112,11 +121,11 @@ public class MainFrame extends Frame {
             	// Break main loop
             	running = false;
             	// Disposing mapView frame
-            	mapView.cleanUp();
+            	MapViewFrame.getInstance().cleanUp();
             	// Disposing mapEditor frame
-            	mapEditor.cleanUp();
+            	MapDrawFrame.getInstance().cleanUp();
             	// Disposing self
-                cleanUp();
+                instance.cleanUp();
             }
             public void windowActivated(WindowEvent we) {
             	// windowActivated is invoked when the Window is set to be the active Window.
@@ -140,11 +149,14 @@ public class MainFrame extends Frame {
 		// VIEW
 		viewMenu.add(view_autoPan);
 		viewMenu.add(view_skipVisited);
+		viewMenu.add(view_fixGUI);
 		viewMenu.addSeparator();
 		viewMenu.add(view_fullScreen);
 		
-		view_skipVisited.setSelected(TourManager.getSkipVisited());
-		view_autoPan.setSelected(true);
+		view_autoPan.setSelected(ConfigData.getPanFlag());
+		view_skipVisited.setSelected(ConfigData.getSkipFlag());
+		view_fixGUI.setSelected(ConfigData.getFixGUIFlag());
+	
 		
 		// SOUND
 		soundMenu.add(sound_playPause);
@@ -189,6 +201,9 @@ public class MainFrame extends Frame {
 		view_skipVisited.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) { skipVisited(); }
 		});
+		view_fixGUI.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) { fixGUIButtons(); }
+		});
 		sound_playPause.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) { soundPlayPause(); }
 		});
@@ -202,14 +217,6 @@ public class MainFrame extends Frame {
 
 	public boolean isRunning() {
 		return running;
-	}
-	
-	public MapDrawFrame getMapDrawingFrame() {
-		return mapEditor;
-	}
-	
-	public MapViewFrame getMapViewFrame() {
-		return mapView;
 	}
 
 	/* Menubar Actions */
@@ -230,8 +237,8 @@ public class MainFrame extends Frame {
 		
 		// Add to new map
 		int spawnX, spawnY;
-		spawnX = mapEditor.getMapPanel().getOriginX();
-		spawnY = mapEditor.getMapPanel().getOriginY();
+		spawnX = MapDrawFrame.getInstance().getMapPanel().getOriginX();
+		spawnY = MapDrawFrame.getInstance().getMapPanel().getOriginY();
 		PanGraph.addNode(imagePath, spawnX, spawnY);
 		PanGraph.setName(PanGraph.DEFAULT_NAME);
 		
@@ -246,7 +253,7 @@ public class MainFrame extends Frame {
 			AutoSave.resetSavingPath();
 			// Open new frame
 			PanGraph.setName(PanGraph.DEFAULT_NAME);
-			mapEditor.showFrame();
+			MapDrawFrame.getInstance().showFrame();
 		}
 		// Map loaded, prompt overwrite
 		else {
@@ -256,7 +263,7 @@ public class MainFrame extends Frame {
 				// Remove map if loaded
 				PanGraph.removeMap();
 				// Open new frame
-				mapEditor.showFrame();
+				MapDrawFrame.getInstance().showFrame();
 			}
 			else {
 				return;
@@ -265,7 +272,7 @@ public class MainFrame extends Frame {
 	}
 	
 	private void openMap() {
-		boolean success = mapEditor.load();
+		boolean success = MapDrawFrame.getInstance().load();
 		
 		if(success) {
 			Scene.queuePanorama(PanGraph.getHome());
@@ -276,13 +283,13 @@ public class MainFrame extends Frame {
 	private void editMap() {
 		if(PanGraph.isEmpty()) return;
 		
-		mapEditor.showFrame();
+		MapDrawFrame.getInstance().showFrame();
 	}
 	
 	private void showMap() {
 		if(PanGraph.isEmpty()) return;
 		
-		mapView.showFrame();
+		MapViewFrame.getInstance().showFrame();
 	}
 	
 	private void fullscreen() {
@@ -290,18 +297,16 @@ public class MainFrame extends Frame {
 	}
 	
 	private void autoPan() {
-		boolean set = Scene.getCamera().setAutoPan();
-		view_autoPan.setSelected(set);
+		InputManager.setLastInteractTime(0);
+		ConfigData.setPanFlag();
 	}
 	
-	private void skipVisited() {
-		// isSelected() returns state AFTER click
-		boolean newState = view_skipVisited.isSelected();
-		
-		System.out.println(newState);
-		
-		TourManager.setSkipVisited(newState);
-		view_skipVisited.setSelected(newState);
+	private void skipVisited() {		
+		ConfigData.setSkipFlag();
+	}
+	
+	private void fixGUIButtons() {
+		ConfigData.setFixGUIFlag();
 	}
 	
 	private void soundPlayPause() {
@@ -338,14 +343,5 @@ public class MainFrame extends Frame {
 		else
 			sound_playPause.setText("Play");
 	}
-	
-	/* Map GUI */
-	
-	public static MapViewFrame getMap() {
-		return mapView;
-	}
-	
-	public static boolean isMapVisible() {
-		return mapView.isVisible();
-	}
+
 }

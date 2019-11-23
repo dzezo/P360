@@ -1,6 +1,12 @@
 /frames/
 /glRenderer/
-/panorama/
+/graph/
+/gui/
 /input/
 /main/
+/models/
+/panorama/
+/shaders/
+/toolbar/
+/touring/
 /utils/

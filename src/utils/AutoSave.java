@@ -5,11 +5,10 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import frames.MapDrawFrame;
-import main.Main;
 import panorama.PanGraph;
+import static utils.ConfigData.AUTO_SAVE_DEFAULT_FILE_PATH;
 
 public class AutoSave implements Runnable {
-	private static final String DEFAULT_FILE_PATH = Main.WORKING_DIR.getPath() + "\\AutoSave.pmap";
 	
 	private static ScheduledThreadPoolExecutor autoSave = new ScheduledThreadPoolExecutor(1);
 	private static ScheduledFuture<?> autoSaveTasks;
@@ -38,7 +37,7 @@ public class AutoSave implements Runnable {
 		if(PanGraph.isEmpty()) return;
 		
 		// get save path
-		String savePath = (!savingPath.isEmpty()) ? savingPath : DEFAULT_FILE_PATH;
+		String savePath = (!savingPath.isEmpty()) ? savingPath : AUTO_SAVE_DEFAULT_FILE_PATH;
 		
 		// save map
 		PanGraph.saveMap(savePath, mapEditor, true);

@@ -1,6 +1,5 @@
 package main;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -21,11 +20,13 @@ import shaders.GuiShader;
 import shaders.StaticShader;
 import utils.AutoLoad;
 import utils.ChooserUtils;
+import utils.ConfigData;
+
+import static utils.ConfigData.WORKING_DIR;
 import utils.ImageLoader;
 import utils.Loader;
 
 public class Main {
-	public static final File WORKING_DIR = new File("C:\\p360system");
 	
 	public static void main(String[] args) throws Exception {
 		// set system look and feel
@@ -39,10 +40,10 @@ public class Main {
 		}
 		
 		// set working dir
-		ChooserUtils.setWorkingDir(WORKING_DIR);
+		ChooserUtils.setWorkingDir();
 		
 		// init
-		MainFrame mainFrame = new MainFrame("P360");
+		MainFrame mainFrame = MainFrame.getInstance();
 		
 		Camera camera = new Camera();
 		StaticShader shader = new StaticShader();
@@ -111,6 +112,9 @@ public class Main {
 		guiShader.cleanUp();
 		Loader.cleanUp();
 		DisplayManager.closeDisplay();
+		
+		// Save config data
+    	ConfigData.updateConfigFile();
 		
 		// Everything is released exit
 		System.exit(0);

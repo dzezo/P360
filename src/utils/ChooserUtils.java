@@ -4,11 +4,11 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
+import static utils.ConfigData.WORKING_DIR;
 
 public class ChooserUtils {
 	/* chooser */
 	private static JFileChooser jfc = new JFileChooser();
-	//private static ImagePreview preview = new ImagePreview(jfc);
 	
 	/* chooser filters */
 	private static FileFilter ff_image = new FileFilter() {
@@ -268,7 +268,7 @@ public class ChooserUtils {
 		
 	}
 	
-	public static void setWorkingDir(File workingDir) {
-		jfc.setCurrentDirectory(workingDir);
+	public static void setWorkingDir() {
+		jfc.setCurrentDirectory(WORKING_DIR);
 	}
 }
