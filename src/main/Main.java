@@ -1,5 +1,7 @@
 package main;
 
+import static utils.ConfigData.WORKING_DIR;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -22,9 +24,9 @@ import utils.AutoLoad;
 import utils.ChooserUtils;
 import utils.ConfigData;
 
-import static utils.ConfigData.WORKING_DIR;
 import utils.ImageLoader;
 import utils.Loader;
+//import videoPlayer.VideoPlayer;
 
 public class Main {
 	

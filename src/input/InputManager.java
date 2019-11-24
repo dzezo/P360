@@ -188,51 +188,54 @@ public class InputManager {
 	}
 
 	private static void readMouse() {
-		// detect draging
-		if(Mouse.isButtonDown(0) && !GuiNavButtons.isMouseOver()) {
-			DisplayManager.showMouseCursor();
-			
-			float pitchDelta = Mouse.getDY() * mouseSensitivity;
-			float yawDelta = Mouse.getDX() * mouseSensitivity;
-			
-			Scene.getCamera().setRotationVelocity(yawDelta, pitchDelta);
-			
-			// Last time user interacted
-			lastInteractTime = System.currentTimeMillis();
+		while(Mouse.next()) {
+			if(Mouse.getEventButtonState()) {
+				// Left click
+				if(Mouse.getEventButton() == 0) {
+					// double click condition
+					if (click && clickTime + doubleClickLatency > System.currentTimeMillis()){
+						if(DisplayManager.isFullscreen())
+							DisplayManager.setWindowed();
+						else
+							DisplayManager.setFullscreen();
+						
+						// reset for next detection
+						click = false;
+					}
+					else {
+						click = true;
+						clickTime = System.currentTimeMillis();
+					}
+					
+					// detect if click happened on gui
+					if(!GuiNavButtons.areHidden())
+						GuiNavButtons.click();
+				}
+				else if (click && clickTime + doubleClickLatency < System.currentTimeMillis()) {
+					click = false;
+				}
+			} else {
+				if(Mouse.isButtonDown(0) && !GuiNavButtons.isMouseOver()) {
+					DisplayManager.showMouseCursor();
+					float pitchDelta = Mouse.getDY() * mouseSensitivity;
+					float yawDelta = Mouse.getDX() * mouseSensitivity;
+					
+					Scene.getCamera().setRotationVelocity(yawDelta, pitchDelta);
+					
+					// Last time user interacted
+					lastInteractTime = System.currentTimeMillis();
+				}
+			}
 		}
+		
 		// detect movement (if not draging)
-		else if(DisplayManager.isMouseInWindow()) {
+		if(DisplayManager.isMouseInWindow()) {
 			if(isMouseMoving()){
 				DisplayManager.showMouseCursor();
 			}
 			else if(isMouseIdling() && GuiNavButtons.areHidden()){
 				DisplayManager.hideMouseCursor();
 			}
-		}
-		
-		// detect left click
-		if(Mouse.next() && Mouse.getEventButtonState() && Mouse.isButtonDown(0)) {
-			// double click condition
-			if (click && clickTime + doubleClickLatency > System.currentTimeMillis()){
-				if(DisplayManager.isFullscreen())
-					DisplayManager.setWindowed();
-				else
-					DisplayManager.setFullscreen();
-				
-				// reset for next detection
-				click = false;
-			}
-			else {
-				click = true;
-				clickTime = System.currentTimeMillis();
-				
-				// detect if click happened on gui
-				if(!GuiNavButtons.areHidden())
-					GuiNavButtons.click();
-			}
-		}
-		else if (click && clickTime + doubleClickLatency < System.currentTimeMillis()) {
-			click = false;
 		}
 	}
 	
