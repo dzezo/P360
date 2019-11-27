@@ -31,6 +31,7 @@ import utils.AutoSave;
 import utils.ChooserUtils;
 import utils.ConfigData;
 import utils.DialogUtils;
+import videoPlayer.VideoPlayer;
 
 @SuppressWarnings("serial")
 public class MainFrame extends Frame {
@@ -48,6 +49,9 @@ public class MainFrame extends Frame {
 	private JPanel mainPanel = new JPanel(new BorderLayout());
 	private Canvas displayCanvas = new Canvas();
 	private boolean running = false;
+	
+	/* Video player */
+	private VideoPlayer videoPlayer = new VideoPlayer();
 	
 	/* MenuBar */
 	private JMenuBar menuBar = new JMenuBar();
@@ -120,6 +124,8 @@ public class MainFrame extends Frame {
             	controllerScanner.doStop();
             	// Break main loop
             	running = false;
+            	// Disposing video player
+            	videoPlayer.cleanUp();
             	// Disposing mapView frame
             	MapViewFrame.getInstance().cleanUp();
             	// Disposing mapEditor frame
@@ -344,4 +350,9 @@ public class MainFrame extends Frame {
 			sound_playPause.setText("Play");
 	}
 
+	/* Video player */
+	
+	public VideoPlayer getVideoPlayer() {
+		return videoPlayer;
+	}
 }

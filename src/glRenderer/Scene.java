@@ -172,4 +172,11 @@ public class Scene {
 			queuePanorama(panorama);
 	}
 	
+	public static void playScene(boolean b) {
+		ready = b;
+		if(ready)
+			AudioManager.continueAudio();
+		else
+			AudioManager.pauseAudio();
+	}
 }

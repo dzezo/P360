@@ -7,6 +7,7 @@ import javax.swing.SwingUtilities;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
+import frames.MainFrame;
 import frames.MapViewFrame;
 import glRenderer.DisplayManager;
 import glRenderer.Scene;
@@ -20,12 +21,14 @@ public class GuiNavButtons {
 	public static GuiButton navRight;
 	public static GuiButton navLeft;
 	public static GuiButton navMap;
+	public static GuiButton playVideo;
 	
 	private static boolean navTopAvail = false;
 	private static boolean navBotAvail = false;
 	private static boolean navRightAvail = false;
 	private static boolean navLeftAvail = false;
 	private static boolean navMapAvail = false;
+	private static boolean playVideoAvail = false;
 	
 	private static boolean areHidden = false;
 	
@@ -141,6 +144,35 @@ public class GuiNavButtons {
 				
 			}		
 		};
+		playVideo = new GuiButton("/nav/playVideo.png", new Vector2f(-btnLocation,-btnLocation), new Vector2f(btnScaleX, btnScaleY)) {
+			public void onClick(IButton button) {
+				// Minimize if dislay is in fullscreen
+				if(DisplayManager.isFullscreen()) {
+					DisplayManager.setWindowed();
+					DisplayManager.setReturnToFullscreen();
+				}
+				
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						Scene.playScene(false);
+						MainFrame.getInstance().setVisible(false);
+						MainFrame.getInstance().getVideoPlayer().playVideo(Scene.getActivePanorama().getVideoPath());
+					}	
+				});
+			}
+
+			public void onStartHover(IButton button) {
+				button.playHoverAnimation(0.01f);
+			}
+
+			public void onStopHover(IButton button) {
+				button.resetScale();
+			}
+
+			public void whileHovering(IButton button) {
+				
+			}		
+		};
 	}
 	
 	public static void hideAll() {
@@ -161,6 +193,9 @@ public class GuiNavButtons {
 			
 			if(navMapAvail)
 				navMap.hide(guis);
+			
+			if(playVideoAvail)
+				playVideo.hide(guis);
 			
 			areHidden = true;
 		}
@@ -187,6 +222,9 @@ public class GuiNavButtons {
 			if(navMapAvail)
 				navMap.show(guis);
 			
+			if(playVideoAvail)
+				playVideo.show(guis);
+			
 			areHidden = false;
 		}
 	}
@@ -205,6 +243,7 @@ public class GuiNavButtons {
 		if(navRightAvail) navRight.hide(guis);	
 		if(navLeftAvail) navLeft.hide(guis);
 		if(navMapAvail) navMap.hide(guis);
+		if(playVideoAvail) playVideo.hide(guis);
 		areHidden = true;
 		
 		// Set nav buttons that are available for currently active panorama
@@ -213,6 +252,7 @@ public class GuiNavButtons {
 		navBotAvail = (node.getBot() != null) ? true : false;
 		navLeftAvail = (node.getLeft() != null) ? true : false;
 		navMapAvail = (PanGraph.isEmpty()) ? false : true;
+		playVideoAvail = node.hasVideo();
 		
 		// Nav buttons are initially showing
 		showAll();
@@ -227,11 +267,12 @@ public class GuiNavButtons {
 	}
 	
 	public static boolean isMouseOver() {
-		return navTop.mouseOver() ||
+		return 	navTop.mouseOver() ||
 				navBot.mouseOver() ||
 				navRight.mouseOver() ||
 				navLeft.mouseOver() ||
-				navMap.mouseOver();
+				navMap.mouseOver() ||
+				playVideo.mouseOver();
 	}
 	
 	public static void click() {
@@ -240,6 +281,7 @@ public class GuiNavButtons {
 		navRight.click();
 		navLeft.click();
 		navMap.click();
+		playVideo.click();
 	}
 	
 	public static void update() {
@@ -253,8 +295,8 @@ public class GuiNavButtons {
 			hideAll();
 		}
 		
+		// Calculating nav. btn. position based on current camera angle
 		if(!ConfigData.getFixGUIFlag()) {
-			// Calculating nav. btn. position based on current camera angle
 			float f_yaw = Scene.getCamera().getYaw();
 			double d_yaw = (double) f_yaw;
 			float posX,posY;
@@ -288,7 +330,6 @@ public class GuiNavButtons {
 			navLeft.setRotation(new Vector3f(0, 0, f_yaw));
 		}
 		else {
-			// Calculating nav. btn. position based on current camera angle
 			float f_yaw = Scene.getCamera().getYaw();
 			double angle;
 			float posX,posY,rotZ;
@@ -325,6 +366,7 @@ public class GuiNavButtons {
 		navRight.update();
 		navLeft.update();
 		navMap.update();
+		playVideo.update();
 	}
 	
 }

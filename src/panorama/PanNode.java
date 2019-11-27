@@ -33,6 +33,9 @@ public class PanNode implements Serializable {
 	// audio zapis
 	private PanAudio audio;
 	
+	// putanja do video zapisa
+	private String videoPath;
+	
 	/**
 	 * Konstruktor
 	 * 
@@ -118,11 +121,7 @@ public class PanNode implements Serializable {
 	public void stopAudio() {
 		this.audio.stop();
 	}
-	
-	public void setAudioPath(String newAudioPath) {
-		audio.setAudioPath(newAudioPath);
-	}
-	
+
 	public String getAudioPath() {
 		if(audio != null)
 			return audio.getAudioPath();
@@ -171,7 +170,7 @@ public class PanNode implements Serializable {
 	
 	public void setPanoramaPath(String panoramaPath) {
 		this.panoramaPath = panoramaPath;
-		mapNode.panName = mapNode.setNameFromPath(panoramaPath);
+		mapNode.panName = mapNode.getNameFromPath(panoramaPath);
 	}
 	
 	/* susedi cvora */
@@ -223,18 +222,14 @@ public class PanNode implements Serializable {
 	}
 	
 	public void setAudio(String audioPath) {
-		if(audioPath != null)
+		if(audioPath != null) {
 			this.audio = new PanAudio(audioPath);
-		else
+			mapNode.audioName = mapNode.getNameFromPath(audioPath);
+		}
+		else {
 			this.audio = null;
-	}
-	
-	public void addAudio(String audioPath) {
-		// set audio
-		setAudio(audioPath);
-		
-		// set graphic representation
-		mapNode.audioName = mapNode.setNameFromPath(audioPath);
+			mapNode.audioName = null;
+		}
 	}
 	
 	public void removeAudio() {
@@ -243,10 +238,32 @@ public class PanNode implements Serializable {
 			stopAudio();
 		
 		// remove audio	
-		setAudio(null);
-		
-		// remove graphic representation
-		mapNode.audioName = null;
+		setAudio(null);		
+	}
+	
+	/* video */
+	
+	public boolean hasVideo() {
+		if(videoPath == null)
+			return false;
+		else
+			return true;
+	}
+	
+	public String getVideoPath() {
+		return videoPath;
+	}
+	
+	public void setVideoPath(String videoPath) {
+		// set video path
+		if(videoPath != null) {
+			this.videoPath = new String(videoPath);
+			mapNode.videoName = mapNode.getNameFromPath(videoPath);
+		}
+		else {
+			this.videoPath = null;
+			mapNode.videoName = null;
+		}
 	}
 	
 }

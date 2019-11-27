@@ -44,6 +44,8 @@ public class MapDrawFrame extends MapFrame {
 	private JButton b_disconnect = new JButton(new ImageIcon(Class.class.getResource("/toolbar/disconnect.png")));
 	private JButton b_addSound = new JButton(new ImageIcon(Class.class.getResource("/toolbar/addSound.png")));
 	private JButton b_removeSound = new JButton(new ImageIcon(Class.class.getResource("/toolbar/removeSound.png")));
+	private JButton b_addVideo = new JButton(new ImageIcon(Class.class.getResource("/toolbar/addVideo.png")));
+	private JButton b_removeVideo = new JButton(new ImageIcon(Class.class.getResource("/toolbar/removeVideo.png")));
 	private JButton b_genPath = new JButton(new ImageIcon(Class.class.getResource("/toolbar/genPath.png")));
 	private JButton b_clearPath = new JButton(new ImageIcon(Class.class.getResource("/toolbar/clearPath.png")));
 	private JButton b_addToPath = new JButton(new ImageIcon(Class.class.getResource("/toolbar/addToPath.png")));
@@ -103,6 +105,12 @@ public class MapDrawFrame extends MapFrame {
 		b_removeSound.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) { removeAudio(); }
 		});
+		b_addVideo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) { addVideo(); }
+		});
+		b_removeVideo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) { removeVideo(); }
+		});
 		b_genPath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) { genPath(); }
 		});
@@ -141,6 +149,9 @@ public class MapDrawFrame extends MapFrame {
 		toolbar.addSeparator();
 		toolbar.add(b_addSound);
 		toolbar.add(b_removeSound);
+		toolbar.addSeparator();
+		toolbar.add(b_addVideo);
+		toolbar.add(b_removeVideo);
 		toolbar.addSeparator();
 		toolbar.add(b_genPath);
 		toolbar.add(b_clearPath);
@@ -291,7 +302,7 @@ public class MapDrawFrame extends MapFrame {
 		if(audioPath == null) 
 			return;
 		
-		selectedNode.addAudio(audioPath);
+		selectedNode.setAudio(audioPath);
 	}
 	
 	private void removeAudio() {
@@ -302,6 +313,30 @@ public class MapDrawFrame extends MapFrame {
 		}
 		
 		selectedNode.removeAudio();
+	}
+	
+	private void addVideo() {
+		PanNode selectedNode = mapPanel.getSelectedNode1();
+		if(selectedNode == null) {
+			DialogUtils.showMessage(err_noSelection, err_selection);
+			return;
+		}
+		
+		String videoPath = ChooserUtils.openVideoDialog();
+		if(videoPath == null) 
+			return;
+		
+		selectedNode.setVideoPath(videoPath);
+	}
+	
+	private void removeVideo() {
+		PanNode selectedNode = mapPanel.getSelectedNode1();
+		if(selectedNode == null) {
+			DialogUtils.showMessage(err_noSelection, err_selection);
+			return;
+		}
+		
+		selectedNode.setVideoPath(null);
 	}
 	
 	private void genPath() {

@@ -3,6 +3,7 @@ package glRenderer;
 import frames.MainFrame;
 import panorama.PanNode;
 import touring.TourManager;
+import utils.ConfigData;
 
 public class AudioManager implements Runnable {
 	private MainFrame mainFrame;
@@ -12,8 +13,8 @@ public class AudioManager implements Runnable {
 	
 	private static PanNode myActivePano;
 	
-	// flag to play audio only once
-	private static boolean audioPlayed = false;
+	private static boolean audioPlayed = false; // flag to play audio only once
+	private static boolean audioPaused;
 	
 	public AudioManager(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
@@ -51,17 +52,37 @@ public class AudioManager implements Runnable {
 		// Automatically play audio while touring
 		if(Scene.isReady()
 				&& TourManager.isTouring() 
-				&& !activePano.visited 
+				&& !(activePano.visited && ConfigData.getPanFlag())
 				&& activePano.hasAudio() 
 				&& !audioPlayed) 
 		{
-			activePano.playAudio();
+			if(!myActivePano.isAudioPlaying()) activePano.playAudio();
 			audioPlayed = true;
 		}
 	}
 	
 	public static void resetAudioPlayed() {
 		audioPlayed = false;
+	}
+	
+	/**
+	 * Continues paused audio
+	 */
+	public static void continueAudio() {
+		if(myActivePano != null && !myActivePano.isAudioPlaying() && audioPaused) {
+			myActivePano.playAudio();
+			audioPaused = false;
+		}
+	}
+	
+	/**
+	 * Pause audio
+	 */
+	public static void pauseAudio() {
+		if(myActivePano != null && myActivePano.isAudioPlaying()) {
+			myActivePano.pauseAudio();
+			audioPaused = true;
+		}
 	}
 	
 	public static void stopAudio() {

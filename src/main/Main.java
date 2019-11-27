@@ -26,7 +26,6 @@ import utils.ConfigData;
 
 import utils.ImageLoader;
 import utils.Loader;
-import videoPlayer.VideoPlayer;
 
 public class Main {
 	
@@ -56,11 +55,7 @@ public class Main {
 		GuiSprites.init();
 		
 		// load previously used map
-		//AutoLoad.load();
-		
-		//////////////////////////////////////////////////////////
-		VideoPlayer vp = new VideoPlayer();
-		vp.playVideo("C:\\Users\\John\\Downloads\\dell2.avi");
+		AutoLoad.load();
 		
 		while(mainFrame.isRunning()) {
 			// check for changes

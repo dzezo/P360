@@ -19,6 +19,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
@@ -28,6 +29,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.plaf.basic.BasicSliderUI;
 
+import frames.MainFrame;
+import glRenderer.DisplayManager;
+import glRenderer.Scene;
+import input.InputManager;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
@@ -48,6 +53,7 @@ public class VideoPlayer {
 	
 	private JButton playPauseButton;
 	private JButton fullScreenButton;
+	private JButton closeButton;
 	
 	private JSlider timeSlider;
 	private boolean timeSeeking;
@@ -59,14 +65,23 @@ public class VideoPlayer {
 	private BufferedImage cursorImg;
 	private Cursor blankCursor;
 	
+	private final ImageIcon pauseIcon 		= new ImageIcon(Class.class.getResource("/video_player/pause.png"));
+	private final ImageIcon playIcon		= new ImageIcon(Class.class.getResource("/video_player/play.png"));
+	private final ImageIcon fullScreenIcon 	= new ImageIcon(Class.class.getResource("/video_player/fullScreen.png"));
+	private final ImageIcon closeIcon 		= new ImageIcon(Class.class.getResource("/video_player/close.png"));
+	
     public VideoPlayer() {
     	frame = new JFrame("Media Player");
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		// clean up
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				mediaPlayerComponent.release();
-				frame.dispose();
+				mediaPlayerComponent.mediaPlayer().controls().stop();
+				frame.setVisible(false);
+				MainFrame.getInstance().setVisible(true);
+				Scene.playScene(true);
+				if(DisplayManager.returnToFullscreen()) 
+					InputManager.requestFullscreen();
 			}
 		});
 		
@@ -138,7 +153,7 @@ public class VideoPlayer {
 		playerPane.setSize(new Dimension(600, 400));
 		
 		controlsPane = new JPanel();
-		playPauseButton = new JButton("Pause");
+		playPauseButton = new JButton(pauseIcon);
 		playPauseButton.setFocusable(false);
 		controlsPane.add(playPauseButton);
 		timeSlider = new JSlider();
@@ -154,19 +169,26 @@ public class VideoPlayer {
 		});
 		timeSeeking = false;
 		controlsPane.add(timeSlider);
-		fullScreenButton = new JButton("Full Screen");
+		fullScreenButton = new JButton(fullScreenIcon);
 		fullScreenButton.setFocusable(false);
 		controlsPane.add(fullScreenButton);
+		closeButton = new JButton(closeIcon);
+		closeButton.setFocusable(false);
+		controlsPane.add(closeButton);
 		controlsPane.setSize(controlsPane.getPreferredSize());
 		controlsPane.setLocation(playerPane.getWidth() / 2 - controlsPane.getWidth() / 2, 
 				playerPane.getHeight() - controlsPane.getHeight());
 		
 		playPauseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	if(mediaPlayerComponent.mediaPlayer().status().isPlaying())
+            	if(mediaPlayerComponent.mediaPlayer().status().isPlaying()) {
             		mediaPlayerComponent.mediaPlayer().controls().pause();
-            	else
+            		playPauseButton.setIcon(playIcon);
+            	}
+            	else {
             		mediaPlayerComponent.mediaPlayer().controls().play();
+            		playPauseButton.setIcon(pauseIcon);
+            	}
             }
         });
 		
@@ -194,6 +216,17 @@ public class VideoPlayer {
 		fullScreenButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	mediaPlayerComponent.mediaPlayer().fullScreen().toggle();
+            }
+        });
+		
+		closeButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	mediaPlayerComponent.mediaPlayer().controls().stop();
+				frame.setVisible(false);
+				MainFrame.getInstance().setVisible(true);
+				Scene.playScene(true);
+				if(DisplayManager.returnToFullscreen()) 
+					InputManager.requestFullscreen();
             }
         });
 		
@@ -249,5 +282,11 @@ public class VideoPlayer {
     	
     	mediaPlayerComponent.mediaPlayer().fullScreen().set(true);
     	mediaPlayerComponent.mediaPlayer().media().play(videoPath);
+    }
+    
+    public void cleanUp() {
+    	mediaPlayerComponent.release();
+		frame.dispose();
+		System.out.println("Video player is disposed.");
     }
 }
