@@ -122,16 +122,10 @@ public class MainFrame extends Frame {
             public void windowClosing(WindowEvent we){
             	// Stop ControllerScanner service
             	controllerScanner.doStop();
-            	// Break main loop
-            	running = false;
             	// Disposing video player
             	videoPlayer.cleanUp();
-            	// Disposing mapView frame
-            	MapViewFrame.getInstance().cleanUp();
-            	// Disposing mapEditor frame
-            	MapDrawFrame.getInstance().cleanUp();
-            	// Disposing self
-                instance.cleanUp();
+            	// Break main loop
+            	running = false;
             }
             public void windowActivated(WindowEvent we) {
             	// windowActivated is invoked when the Window is set to be the active Window.

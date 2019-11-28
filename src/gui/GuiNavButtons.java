@@ -127,6 +127,7 @@ public class GuiNavButtons {
 				// SwingUtilities.invokeLater or SwingUtilities.invokeAndWait
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
+						MainFrame.getInstance().setVisible(false);
 						MapViewFrame.getInstance().showFrame();
 					}	
 				});
@@ -154,7 +155,7 @@ public class GuiNavButtons {
 				
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
-						Scene.playScene(false);
+						Scene.setReady(false);
 						MainFrame.getInstance().setVisible(false);
 						MainFrame.getInstance().getVideoPlayer().playVideo(Scene.getActivePanorama().getVideoPath());
 					}	

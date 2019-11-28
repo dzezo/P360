@@ -53,36 +53,32 @@ public class AudioManager implements Runnable {
 		if(Scene.isReady()
 				&& TourManager.isTouring() 
 				&& !(activePano.visited && ConfigData.getPanFlag())
-				&& activePano.hasAudio() 
+				&& activePano.hasAudio()
 				&& !audioPlayed) 
 		{
 			if(!myActivePano.isAudioPlaying()) activePano.playAudio();
 			audioPlayed = true;
+			audioPaused = false;
 		}
-	}
-	
-	public static void resetAudioPlayed() {
-		audioPlayed = false;
-	}
-	
-	/**
-	 * Continues paused audio
-	 */
-	public static void continueAudio() {
-		if(myActivePano != null && !myActivePano.isAudioPlaying() && audioPaused) {
+		
+		// Automatically pause audio once video player is requested
+		if(MainFrame.getInstance().getVideoPlayer().getFrame().isVisible()
+				&& myActivePano.isAudioPlaying()
+				&& !audioPaused) 
+		{
+			myActivePano.pauseAudio();
+			audioPaused = true;
+		}
+		else if(!MainFrame.getInstance().getVideoPlayer().getFrame().isVisible()
+				&& audioPaused) 
+		{
 			myActivePano.playAudio();
 			audioPaused = false;
 		}
 	}
 	
-	/**
-	 * Pause audio
-	 */
-	public static void pauseAudio() {
-		if(myActivePano != null && myActivePano.isAudioPlaying()) {
-			myActivePano.pauseAudio();
-			audioPaused = true;
-		}
+	public static void resetAudioPlayed() {
+		audioPlayed = false;
 	}
 	
 	public static void stopAudio() {

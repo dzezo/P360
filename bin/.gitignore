@@ -1,11 +1,6 @@
 /videoPlayer/
-/main/
 /frames/
-/gui/
-/nav/
 /toolbar/
-/utils/
-/panorama/
+/gui/
 /glRenderer/
-/touring/
-/video_player/
+/main/

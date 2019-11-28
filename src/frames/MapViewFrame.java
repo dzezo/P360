@@ -1,14 +1,22 @@
 package frames;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
 
 import glRenderer.DisplayManager;
+import glRenderer.Scene;
 import input.InputManager;
 import panorama.PanGraph;
+import panorama.PanNode;
 
 @SuppressWarnings("serial")
 public class MapViewFrame extends MapFrame {
@@ -22,18 +30,42 @@ public class MapViewFrame extends MapFrame {
 		return instance;
 	}
 	
+	// ToolBar
+	final private JToolBar toolbar = new JToolBar(JToolBar.VERTICAL);
+	final private JButton b_center = new JButton(new ImageIcon(Class.class.getResource("/toolbar/center.png")));
+	final private JToggleButton b_textMode = new JToggleButton(new ImageIcon(Class.class.getResource("/toolbar/text.png")));
+	
 	private MapViewFrame() {
 		super("P360");
 		// instantiate map panel
 		mapPanel = new MapViewPanel();
 		
 		// create frame
+		createToolBar();
 		createFrame();
+	}
+	
+	private void createToolBar() {
+		// JButton ActionListeners
+		b_center.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) { centerMap(); }
+		});
+		b_textMode.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) { setTextMode(); }
+		});
+		
+		// The JToolBar uses a BoxLayout to layout it’s components.
+		toolbar.add(b_center);
+		toolbar.addSeparator();
+		toolbar.add(b_textMode);
+		
+		// Disables toolbar from moving
+		toolbar.setFloatable(false);
+		getContentPane().add(toolbar, BorderLayout.WEST);
 	}
 	
 	private void createFrame() {
 		setSize(mapWidth, mapHeight);
-		setAlwaysOnTop(true);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
@@ -63,6 +95,8 @@ public class MapViewFrame extends MapFrame {
 		// show frame
 		setVisible(true);
 		setTitle(PanGraph.getName());
+		toFront();
+		repaint();
 		
 		// set origin of a map
 		setOrigin();
@@ -77,10 +111,26 @@ public class MapViewFrame extends MapFrame {
         
     	// hide frame
         setVisible(false);
+        MainFrame.getInstance().setVisible(true);
         
         // set fullscreen if necessary
         if(DisplayManager.returnToFullscreen()) {
         	InputManager.requestFullscreen();
         }
+	}
+	
+	/* Toolbar Actions */
+	
+	private void centerMap() {
+		PanNode activePanorama = Scene.getActivePanorama();
+		int cX = (int) activePanorama.getMapNode().getCenterX();
+		int cY = (int) activePanorama.getMapNode().getCenterY();
+		int width = mapPanel.getWidth() / 2;
+		int height = mapPanel.getHeight() / 2;
+		mapPanel.setOrigin(cX - width, cY - height);
+	}
+	
+	private void setTextMode() {
+		PanGraph.setTextMode(b_textMode.isSelected());
 	}
 }

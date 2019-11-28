@@ -65,11 +65,18 @@ public class Scene {
 	}
 	
 	public static void dequeuePanorama() {
-		queuedPanorama = activePanorama;
-		
 		// Loading canceled
-		// Start displaying active panorama
-		ready = true;
+		if(activePanorama != null) {
+			// Display active panorama if exists
+			queuedPanorama = activePanorama;
+			ready = true;
+		}
+		else {
+			// Wait for another input
+			queuedPanorama = null;
+			ready = false;
+		}
+		
 	}
 	
 	public static PanNode getQueuedPanorama() {
@@ -172,11 +179,4 @@ public class Scene {
 			queuePanorama(panorama);
 	}
 	
-	public static void playScene(boolean b) {
-		ready = b;
-		if(ready)
-			AudioManager.continueAudio();
-		else
-			AudioManager.pauseAudio();
-	}
 }

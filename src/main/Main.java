@@ -6,9 +6,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import frames.MainFrame;
+import frames.MapDrawFrame;
+import frames.MapViewFrame;
 import glRenderer.AudioManager;
 import glRenderer.Camera;
 import glRenderer.DisplayManager;
@@ -44,6 +47,12 @@ public class Main {
 		ChooserUtils.setWorkingDir();
 		
 		// init
+		SwingUtilities.invokeAndWait(new Runnable() {
+			public void run() {
+				MapDrawFrame.getInstance();
+				MapViewFrame.getInstance();
+			}
+		});
 		MainFrame mainFrame = MainFrame.getInstance();
 		
 		Camera camera = new Camera();
@@ -71,7 +80,6 @@ public class Main {
 				}
 				else if(ImageLoader.isCanceled()) {
 					Scene.dequeuePanorama();
-					Scene.setReady(false);
 					
 					ImageLoader.resetLoader();
 				}
@@ -104,6 +112,15 @@ public class Main {
 			DisplayManager.updateDisplay();
 			
 		}
+		
+		// Disposing frames
+		SwingUtilities.invokeAndWait(new Runnable() {
+			public void run() {
+				MapViewFrame.getInstance().cleanUp();
+		    	MapDrawFrame.getInstance().cleanUp();
+			}
+		});
+		MainFrame.getInstance().cleanUp();
 		
 		// stop audio
 		AudioManager.stopAudio();

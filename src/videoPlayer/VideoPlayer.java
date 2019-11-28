@@ -29,10 +29,13 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.plaf.basic.BasicSliderUI;
 
+import com.sun.jna.NativeLibrary;
+
 import frames.MainFrame;
 import glRenderer.DisplayManager;
 import glRenderer.Scene;
 import input.InputManager;
+import uk.co.caprica.vlcj.binding.RuntimeUtil;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
@@ -70,6 +73,12 @@ public class VideoPlayer {
 	private final ImageIcon fullScreenIcon 	= new ImageIcon(Class.class.getResource("/video_player/fullScreen.png"));
 	private final ImageIcon closeIcon 		= new ImageIcon(Class.class.getResource("/video_player/close.png"));
 	
+	private final String keys [] = {
+            "sun.arch.data.model",
+            "com.ibm.vm.bitmode",
+            "os.arch",
+            };
+	
     public VideoPlayer() {
     	frame = new JFrame("Media Player");
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -78,12 +87,30 @@ public class VideoPlayer {
 			public void windowClosing(WindowEvent e) {
 				mediaPlayerComponent.mediaPlayer().controls().stop();
 				frame.setVisible(false);
+				
 				MainFrame.getInstance().setVisible(true);
-				Scene.playScene(true);
-				if(DisplayManager.returnToFullscreen()) 
-					InputManager.requestFullscreen();
+				Scene.setReady(true);
+				
+				if(DisplayManager.returnToFullscreen()) InputManager.requestFullscreen();
 			}
 		});
+		
+		// Ukljucivanje VLC native biblioteka i VLC plugin-ova
+		boolean jvm64 = true;
+		for (String key : keys) {
+			String property  = System.getProperty(key);
+			if(property != null) {
+				jvm64 = (property.indexOf("64") >= 0) ? true : false;
+			}
+		}
+		if(jvm64) {
+			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "./vlc");
+			System.setProperty("VLC_PLUGIN_PATH", "./vlc/plugins");
+		}
+		else {
+			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "./vlc(x86)");
+			System.setProperty("VLC_PLUGIN_PATH", "./vlc(x86)/plugins");
+		}
 		
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent(
 				null,
@@ -223,10 +250,11 @@ public class VideoPlayer {
             public void actionPerformed(ActionEvent e) {
             	mediaPlayerComponent.mediaPlayer().controls().stop();
 				frame.setVisible(false);
+				
 				MainFrame.getInstance().setVisible(true);
-				Scene.playScene(true);
-				if(DisplayManager.returnToFullscreen()) 
-					InputManager.requestFullscreen();
+				Scene.setReady(true);
+				
+				if(DisplayManager.returnToFullscreen()) InputManager.requestFullscreen();
             }
         });
 		
@@ -288,5 +316,9 @@ public class VideoPlayer {
     	mediaPlayerComponent.release();
 		frame.dispose();
 		System.out.println("Video player is disposed.");
+    }
+    
+    public JFrame getFrame() {
+    	return this.frame;
     }
 }
