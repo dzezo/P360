@@ -18,7 +18,7 @@ public class Renderer {
 	private static final float HFOV_CAP = 80f;
 	private static final float VFOV_CAP = 70f;
 	private static float NEAR_PLANE = 0.1f;
-	private static float FAR_PLANE = 5000f;
+	private static float FAR_PLANE = 1000000f;
 	
 	private static boolean newProjection = false;
 	

@@ -4,7 +4,6 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
 
 import utils.BuffUtils;
-import utils.ImageData;
 import utils.ImageLoader;
 
 public class Texture {
@@ -12,10 +11,8 @@ public class Texture {
 	protected int width, height;
 	
 	public Texture() {
-		ImageData img = ImageLoader.getImageData();
-		
-		width = img.getWidth();
-		height = img.getHeight();
+		width = ImageLoader.getImage().getWidth();
+		height = ImageLoader.getImage().getHeight();
 		
 		textureID = glGenTextures();
 		glBindTexture(GL_TEXTURE_2D, textureID);
@@ -25,14 +22,14 @@ public class Texture {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, 
-				BuffUtils.storeInIntBuffer(img.getPixels()));
-
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width / 2, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, 
+				BuffUtils.storeInIntBuffer(ImageLoader.getImageData()));
+		
 		glBindTexture(GL_TEXTURE_2D, 0);
 		
-		ImageLoader.clearImageData();
+		ImageLoader.clearImage();
 	}
 
 	public int getTextureID() {

@@ -1,6 +1,4 @@
-/videoPlayer/
-/frames/
-/toolbar/
-/gui/
+/utils/
 /glRenderer/
-/main/
+/models/
+/panorama/

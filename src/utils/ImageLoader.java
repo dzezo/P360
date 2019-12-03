@@ -1,19 +1,18 @@
 package utils;
 
-import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.swing.ImageIcon;
-
 import gui.GuiSprites;
+import sun.awt.image.codec.JPEGImageDecoderImpl;
 
 public class ImageLoader {
 	private static ExecutorService executor = Executors.newFixedThreadPool(1);
 	
-	private static ImageData img;
+	private static BufferedImage image;
 	private static boolean isLoading = false;
 	private static boolean isLoaded = false;
 	private static boolean isCanceled = false;
@@ -29,32 +28,15 @@ public class ImageLoader {
 		// Execute loading
 		executor.execute(new Runnable() {
 			public void run() {
-				BufferedImage image = null;
-				int width, height;
-				int[] pixels;
-				
 				try {
 					image = loadBufferedImage(path);
-					width = image.getWidth();
-					height = image.getHeight();
-					pixels = new int[width*height];
-					image.getRGB(0, 0, width, height, pixels, 0, width);
-					
-					img = new ImageData(pixels, width, height);
-					
-					// loading completed
 					isLoaded = true;
 				} catch (OutOfMemoryError | Exception e) {
 					e.printStackTrace();
-					
-					// release memory
 					if(image != null) {
 						image.flush();
 						image = null;
-						pixels = null;
 					}
-					
-					// set cancel flag
 					isCanceled = true;
 				}
 			}		
@@ -62,37 +44,21 @@ public class ImageLoader {
 	}
 	
 	private static BufferedImage loadBufferedImage(String path) throws Exception {
-		// load image
-		Image image;
-		// image is .pimg
-		if(ImageCipher.isEncrypted(path)) {
-			image = new ImageIcon(ImageCipher.imageDecrypt(path)).getImage();
-		}
-		// image is not encrypted
-		else {
-			image = new ImageIcon(path).getImage();
-		}
-		
-		// create bufferedImage
-		BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);
-        Graphics g = bufferedImage.getGraphics();
-        g.drawImage(image, 0, 0, null);
-        g.dispose();
-		
-        // release memory
-        image.flush();
-        image = null;
-        
-        // return buffered image
-		return bufferedImage;
+		if(ImageCipher.isEncrypted(path))
+			return new JPEGImageDecoderImpl(new ByteArrayInputStream(ImageCipher.imageDecrypt(path))).decodeAsBufferedImage();
+		return new JPEGImageDecoderImpl(new FileInputStream(path)).decodeAsBufferedImage();
 	}
 	
-	public static ImageData getImageData() {
-		return img;
+	public static int[] getImageData() {
+		return image.getRGB(0, 0, image.getWidth() / 2, image.getHeight(), null, 0, image.getWidth() / 2);
 	}
 	
-	public static void clearImageData() {
-		img.clearImageData();
+	public static BufferedImage getImage() {
+		return image;
+	}
+	
+	public static void clearImage() {
+		image = null;
 	}
 	
 	public static boolean isLoading() {
@@ -114,7 +80,7 @@ public class ImageLoader {
 	
 	public static void resetLoader() {
 		// Reset loader
-		img = null;
+		image = null;
 		isLoading = false;
 		isLoaded = false;
 		isCanceled = false;

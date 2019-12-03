@@ -21,7 +21,7 @@ public class Cylinder extends Body {
 		float sStep = angleStep/360;
 		
 		int vertexIndex = 0;
-		for(alpha=0, s = 0; alpha<=360; alpha+=angleStep, s+=sStep) {
+		for(alpha=0, s = 0; alpha<=180; alpha+=angleStep, s+=sStep) {
 			x = (float) (radius * (Math.cos(alpha / 180 * Math.PI)));
 			z = (float) (radius * (Math.sin(alpha / 180 * Math.PI)));
 			y = (float) h/2;
