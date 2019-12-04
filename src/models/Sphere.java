@@ -16,10 +16,10 @@ import utils.Loader;
 
 public class Sphere extends Body {
 	
-	private static final float angleStep = 2.0f; // Must be divisible with 360
-	private static final int coordCount = (int) ((360/angleStep + 1) * (180/angleStep + 1));
+	private static final float angleStep = 1.0f; // Must be divisible with 360
+	private static final int coordCount = (int) ((180/angleStep + 1) * (180/angleStep + 1)); ////////////////////////
 	
-	public Sphere(int width) {
+	public Sphere(int width, float endAngle) {
 		vertexCount = 2*coordCount;
 		radius = (float) (width/(2*Math.PI));
 		
@@ -36,10 +36,10 @@ public class Sphere extends Body {
 		float x, y, z;
 		float s,t;
 		float tStep = angleStep/180;
-		float sStep = angleStep/360;
+		float sStep = angleStep/180; /////////
 		
 		for (phi = 0, t = 0; phi < 180; phi += angleStep, t += tStep) {
-			for (theta = 360, s = 0; theta >= 0; theta -= angleStep, s += sStep) {
+			for (theta = endAngle + 180, s = 0; theta >= endAngle; theta -= angleStep, s += sStep) {
 				if(phi == 0) {
 					z = (float) (Math.sin(phi / 180 * Math.PI)*Math.cos(theta / 180 * Math.PI));
 					x = (float) (Math.sin(phi / 180 * Math.PI)*Math.sin(theta / 180 * Math.PI));

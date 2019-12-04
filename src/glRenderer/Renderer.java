@@ -38,15 +38,14 @@ public class Renderer {
 		if (DisplayManager.wasResized() || newProjection) {
 			DisplayManager.confirmResize();
 			shader.loadProjectionMatrix(createProjectionMatrix());
-			// Request served
 			if(newProjection) newProjection = false;
 		}
+		
+		shader.loadTransformationMatrix(createTransformationMatrix());
 		
 		glBindVertexArray(Scene.getPanorama().getBody().getVaoID());
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
-		
-		shader.loadTransformationMatrix(createTransformationMatrix());
 		
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, Scene.getPanorama().getTextureID());
@@ -55,6 +54,21 @@ public class Renderer {
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glBindVertexArray(0);
+		
+		// drugi deo
+		
+		glBindVertexArray(Scene.getPanorama().getBody2().getVaoID());
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, Scene.getPanorama().getTextureID2());
+		glDrawElements(GL_TRIANGLE_STRIP, Scene.getPanorama().getBody2().getVertexCount(), GL_UNSIGNED_INT, 0);
+		
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		glBindVertexArray(0);
+		
 		shader.stop();
 	}
 

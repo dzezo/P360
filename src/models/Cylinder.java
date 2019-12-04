@@ -5,10 +5,10 @@ import utils.Loader;
 public class Cylinder extends Body {
 	
 	// Must be divisible with 360
-	private static final float angleStep = 2.0f;
+	private static final float angleStep = 1.0f;
 	
-	public Cylinder(int w, int h) {
-		vertexCount = (int) (2*(360/angleStep + 1));
+	public Cylinder(int w, int h, float startAngle) {
+		vertexCount = (int) (2*(180/angleStep + 1)); //////////////////
 		radius = (float) (w/(2*Math.PI));
 		
 		posCoords = new float[vertexCount*3];
@@ -18,10 +18,10 @@ public class Cylinder extends Body {
 		float x,y,z; // posCoords
 		float s,t;   // texCoords
 		float alpha;
-		float sStep = angleStep/360;
+		float sStep = angleStep/180;
 		
 		int vertexIndex = 0;
-		for(alpha=0, s = 0; alpha<=180; alpha+=angleStep, s+=sStep) {
+		for(alpha=startAngle, s = 0; alpha<=startAngle + 180; alpha+=angleStep, s+=sStep) {
 			x = (float) (radius * (Math.cos(alpha / 180 * Math.PI)));
 			z = (float) (radius * (Math.sin(alpha / 180 * Math.PI)));
 			y = (float) h/2;

@@ -11,7 +11,7 @@ public class Panorama extends Texture {
 	public static final int TYPE_CYLINDRICAL = 0;
 	public static final int TYPE_SPHERICAL = 1;
 
-	private Body body;
+	private Body[] body = new Body[2];
 	private int type;
 	
 	/* World transform */
@@ -24,17 +24,24 @@ public class Panorama extends Texture {
 		
 		float imageAspect = (float) width / (float) height;
 		if(imageAspect == 2) {
-			body = new Sphere(width);
+			body[0] = new Sphere(width, 180);
+			body[1] = new Sphere(width, 0);
 			type = TYPE_SPHERICAL;
 		}
 		else {
-			body = new Cylinder(width, height);
+			body[0] = new Cylinder(width, height, 0);
+			body[1] = new Cylinder(width, height, 180);
 			type = TYPE_CYLINDRICAL;
 		}
 	}
 	
 	public Body getBody() {
-		return body;
+		return body[0];
+	}
+	
+	// drugi deo
+	public Body getBody2() {
+		return body[1];
 	}
 	
 	public int getType() {

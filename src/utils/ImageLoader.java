@@ -50,7 +50,11 @@ public class ImageLoader {
 	}
 	
 	public static int[] getImageData() {
-		return image.getRGB(0, 0, image.getWidth() / 2, image.getHeight(), null, 0, image.getWidth() / 2);
+		return image.getRGB(0, 0, image.getWidth()/2, image.getHeight(), null, 0, image.getWidth()/2);
+	}
+	
+	public static int[] getImageData2() {
+		return image.getRGB(image.getWidth()/2, 0, image.getWidth()/2, image.getHeight(), null, 0, image.getWidth()/2);
 	}
 	
 	public static BufferedImage getImage() {
