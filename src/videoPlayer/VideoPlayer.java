@@ -85,13 +85,7 @@ public class VideoPlayer {
 		// clean up
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				mediaPlayerComponent.mediaPlayer().controls().stop();
-				frame.setVisible(false);
-				
-				MainFrame.getInstance().setVisible(true);
-				Scene.setReady(true);
-				
-				if(DisplayManager.returnToFullscreen()) InputManager.requestFullscreen();
+				hideFrame();
 			}
 		});
 		
@@ -126,7 +120,7 @@ public class VideoPlayer {
 				// Potrebno je napraviti asinhroni egzekutor koji nudi MediaPlayer objekat koji se prosledjuje listeneru.
 				mediaPlayer.submit(new Runnable() {
 					public void run() {
-						mediaPlayerComponent.mediaPlayer().media().play(videoPath);
+						hideFrame();
 					}
 				});
 			}
@@ -248,13 +242,7 @@ public class VideoPlayer {
 		
 		closeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	mediaPlayerComponent.mediaPlayer().controls().stop();
-				frame.setVisible(false);
-				
-				MainFrame.getInstance().setVisible(true);
-				Scene.setReady(true);
-				
-				if(DisplayManager.returnToFullscreen()) InputManager.requestFullscreen();
+            	hideFrame();
             }
         });
 		
@@ -320,5 +308,15 @@ public class VideoPlayer {
     
     public JFrame getFrame() {
     	return this.frame;
+    }
+    
+    public void hideFrame() {
+    	mediaPlayerComponent.mediaPlayer().controls().stop();
+		frame.setVisible(false);
+		
+		MainFrame.getInstance().setVisible(true);
+		Scene.setReady(true);
+		
+		if(DisplayManager.returnToFullscreen()) InputManager.requestFullscreen();
     }
 }

@@ -24,13 +24,13 @@ public class Panorama extends Texture {
 		
 		float imageAspect = (float) width / (float) height;
 		if(imageAspect == 2) {
-			body[0] = new Sphere(width, 180);
+			body[0] = new Sphere(width, 180.0f);
 			body[1] = new Sphere(width, 0);
 			type = TYPE_SPHERICAL;
 		}
 		else {
 			body[0] = new Cylinder(width, height, 0);
-			body[1] = new Cylinder(width, height, 180);
+			body[1] = new Cylinder(width, height, 180.0f);
 			type = TYPE_CYLINDRICAL;
 		}
 	}

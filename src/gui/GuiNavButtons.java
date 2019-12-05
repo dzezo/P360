@@ -158,7 +158,7 @@ public class GuiNavButtons {
 						Scene.setReady(false);
 						MainFrame.getInstance().setVisible(false);
 						MainFrame.getInstance().getVideoPlayer().playVideo(Scene.getActivePanorama().getVideoPath());
-					}	
+					}
 				});
 			}
 
