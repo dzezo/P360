@@ -52,7 +52,7 @@ public class Sphere extends Body {
 					texCoords[2*newVertexIndex + 1] = t;
 					indices[vertexCounter++] = newVertexIndex++;
 				}
-				else if (phi == angleStep && theta > 0) {
+				else if (phi == angleStep && theta > endAngle) {
 					indices[vertexCounter++] = oldVertexIndex;
 					oldVertexIndex += 2;
 				}
