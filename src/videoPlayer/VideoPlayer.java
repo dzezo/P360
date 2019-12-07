@@ -34,7 +34,6 @@ import com.sun.jna.NativeLibrary;
 import frames.MainFrame;
 import glRenderer.DisplayManager;
 import glRenderer.Scene;
-import input.InputManager;
 import uk.co.caprica.vlcj.binding.RuntimeUtil;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
@@ -114,6 +113,14 @@ public class VideoPlayer {
 				null);
 		
 		mediaPlayerComponent.mediaPlayer().events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
+			public void playing(MediaPlayer mediaPlayer) {
+				mediaPlayer.submit(new Runnable() {
+					public void run() {
+						frame.toFront();
+						frame.repaint();
+					}
+				});
+			}
 			// finished event se triggeruje kada se playback zavrsi.
 			public void finished(MediaPlayer mediaPlayer) {
 				// Nije dozvoljen libVLC callback preko event niti, jer moze da dovede do nepredvidivog ponasanja JVM-a
@@ -312,11 +319,8 @@ public class VideoPlayer {
     
     public void hideFrame() {
     	mediaPlayerComponent.mediaPlayer().controls().stop();
-		frame.setVisible(false);
-		
-		MainFrame.getInstance().setVisible(true);
-		Scene.setReady(true);
-		
-		if(DisplayManager.returnToFullscreen()) InputManager.requestFullscreen();
+    	Scene.setReady(true);
+    	
+		frame.setVisible(false);	
     }
 }

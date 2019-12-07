@@ -118,8 +118,8 @@ public class GuiNavButtons {
 			public void onClick(IButton button) {
 				// Minimize if dislay is in fullscreen
 				if(DisplayManager.isFullscreen()) {
-					DisplayManager.setWindowed();
-					DisplayManager.setReturnToFullscreen();
+					DisplayManager.requestWindowed();
+					DisplayManager.requestReturnToFullScreen();
 				}
 				
 				// Show map
@@ -146,17 +146,10 @@ public class GuiNavButtons {
 			}		
 		};
 		playVideo = new GuiButton("/nav/playVideo.png", new Vector2f(-btnLocation,-btnLocation), new Vector2f(btnScaleX, btnScaleY)) {
-			public void onClick(IButton button) {
-				// Minimize if dislay is in fullscreen
-				if(DisplayManager.isFullscreen()) {
-					DisplayManager.setWindowed();
-					DisplayManager.setReturnToFullscreen();
-				}
-				
+			public void onClick(IButton button) {	
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						Scene.setReady(false);
-						MainFrame.getInstance().setVisible(false);
 						MainFrame.getInstance().getVideoPlayer().playVideo(Scene.getActivePanorama().getVideoPath());
 					}
 				});

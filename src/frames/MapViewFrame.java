@@ -14,9 +14,9 @@ import javax.swing.JToolBar;
 
 import glRenderer.DisplayManager;
 import glRenderer.Scene;
-import input.InputManager;
 import panorama.PanGraph;
 import panorama.PanNode;
+import utils.IconLoader;
 
 @SuppressWarnings("serial")
 public class MapViewFrame extends MapFrame {
@@ -100,6 +100,9 @@ public class MapViewFrame extends MapFrame {
 		
 		// set origin of a map
 		setOrigin();
+		
+		// Unpause IconLoader
+		IconLoader.getInstance().pauseLoading(false);
 	}
 	
 	public void hideFrame() {
@@ -113,10 +116,11 @@ public class MapViewFrame extends MapFrame {
         setVisible(false);
         MainFrame.getInstance().setVisible(true);
         
-        // set fullscreen if necessary
-        if(DisplayManager.returnToFullscreen()) {
-        	InputManager.requestFullscreen();
-        }
+        // get back to fullscreen mode
+        DisplayManager.returnToFullScreen();
+        
+        // Pause IconLoader
+        IconLoader.getInstance().pauseLoading(true);
 	}
 	
 	/* Toolbar Actions */
@@ -133,4 +137,5 @@ public class MapViewFrame extends MapFrame {
 	private void setTextMode() {
 		PanGraph.setTextMode(b_textMode.isSelected());
 	}
+
 }

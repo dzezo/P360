@@ -16,8 +16,10 @@ import utils.Loader;
 
 public class Sphere extends Body {
 	
-	private static final float angleStep = 1.0f; // Must be divisible with 360
-	private static final int coordCount = (int) ((180/angleStep + 1) * (180/angleStep + 1)); ////////////////////////
+	//private static final float angleStep = 1.0f; // Must be divisible with 360
+	//private static final int coordCount = (int) ((180/angleStep + 1) * (180/angleStep + 1)); ////////////////////////
+	private static final double gradation = 90;
+	private static final int coordCount = (int) (2*(gradation + 1)*(gradation + 1));
 	
 	public Sphere(int width, float endAngle) {
 		vertexCount = 2*coordCount;
@@ -31,7 +33,7 @@ public class Sphere extends Body {
 		// indices array
 		int newVertexIndex = 0;
 		int oldVertexIndex = 1;
-		
+		/*
 		float phi, theta;
 		float x, y, z;
 		float s,t;
@@ -68,6 +70,46 @@ public class Sphere extends Body {
 				posCoords[3*newVertexIndex + 2] = z*radius;
 				texCoords[2*newVertexIndex] = s;
 				texCoords[2*newVertexIndex + 1] = t + tStep;		
+				indices[vertexCounter++] = newVertexIndex++;
+			}
+		}
+		*/
+		
+		float x, y, z;
+		float s, t;
+		double alpha1, alpha2, beta;
+		
+		for(double j = 0; j < gradation; j++) {
+			alpha1 = j/gradation * Math.PI;
+			alpha2 = (j+1)/gradation * Math.PI;
+			for(double i = 0; i <= gradation; i++) {
+				beta = i/gradation * Math.PI;
+				
+				z = (float) (Math.sin(alpha1)*Math.cos(beta));
+				x = (float) (Math.sin(alpha1)*Math.sin(beta));
+				y = (float) Math.cos(alpha1);
+				
+				s = (float) (beta / Math.PI);
+				t = (float) (alpha1 / Math.PI);
+				
+				posCoords[3*newVertexIndex] = x*radius;
+				posCoords[3*newVertexIndex + 1] = y*radius;
+				posCoords[3*newVertexIndex + 2] = z*radius;
+				texCoords[2*newVertexIndex] = s;
+				texCoords[2*newVertexIndex + 1] = t;
+				indices[vertexCounter++] = newVertexIndex++;
+				
+				z = (float) (Math.sin(alpha2)*Math.cos(beta));
+				x = (float) (Math.sin(alpha2)*Math.sin(beta));
+				y = (float) Math.cos(alpha2);
+				
+				t = (float) (alpha2 / Math.PI);
+				
+				posCoords[3*newVertexIndex] = x*radius;
+				posCoords[3*newVertexIndex + 1] = y*radius;
+				posCoords[3*newVertexIndex + 2] = z*radius;
+				texCoords[2*newVertexIndex] = s;
+				texCoords[2*newVertexIndex + 1] = t;
 				indices[vertexCounter++] = newVertexIndex++;
 			}
 		}

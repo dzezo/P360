@@ -26,7 +26,7 @@ import shaders.StaticShader;
 import utils.AutoLoad;
 import utils.ChooserUtils;
 import utils.ConfigData;
-
+import utils.IconLoader;
 import utils.ImageLoader;
 import utils.Loader;
 
@@ -109,6 +109,7 @@ public class Main {
 			GuiRenderer.render(guiShader);
 			
 			// update display
+			DisplayManager.serveRequests();
 			DisplayManager.updateDisplay();
 			
 		}
@@ -124,6 +125,9 @@ public class Main {
 		
 		// stop audio
 		AudioManager.stopAudio();
+		
+		// stop IconLoader
+		IconLoader.getInstance().doStop();
 		
 		// Releasing resources
 		shader.cleanUp();

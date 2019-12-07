@@ -14,6 +14,8 @@ import static org.lwjgl.opengl.GL11.*;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.util.vector.Vector2f;
 
+import frames.MainFrame;
+
 public class DisplayManager {
 	private static final int WIDTH = 800;
 	private static final int HEIGHT = 600;
@@ -26,13 +28,15 @@ public class DisplayManager {
 	private static Cursor emptyCursor;
 	
 	private static boolean toFullscreen = false;
+	private static boolean fullScreenRequest = false;
+	private static boolean windowedRequest = false;
 	
 	public static void createDisplay(Canvas canvas) {
 		ContextAttribs attribs = new ContextAttribs(3,3).withForwardCompatible(true).withProfileCore(true);
 		
 		try{
 			Display.setParent(canvas);
-			Display.setTitle("P360");
+			Display.setTitle("P360 Full Screen");
 			Display.setVSyncEnabled(true);
 			Display.create(new PixelFormat(), attribs);
 		}
@@ -73,7 +77,7 @@ public class DisplayManager {
 		return HEIGHT;
 	}
 	
-	public static void setFullscreen() {
+	private static void setFullscreen() {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int width = (int) screenSize.getWidth();
 		int height = (int) screenSize.getHeight();
@@ -94,7 +98,7 @@ public class DisplayManager {
 		return Display.isFullscreen();
 	}
 	
-	public static void setWindowed() {
+	private static void setWindowed() {
 		try {
 			Display.setFullscreen(false);
 		} catch (LWJGLException e) {
@@ -106,26 +110,6 @@ public class DisplayManager {
 		glViewport(0, 0, Display.getWidth(), Display.getHeight());
 		// Inform about resizing
 		resized = true;
-	}
-	
-	/**
-	 * Sets request to return to fullscreen mode when possible
-	 */
-	public static void setReturnToFullscreen() {
-		toFullscreen = true;
-	}
-	
-	/**
-	 * Checks for a fullscreen request
-	 * @return true if request was set
-	 */
-	public static boolean returnToFullscreen() {
-		if(toFullscreen) {
-			toFullscreen = false;
-			return true;
-		}
-		
-		return false;
 	}
 	
 	public static boolean wasResized() {
@@ -176,4 +160,44 @@ public class DisplayManager {
 	public static boolean isMouseInWindow() {
 		return Mouse.isInsideWindow();
 	}
+
+	/* Requests */
+	public static void serveRequests() {
+		if(fullScreenRequest && !Display.isFullscreen()) {
+			DisplayManager.setFullscreen();
+			fullScreenRequest = false;
+		}
+		if(windowedRequest && Display.isFullscreen()) {
+			DisplayManager.setWindowed();
+			windowedRequest = false;
+		}
+	}
+	
+	public static void requestFullScreen() {
+		fullScreenRequest = true;
+	}
+	
+	public static void requestWindowed() {
+		windowedRequest = true;
+	}
+	
+	
+	public static void requestReturnToFullScreen() {
+		toFullscreen = true;
+	}
+	
+	/**
+	 * Proverava da li je postavljen flag da je bio fullscreen,
+	 * ukoliko jeste zahteva ponovno vracanje u fullscreen rezim
+	 * @return flag da je bio fullscreen
+	 */
+	public static boolean returnToFullScreen() {
+		if(toFullscreen) {
+			fullScreenRequest = true;
+			toFullscreen = false;
+		}
+		
+		return toFullscreen;
+	}
+	
 }

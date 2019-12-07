@@ -22,6 +22,7 @@ import touring.TourManager;
 import utils.AutoSave;
 import utils.ChooserUtils;
 import utils.DialogUtils;
+import utils.IconLoader;
 
 @SuppressWarnings("serial")
 public class MapDrawFrame extends MapFrame {
@@ -225,6 +226,9 @@ public class MapDrawFrame extends MapFrame {
 		
 		// set origin of a map
 		setOrigin();
+		
+		// Unpause IconLoader
+		IconLoader.getInstance().pauseLoading(false);
 	}
 	
 	public void hideFrame() {
@@ -236,6 +240,9 @@ public class MapDrawFrame extends MapFrame {
         
     	// hide frame
         setVisible(false);
+        
+        // Pause IconLoader
+        IconLoader.getInstance().pauseLoading(true);
 	}
 	
 	/* Toolbar Actions */
@@ -430,7 +437,7 @@ public class MapDrawFrame extends MapFrame {
             AutoSave.stopSaving();
             
             // hide frame
-			setVisible(false);
+			hideFrame();
 		}
 	}
 	

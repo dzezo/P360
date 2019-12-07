@@ -69,6 +69,7 @@ public class PanMap extends Rectangle {
 		super(x, y, WIDTH, HEIGHT);
 		this.parent = parent;
 		this.panName = getNameFromPath(parent.getPanoramaPath());
+		this.icon = new PanMapIcon(this);
 		
 		calculatePorts(x,y);       
 	}
@@ -265,12 +266,9 @@ public class PanMap extends Rectangle {
 		if(!panelRect.intersects(this)) return;
 		
 		// draw fill
-		// create icon if non exists
-		if(icon == null) {
-			icon = new PanMapIcon(this);
-		}
-		else if(!icon.isLoaded())
-			icon.reloadIcon();
+		// load icon if not loaded
+		if(!icon.isLoaded())
+			icon.loadIcon();
 		
 		// draw icon/text
 		if(PanGraph.isTextMode() || !icon.isLoaded()) {

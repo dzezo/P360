@@ -2,8 +2,8 @@ package utils;
 
 import javax.swing.SwingWorker;
 
+import glRenderer.DisplayManager;
 import glRenderer.Scene;
-import input.InputManager;
 import panorama.PanGraph;
 import touring.TourManager;
 
@@ -21,7 +21,7 @@ public class AutoLoad {
 					
 					// Set fullscreen if path exists
 					if(TourManager.hasPath() && ConfigData.getPanFlag())
-						InputManager.requestFullscreen();
+						DisplayManager.requestFullScreen();
 				}
 				
 				// loading complete

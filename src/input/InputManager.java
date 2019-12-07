@@ -44,9 +44,6 @@ public class InputManager {
 	public static final int GP_MAP = 4;			// L2
 	public static final int GP_MAP_CONFIRM = 5;	// R2
 	
-	// Requests
-	private static boolean fullscreenRequest = false;
-	
 	// Mouse movement config
 	private static Vector2f prevMouseDisplayPos = new Vector2f(0, 0);
 	private static Vector2f mouseDisplayPos = new Vector2f(0, 0);
@@ -93,8 +90,6 @@ public class InputManager {
 				readControlerOnMap();
 		}
 		
-		// Other Input Requests
-		fullscreenRequest();
 	}
 	
 	public static void setController(ControllerItem ci) {
@@ -148,8 +143,8 @@ public class InputManager {
 				int key = Keyboard.getEventKey();
 				switch(key) {
 				case K_FSCREEN:
-					if(!DisplayManager.isFullscreen()) DisplayManager.setFullscreen();
-					else DisplayManager.setWindowed();
+					if(!DisplayManager.isFullscreen()) DisplayManager.requestFullScreen();
+					else DisplayManager.requestWindowed();
 					break;
 				case K_LPAN:
 					if(!GuiNavButtons.areHidden()) Scene.goSide(3);
@@ -180,7 +175,7 @@ public class InputManager {
 				case K_DOWN:
 					break;
 				default:
-					if(DisplayManager.isFullscreen()) DisplayManager.setWindowed();
+					if(DisplayManager.isFullscreen()) DisplayManager.requestWindowed();
 					break;
 				}
 			}
@@ -195,9 +190,9 @@ public class InputManager {
 					// double click condition
 					if (click && clickTime + doubleClickLatency > System.currentTimeMillis()){
 						if(DisplayManager.isFullscreen())
-							DisplayManager.setWindowed();
+							DisplayManager.requestWindowed();
 						else
-							DisplayManager.setFullscreen();
+							DisplayManager.requestFullScreen();
 						
 						// reset for next detection
 						click = false;
@@ -300,9 +295,9 @@ public class InputManager {
 				}
 				else if(controller.isButtonPressed(GP_FSCREEN)) {
 					if(DisplayManager.isFullscreen())
-						DisplayManager.setWindowed();
+						DisplayManager.requestWindowed();
 					else
-						DisplayManager.setFullscreen();
+						DisplayManager.requestFullScreen();
 				}
 				else if(controller.isButtonPressed(GP_PAN)) {
 					ConfigData.setPanFlag();
@@ -371,18 +366,6 @@ public class InputManager {
 		return System.currentTimeMillis() > lastMouseMoveTime + mouseHideLatency;
 	}
 	
-	private static void fullscreenRequest() {
-		if(fullscreenRequest) {
-			DisplayManager.setFullscreen();
-			
-			fullscreenRequest = false;
-		}
-	}
-	
-	public static void requestFullscreen() {
-		fullscreenRequest = true;
-	}
-
 	public static long getLastInteractTime() {
 		return lastInteractTime;
 	}
@@ -390,4 +373,5 @@ public class InputManager {
 	public static void setLastInteractTime(long time) {
 		lastInteractTime = time;
 	}
+
 }
