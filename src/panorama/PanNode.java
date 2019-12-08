@@ -48,22 +48,16 @@ public class PanNode implements Serializable {
 	}
 	
 	/**
-	 * Provera da li je panorama ucitana
-	 * @return true ukoliko jeste
-	 */
-	public boolean isLoaded() {
-		if(panorama == null)
-			return false;
-		else
-			return true;
-	}
-	
-	/**
 	 * Ucitava panoramu ukoliko ona nije ucitana
 	 */
 	public void loadPanorama() {
-		if(!isLoaded())
+		if(panorama == null)
 			panorama = new Panorama();
+	}
+	
+	public void unloadPanorama() {
+		panorama = null;
+		System.gc();
 	}
 	
 	/**

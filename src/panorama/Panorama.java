@@ -24,8 +24,8 @@ public class Panorama extends Texture {
 		
 		float imageAspect = (float) width / (float) height;
 		if(imageAspect == 2) {
-			body[0] = new Sphere(width, 180.0f);
-			body[1] = new Sphere(width, 0);
+			body[0] = new Sphere(width, Math.PI);
+			body[1] = new Sphere(width, -Math.PI);
 			type = TYPE_SPHERICAL;
 		}
 		else {

@@ -17,7 +17,8 @@ public class IconLoader extends Thread {
 	private Object lock = new Object();
 	
 	private boolean doStop = false;
-	private boolean pause = false;
+	private boolean postpone = false;
+	private boolean loading = false;
 	
 	private IconLoader() {
 		this.setName("PanMapIcon loader");
@@ -30,6 +31,10 @@ public class IconLoader extends Thread {
 		return instance;
 	}
 	
+	public boolean isLoading() {
+		return loading;
+	}
+	
 	public void doStop() {
 		synchronized(lock) {
 			doStop = true;
@@ -38,18 +43,18 @@ public class IconLoader extends Thread {
 	}
 	
 	/**
-	 * Podesava pause flag
+	 * Odlaze ucitavanje ikonica
 	 * @param pause
-	 * <br> true - Zavrsava ucitavanje i pauzira sledeca ucitavanja.
+	 * <br> true - Zavrsava ucitavanje i odlaze sledeca ucitavanja.
 	 * <br> false - Budi nit ukoliko spava i postavlja flag da je ucitavanje dozvoljeno.
 	 */
-	public void pauseLoading(boolean pause) {
-		if(pause) {
-			this.pause = true;
+	public void postponeLoading(boolean postpone) {
+		if(postpone) {
+			this.postpone = true;
 		}
 		else {
 			synchronized(lock) {
-				this.pause = false;
+				this.postpone = false;
 				lock.notify();
 			}
 		}
@@ -60,7 +65,7 @@ public class IconLoader extends Thread {
 	}
 	
 	private boolean keepLoading() {
-		return pause == false;
+		return postpone == false;
 	}
 	
 	public void run() {
@@ -76,6 +81,9 @@ public class IconLoader extends Thread {
 			
 			while(!loadingQueue.isEmpty() && keepLoading() && keepRunning()) {
 				try {
+					// Loading flag
+					loading = true;
+					
 					// Deque PanMapIcon
 					PanMapIcon icon = loadingQueue.remove();
 					String iconPath = icon.getParent().getParent().getPanoramaPath();
@@ -108,6 +116,10 @@ public class IconLoader extends Thread {
 					e.printStackTrace();
 				}
 			}
+			
+			// Loading completed
+			loading = false;
+			ImageLoader.allowLoading();
 		}
 	}
 	

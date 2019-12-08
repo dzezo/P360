@@ -228,7 +228,7 @@ public class MapDrawFrame extends MapFrame {
 		setOrigin();
 		
 		// Unpause IconLoader
-		IconLoader.getInstance().pauseLoading(false);
+		IconLoader.getInstance().postponeLoading(false);
 	}
 	
 	public void hideFrame() {
@@ -242,7 +242,7 @@ public class MapDrawFrame extends MapFrame {
         setVisible(false);
         
         // Pause IconLoader
-        IconLoader.getInstance().pauseLoading(true);
+        IconLoader.getInstance().postponeLoading(true);
 	}
 	
 	/* Toolbar Actions */
@@ -427,7 +427,7 @@ public class MapDrawFrame extends MapFrame {
 	
 	private void ok() {
 		if(PanGraph.getHome() != null) {
-			Scene.refreshScene(PanGraph.getHome());
+			Scene.queuePanorama(PanGraph.getHome());
 			TourManager.prepare(PanGraph.getHome());
 			
 			// update map size

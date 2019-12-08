@@ -69,18 +69,18 @@ public class Main {
 		while(mainFrame.isRunning()) {
 			// check for changes
 			if(Scene.changeRequested()) {
-				if(Scene.getQueuedPanorama().isLoaded() || ImageLoader.isLoaded()) {
-					Scene.loadNewImage(Scene.getQueuedPanorama());
-	
+				if(ImageLoader.isLoaded()) {
+					Scene.loadNewActivePanorama(Scene.getQueuedPanorama());
 					ImageLoader.resetLoader();
 				}
 				else if(!ImageLoader.isLoading()){
 					AudioManager.stopAudio();
+					Loader.scrap();
+					Scene.unloadActivePanorama();
 					ImageLoader.loadImage(Scene.getQueuedPanorama().getPanoramaPath());
 				}
 				else if(ImageLoader.isCanceled()) {
 					Scene.dequeuePanorama();
-					
 					ImageLoader.resetLoader();
 				}
 			}

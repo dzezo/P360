@@ -17,6 +17,8 @@ public class ImageLoader {
 	private static boolean isLoaded = false;
 	private static boolean isCanceled = false;
 	
+	private static final Object lock = new Object();
+	
 	public static void loadImage(String path) {
 		// Set loader
 		isLoading = true;
@@ -29,6 +31,11 @@ public class ImageLoader {
 		executor.execute(new Runnable() {
 			public void run() {
 				try {
+					while(IconLoader.getInstance().isLoading()) {
+						synchronized(lock) {
+							lock.wait();
+						}
+					}
 					image = loadBufferedImage(path);
 					isLoaded = true;
 				} catch (OutOfMemoryError | Exception e) {
@@ -36,11 +43,18 @@ public class ImageLoader {
 					if(image != null) {
 						image.flush();
 						image = null;
+						System.gc();
 					}
 					isCanceled = true;
 				}
 			}		
 		});
+	}
+	
+	public static void allowLoading() {
+		synchronized(lock) {
+			lock.notify();
+		}
 	}
 	
 	private static BufferedImage loadBufferedImage(String path) throws Exception {
@@ -63,6 +77,7 @@ public class ImageLoader {
 	
 	public static void clearImage() {
 		image = null;
+		System.gc();
 	}
 	
 	public static boolean isLoading() {

@@ -56,7 +56,7 @@ public class Renderer {
 		glBindVertexArray(0);
 		
 		// drugi deo
-		/*
+		
 		glBindVertexArray(Scene.getPanorama().getBody2().getVaoID());
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
@@ -68,7 +68,7 @@ public class Renderer {
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glBindVertexArray(0);
-		*/
+		
 		shader.stop();
 	}
 

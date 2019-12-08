@@ -21,7 +21,7 @@ public class Sphere extends Body {
 	private static final double gradation = 90;
 	private static final int coordCount = (int) (2*(gradation + 1)*(gradation + 1));
 	
-	public Sphere(int width, float endAngle) {
+	public Sphere(int width, double endAngle) {
 		vertexCount = 2*coordCount;
 		radius = (float) (width/(2*Math.PI));
 		
@@ -82,14 +82,14 @@ public class Sphere extends Body {
 		for(double j = 0; j < gradation; j++) {
 			alpha1 = j/gradation * Math.PI;
 			alpha2 = (j+1)/gradation * Math.PI;
-			for(double i = 0; i <= gradation; i++) {
-				beta = i/gradation * Math.PI;
+			for(double i = gradation; i >= 0; i--) {
+				beta = i/gradation * endAngle;
 				
 				z = (float) (Math.sin(alpha1)*Math.cos(beta));
 				x = (float) (Math.sin(alpha1)*Math.sin(beta));
 				y = (float) Math.cos(alpha1);
 				
-				s = (float) (beta / Math.PI);
+				s = (endAngle > 0) ? (float) (1.0 - beta / endAngle) : (float) (beta / endAngle);
 				t = (float) (alpha1 / Math.PI);
 				
 				posCoords[3*newVertexIndex] = x*radius;

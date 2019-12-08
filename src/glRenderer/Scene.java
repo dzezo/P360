@@ -9,20 +9,21 @@ public class Scene {
 	private static PanNode queuedPanorama;
 	private static Camera camera;
 	private static boolean ready = false;
-	private static boolean refreshScene = false;
 	
-	public static void loadNewImage(PanNode newImage) {
-		// reset ready flag
-		ready = false;
+	public static void loadNewActivePanorama(PanNode newImage) {
+		activePanorama = newImage;
+		activePanorama.loadPanorama();
 		
-		// prepare renderer
-		initScene(newImage);
-		
-		// set available nav buttons
+		Renderer.setNewProjection();		
 		GuiNavButtons.setAvailableNavButtons(activePanorama);
 		
-		// set ready flag
+		queuedPanorama = null;
 		ready = true;
+	}
+	
+	public static void unloadActivePanorama() {
+		if(activePanorama != null)
+			activePanorama.unloadPanorama();
 	}
 	
 	/**
@@ -56,9 +57,6 @@ public class Scene {
 		// Queue image for loading
 		queuedPanorama = panorama;
 		
-		// If loaded, there is no need to stop the scene
-		if(queuedPanorama.isLoaded()) return;
-		
 		// Loading started
 		// Stop displaying active panorama
 		ready = false;
@@ -68,8 +66,7 @@ public class Scene {
 		// Loading canceled
 		if(activePanorama != null) {
 			// Display active panorama if exists
-			queuedPanorama = activePanorama;
-			ready = true;
+			queuePanorama(activePanorama);
 		}
 		else {
 			// Wait for another input
@@ -83,9 +80,11 @@ public class Scene {
 		return queuedPanorama;
 	}
 	
-	/**
-	 * Interfejs za navigaciju dugmicima
-	 */
+	public static boolean changeRequested() {
+		return queuedPanorama != null;
+	}
+	
+	// Interfejs za navigaciju dugmicima
 	
 	/**
 	 * Skace na odabranu susednu panoramu.
@@ -150,33 +149,6 @@ public class Scene {
 		if(activePanorama.getBot() !=null) {
 			queuePanorama(activePanorama.getBot());
 		}
-	}
-	
-	/**
-	 * Ucitava aktivnu panoramu na scenu
-	 */
-	public static void initScene(PanNode newImage) {
-		// set image to load
-		activePanorama = newImage;
-		
-		activePanorama.loadPanorama();
-		Renderer.setNewProjection();
-	}
-	
-	public static boolean changeRequested() {
-		if(refreshScene) {
-			GuiNavButtons.setAvailableNavButtons(activePanorama);
-			refreshScene = false;
-		}
-		
-		return activePanorama != queuedPanorama;
-	}
-	
-	public static void refreshScene(PanNode panorama) {
-		if(activePanorama == panorama)
-			refreshScene = true;
-		else
-			queuePanorama(panorama);
 	}
 	
 }

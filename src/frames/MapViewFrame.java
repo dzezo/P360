@@ -102,7 +102,7 @@ public class MapViewFrame extends MapFrame {
 		setOrigin();
 		
 		// Unpause IconLoader
-		IconLoader.getInstance().pauseLoading(false);
+		IconLoader.getInstance().postponeLoading(false);
 	}
 	
 	public void hideFrame() {
@@ -120,7 +120,7 @@ public class MapViewFrame extends MapFrame {
         DisplayManager.returnToFullScreen();
         
         // Pause IconLoader
-        IconLoader.getInstance().pauseLoading(true);
+        IconLoader.getInstance().postponeLoading(true);
 	}
 	
 	/* Toolbar Actions */
