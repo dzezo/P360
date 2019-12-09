@@ -10,12 +10,10 @@ import java.io.Serializable;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
-import utils.IconLoader;
+import loaders.IconLoader;
 
 public class PanMapIcon implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
-	private static transient IconLoader iconLoader = IconLoader.getInstance();
 	
 	private PanMap parent;
 	
@@ -47,7 +45,7 @@ public class PanMapIcon implements Serializable {
 			return;
 		
 		loadRequested = true;
-		iconLoader.add(this);
+		IconLoader.getInstance().add(this);
 	}
 	
 	/**

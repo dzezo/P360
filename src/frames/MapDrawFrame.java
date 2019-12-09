@@ -16,13 +16,13 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 import glRenderer.Scene;
+import loaders.IconLoader;
 import panorama.PanGraph;
 import panorama.PanNode;
 import touring.TourManager;
 import utils.AutoSave;
 import utils.ChooserUtils;
 import utils.DialogUtils;
-import utils.IconLoader;
 
 @SuppressWarnings("serial")
 public class MapDrawFrame extends MapFrame {

@@ -21,13 +21,13 @@ import gui.GuiNavButtons;
 import gui.GuiRenderer;
 import gui.GuiSprites;
 import input.InputManager;
+import loaders.IconLoader;
+import loaders.ImageLoader;
 import shaders.GuiShader;
 import shaders.StaticShader;
 import utils.AutoLoad;
 import utils.ChooserUtils;
 import utils.ConfigData;
-import utils.IconLoader;
-import utils.ImageLoader;
 import utils.Loader;
 
 public class Main {
@@ -64,24 +64,26 @@ public class Main {
 		GuiSprites.init();
 		
 		// load previously used map
+		ImageLoader imageLoader = ImageLoader.getInstance();
+		IconLoader iconLoader = IconLoader.getInstance();
 		AutoLoad.load();
 		
 		while(mainFrame.isRunning()) {
 			// check for changes
 			if(Scene.changeRequested()) {
-				if(ImageLoader.isLoaded()) {
+				if(imageLoader.isLoaded()) {
 					Scene.loadNewActivePanorama(Scene.getQueuedPanorama());
-					ImageLoader.resetLoader();
+					imageLoader.resetLoader();
 				}
-				else if(!ImageLoader.isLoading()){
+				else if(!imageLoader.isLoading()){
 					AudioManager.stopAudio();
-					Loader.scrap();
+					Loader.cleanUp();
 					Scene.unloadActivePanorama();
-					ImageLoader.loadImage(Scene.getQueuedPanorama().getPanoramaPath());
+					imageLoader.loadImage(Scene.getQueuedPanorama().getPanoramaPath());
 				}
-				else if(ImageLoader.isCanceled()) {
+				else if(imageLoader.isCanceled()) {
 					Scene.dequeuePanorama();
-					ImageLoader.resetLoader();
+					imageLoader.resetLoader();
 				}
 			}
 			
@@ -89,7 +91,7 @@ public class Main {
 			Renderer.prepare();
 			
 			if(Scene.isReady()) {
-				if(!ImageLoader.isLoading()) {
+				if(!imageLoader.isLoading()) {
 					InputManager.readInput();		
 				}
 				
@@ -126,8 +128,9 @@ public class Main {
 		// stop audio
 		AudioManager.stopAudio();
 		
-		// stop IconLoader
-		IconLoader.getInstance().doStop();
+		// stop loaders
+		imageLoader.doStop();
+		iconLoader.doStop();
 		
 		// Releasing resources
 		shader.cleanUp();

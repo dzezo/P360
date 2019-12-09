@@ -14,9 +14,9 @@ import javax.swing.JToolBar;
 
 import glRenderer.DisplayManager;
 import glRenderer.Scene;
+import loaders.IconLoader;
 import panorama.PanGraph;
 import panorama.PanNode;
-import utils.IconLoader;
 
 @SuppressWarnings("serial")
 public class MapViewFrame extends MapFrame {

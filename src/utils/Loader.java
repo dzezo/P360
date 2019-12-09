@@ -67,15 +67,6 @@ public class Loader {
 		}
 	}
 	
-	public static void scrap() {
-		for(int vao:vaos) {
-			glDeleteVertexArrays(vao);
-		}
-		for(int vbo:vbos) {
-			glDeleteBuffers(vbo);
-		}
-	}
-	
 	private static int createVAO() {
 		int vaoID = glGenVertexArrays();
 		vaos.add(vaoID);

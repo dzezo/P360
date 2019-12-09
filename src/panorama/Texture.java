@@ -3,8 +3,8 @@ package panorama;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
 
+import loaders.ImageLoader;
 import utils.BuffUtils;
-import utils.ImageLoader;
 
 public class Texture {
 	protected int textureID;
@@ -12,8 +12,8 @@ public class Texture {
 	protected int width, height;
 	
 	public Texture() {
-		width = ImageLoader.getImage().getWidth();
-		height = ImageLoader.getImage().getHeight();
+		width = ImageLoader.getInstance().getImage().getWidth();
+		height = ImageLoader.getInstance().getImage().getHeight();
 		
 		textureID = glGenTextures();
 		glBindTexture(GL_TEXTURE_2D, textureID);
@@ -26,7 +26,7 @@ public class Texture {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width / 2, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, 
-				BuffUtils.storeInIntBuffer(ImageLoader.getImageData()));
+				BuffUtils.storeInIntBuffer(ImageLoader.getInstance().getImageData(0, 0, 2, 1)));
 		
 		glBindTexture(GL_TEXTURE_2D, 0);
 	
@@ -43,13 +43,13 @@ public class Texture {
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width / 2, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, 
-				BuffUtils.storeInIntBuffer(ImageLoader.getImageData2()));
+				BuffUtils.storeInIntBuffer(ImageLoader.getInstance().getImageData(1, 0, 2, 1)));
 		
 		glBindTexture(GL_TEXTURE_2D, 0);
 		
 		// Ocisti ucitanu sliku
 		
-		ImageLoader.clearImage();
+		ImageLoader.getInstance().clearImage();
 	}
 
 	public int getTextureID() {
