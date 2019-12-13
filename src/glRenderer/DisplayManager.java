@@ -10,6 +10,9 @@ import org.lwjgl.input.Cursor;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+
 import static org.lwjgl.opengl.GL11.*;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.util.vector.Vector2f;
@@ -36,9 +39,10 @@ public class DisplayManager {
 		
 		try{
 			Display.setParent(canvas);
-			Display.setTitle("P360 Full Screen");
+			Display.setTitle("P360");
 			Display.setVSyncEnabled(true);
-			Display.create(new PixelFormat(), attribs);
+			Display.create(new PixelFormat().withSamples(4), attribs);
+			GL11.glEnable(GL13.GL_MULTISAMPLE);
 		}
 		catch(LWJGLException e){
 			e.printStackTrace();
@@ -82,6 +86,7 @@ public class DisplayManager {
 		int width = (int) screenSize.getWidth();
 		int height = (int) screenSize.getHeight();
 		try {
+			MainFrame.getInstance().setVisible(false);
 			Display.setDisplayModeAndFullscreen(Display.getDesktopDisplayMode());
 		} catch (LWJGLException e) {
 			e.printStackTrace();
@@ -101,6 +106,7 @@ public class DisplayManager {
 	private static void setWindowed() {
 		try {
 			Display.setFullscreen(false);
+			MainFrame.getInstance().setVisible(true);
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 		}
@@ -187,14 +193,13 @@ public class DisplayManager {
 	}
 	
 	/**
-	 * Proverava da li je postavljen flag da je bio fullscreen,
-	 * ukoliko jeste zahteva ponovno vracanje u fullscreen rezim
-	 * @return flag da je bio fullscreen
+	 * Poziv ce resetovati return to full screen flag.
+	 * @return stanje return to full screen flag-a
 	 */
-	public static boolean returnToFullScreen() {
+	public static boolean returnToFullScreenRequested() {
 		if(toFullscreen) {
-			fullScreenRequest = true;
 			toFullscreen = false;
+			return true;
 		}
 		
 		return toFullscreen;

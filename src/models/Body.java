@@ -1,10 +1,9 @@
 package models;
 
-public class Body {
+public abstract class Body {
 	protected int vaoID;
-	protected int vertexCount;
-	protected float radius;
 	
+	protected float radius;
 	protected float posCoords[];
 	protected float texCoords[];
 	protected int indices[];
@@ -13,11 +12,13 @@ public class Body {
 		return vaoID;
 	}
 
-	public int getVertexCount() {
-		return vertexCount;
+	public int getIndicesCount() {
+		return indices.length;
 	}
 	
 	public float getRadius() {
 		return radius;
 	}
+	
+	public abstract int getPrimitiveType();
 }

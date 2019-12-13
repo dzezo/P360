@@ -3,8 +3,6 @@ package loaders;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import gui.GuiSprites;
 import sun.awt.image.codec.JPEGImageDecoderImpl;

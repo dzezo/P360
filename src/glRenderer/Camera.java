@@ -7,7 +7,7 @@ import utils.ConfigData;
 
 public class Camera {
 	// Camera world position
-	private Vector3f position = new Vector3f(0,0,0);
+	private Vector3f position = new Vector3f(0, 0, 0);
 	
 	// Camera angles
 	private float pitch;

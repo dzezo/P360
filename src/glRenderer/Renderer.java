@@ -49,7 +49,7 @@ public class Renderer {
 		
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, Scene.getPanorama().getTextureID());
-		glDrawElements(GL_TRIANGLE_STRIP, Scene.getPanorama().getBody().getVertexCount(), GL_UNSIGNED_INT, 0);
+		glDrawElements(Scene.getPanorama().getBody().getPrimitiveType(), Scene.getPanorama().getBody().getIndicesCount(), GL_UNSIGNED_INT, 0);
 		
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
@@ -63,7 +63,7 @@ public class Renderer {
 		
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, Scene.getPanorama().getTextureID2());
-		glDrawElements(GL_TRIANGLE_STRIP, Scene.getPanorama().getBody2().getVertexCount(), GL_UNSIGNED_INT, 0);
+		glDrawElements(Scene.getPanorama().getBody2().getPrimitiveType(), Scene.getPanorama().getBody2().getIndicesCount(), GL_UNSIGNED_INT, 0);
 		
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);

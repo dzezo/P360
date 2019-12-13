@@ -5,8 +5,8 @@ import static org.lwjgl.opengl.GL12.*;
 
 import loaders.ImageLoader;
 import utils.BuffUtils;
-
 public class Texture {
+	
 	protected int textureID;
 	protected int textureID2; // drugi deo
 	protected int width, height;
@@ -22,14 +22,14 @@ public class Texture {
 		
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width / 2, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, 
 				BuffUtils.storeInIntBuffer(ImageLoader.getInstance().getImageData(0, 0, 2, 1)));
 		
 		glBindTexture(GL_TEXTURE_2D, 0);
-	
+		
 		// Drugi deo texture
 		
 		textureID2 = glGenTextures();
@@ -51,7 +51,7 @@ public class Texture {
 		
 		ImageLoader.getInstance().clearImage();
 	}
-
+	
 	public int getTextureID() {
 		return textureID;
 	}

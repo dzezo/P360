@@ -117,7 +117,8 @@ public class MapViewFrame extends MapFrame {
         MainFrame.getInstance().setVisible(true);
         
         // get back to fullscreen mode
-        DisplayManager.returnToFullScreen();
+        if(DisplayManager.returnToFullScreenRequested())
+        	DisplayManager.requestFullScreen();
         
         // Pause IconLoader
         IconLoader.getInstance().postponeLoading(true);

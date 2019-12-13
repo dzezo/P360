@@ -31,7 +31,6 @@ import javax.swing.plaf.basic.BasicSliderUI;
 
 import com.sun.jna.NativeLibrary;
 
-import frames.MainFrame;
 import glRenderer.DisplayManager;
 import glRenderer.Scene;
 import uk.co.caprica.vlcj.binding.RuntimeUtil;
@@ -60,8 +59,10 @@ public class VideoPlayer {
 	private JSlider timeSlider;
 	private boolean timeSeeking;
 	
-	private Timer hideTimer;
+	private Timer hideCursorTimer;
 	private Timer fullScreenTimer;
+	private Timer showTimer;
+	private Timer hideTimer;
 	private boolean doubleClick;
 	
 	private BufferedImage cursorImg;
@@ -116,8 +117,7 @@ public class VideoPlayer {
 			public void playing(MediaPlayer mediaPlayer) {
 				mediaPlayer.submit(new Runnable() {
 					public void run() {
-						frame.toFront();
-						frame.repaint();
+						showTimer.start();
 					}
 				});
 			}
@@ -159,7 +159,7 @@ public class VideoPlayer {
 				if(!controlsPane.isVisible())
 					controlsPane.setVisible(true);
 				frame.getContentPane().setCursor(Cursor.getDefaultCursor());
-				hideTimer.restart();
+				hideCursorTimer.restart();
 			}
 		});
 		videoSurface.addMouseListener(new MouseAdapter() {
@@ -242,8 +242,12 @@ public class VideoPlayer {
 		});
 		
 		fullScreenButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e) {	
             	mediaPlayerComponent.mediaPlayer().fullScreen().toggle();
+            	if(mediaPlayerComponent.mediaPlayer().fullScreen().isFullScreen())
+            		frame.setAlwaysOnTop(true);
+            	else
+            		frame.setAlwaysOnTop(false);
             }
         });
 		
@@ -275,7 +279,7 @@ public class VideoPlayer {
 		blankCursor = Toolkit.getDefaultToolkit()
 				.createCustomCursor(cursorImg, new Point(0, 0), "blank cursor");
 		
-		hideTimer = new Timer(3000, new ActionListener() {
+		hideCursorTimer = new Timer(3000, new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if(frame.isVisible() && controlsPane.isVisible()) {
 					Rectangle controlsRect = controlsPane.getBounds();
@@ -287,7 +291,7 @@ public class VideoPlayer {
 				}
 			}	
 		});
-		hideTimer.start();
+		hideCursorTimer.start();
 		
 		fullScreenTimer = new Timer(750, new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -295,6 +299,31 @@ public class VideoPlayer {
 			}	
 		});
 		fullScreenTimer.start();
+		
+		showTimer = new Timer(300, new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				frame.setAlwaysOnTop(true);
+				frame.toFront();
+				frame.repaint();
+				
+				if(DisplayManager.isFullscreen()) {
+					DisplayManager.requestReturnToFullScreen();
+					DisplayManager.requestWindowed();
+				}
+				else {
+					showTimer.stop();
+				}
+			}	
+		});
+		
+		hideTimer = new Timer(300, new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(DisplayManager.isFullscreen()) {
+					frame.setVisible(false);
+					hideTimer.stop();
+				}
+			}	
+		});
     }
     
     public void playVideo(String videoPath) {
@@ -321,6 +350,13 @@ public class VideoPlayer {
     	mediaPlayerComponent.mediaPlayer().controls().stop();
     	Scene.setReady(true);
     	
-		frame.setVisible(false);	
+		//frame.setVisible(false);
+		if(DisplayManager.returnToFullScreenRequested()) {
+			DisplayManager.requestFullScreen();
+			hideTimer.start();
+		}
+		else {
+			frame.setVisible(false);
+		}
     }
 }
