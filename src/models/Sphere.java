@@ -10,8 +10,9 @@ public class Sphere extends Body {
 	private static final int coordCount = (sectorCount + 1) * (stackCount + 1);
 	private static final int indicesCount = 6*sectorCount*(stackCount - 1);
 	
-	public Sphere(int width, int sliceX, int slicesX) {
+	public Sphere(int width, int sliceX, int slicesX, int textureID) {
 		radius = (float) (width / (2 * Math.PI));
+		
 		posCoords = new float[coordCount*3];
 		texCoords = new float[coordCount*2];
 		indices = new int[indicesCount];
@@ -51,7 +52,8 @@ public class Sphere extends Body {
 		
 		generateIndices();
 		
-		vaoID = Loader.loadToVAO(posCoords, texCoords, indices);
+		vaoID = Loader.loadToVAO(posCoords, texCoords, indices, vbosID);
+		texID = textureID;
 	}
 	
 	private void generateIndices() {
@@ -80,6 +82,10 @@ public class Sphere extends Body {
 	
 	public int getPrimitiveType() {
 		return primitiveType;
+	}
+
+	public int getType() {
+		return TYPE_SPHERICAL;
 	}
 	
 }

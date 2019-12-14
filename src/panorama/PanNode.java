@@ -56,6 +56,7 @@ public class PanNode implements Serializable {
 	}
 	
 	public void unloadPanorama() {
+		panorama.cleanUp();
 		panorama = null;
 		System.gc();
 	}

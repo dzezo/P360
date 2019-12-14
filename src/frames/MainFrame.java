@@ -45,10 +45,10 @@ public class MainFrame extends Frame {
 		return instance;
 	}
 	
-	/* Display */
 	private JPanel mainPanel = new JPanel(new BorderLayout());
 	private Canvas displayCanvas = new Canvas();
 	private boolean running = false;
+	private boolean closing = false;
 	
 	/* Video player */
 	private VideoPlayer videoPlayer = new VideoPlayer();
@@ -120,11 +120,11 @@ public class MainFrame extends Frame {
 		this.addWindowListener(new WindowAdapter() 
 		{
             public void windowClosing(WindowEvent we){
-            	// Stop ControllerScanner service
+            	if(closing) return;
+            	
+            	closing = true;
             	controllerScanner.doStop();
-            	// Disposing video player
             	videoPlayer.cleanUp();
-            	// Break main loop
             	running = false;
             }
             public void windowActivated(WindowEvent we) {

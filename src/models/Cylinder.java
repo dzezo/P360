@@ -8,7 +8,7 @@ public class Cylinder extends Body {
 	private static final int sectorCount = 180;
 	private static final int indicesCount = 2*(sectorCount + 1);
 	
-	public Cylinder(int width, int height, int sliceX, int slicesX) {
+	public Cylinder(int width, int height, int sliceX, int slicesX, int textureID) {
 		radius = (float) (width / (2 * Math.PI));
 		
 		posCoords = new float[indicesCount*3];
@@ -54,10 +54,15 @@ public class Cylinder extends Body {
 			indices[vertexIndex] = vertexIndex++;
 		}
 		
-		vaoID = Loader.loadToVAO(posCoords, texCoords, indices);
+		vaoID = Loader.loadToVAO(posCoords, texCoords, indices, vbosID);
+		texID = textureID;
 	}
 
 	public int getPrimitiveType() {
 		return primitiveType;
+	}
+
+	public int getType() {
+		return TYPE_CYLINDRICAL;
 	}
 }

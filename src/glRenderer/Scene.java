@@ -14,7 +14,7 @@ public class Scene {
 		activePanorama = newImage;
 		activePanorama.loadPanorama();
 		
-		Renderer.setNewProjection();		
+		Renderer.requestNewProjection();		
 		GuiNavButtons.setAvailableNavButtons(activePanorama);
 		
 		queuedPanorama = null;

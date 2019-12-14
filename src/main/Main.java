@@ -77,7 +77,6 @@ public class Main {
 				}
 				else if(!imageLoader.isLoading()){
 					AudioManager.stopAudio();
-					Loader.cleanUp();
 					Scene.unloadActivePanorama();
 					imageLoader.loadImage(Scene.getQueuedPanorama().getPanoramaPath());
 				}

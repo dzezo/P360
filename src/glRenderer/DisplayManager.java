@@ -92,7 +92,7 @@ public class DisplayManager {
 			e.printStackTrace();
 		}
 		// Recalculate projection matrix
-		Renderer.setNewProjection();
+		Renderer.requestNewProjection();
 		// Where to render on display
 		glViewport(0, 0, width, height);
 		// Inform about resizing
@@ -111,7 +111,7 @@ public class DisplayManager {
 			e.printStackTrace();
 		}
 		// Recalculate projection matrix
-		Renderer.setNewProjection();
+		Renderer.requestNewProjection();
 		// Where to render on display
 		glViewport(0, 0, Display.getWidth(), Display.getHeight());
 		// Inform about resizing
