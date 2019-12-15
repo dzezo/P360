@@ -323,36 +323,6 @@ public class GuiNavButtons {
 			navRight.setRotation(new Vector3f(0, 0, f_yaw));
 			navLeft.setRotation(new Vector3f(0, 0, f_yaw));
 		}
-		else {
-			float f_yaw = Scene.getCamera().getYaw();
-			double angle;
-			float posX,posY,rotZ;
-			
-			if(45 < f_yaw && f_yaw < 135) 
-				angle = Math.PI;
-			else if (135 <= f_yaw && f_yaw <= 225) 
-				angle = 3 * Math.PI / 2;
-			else if(225 < f_yaw && f_yaw < 315) 
-				angle = 0;
-			else 
-				angle = Math.PI / 2;
-				
-			posX = (float) (Math.cos(angle) * btnLocation);
-			posY = (float) (Math.sin(angle) * btnLocation);
-			rotZ = (float) Math.toDegrees(angle - (Math.PI / 2));
-			
-			// Setting nav. btn. positon
-			navTop.setPosition(new Vector2f(posX, posY));
-			navBot.setPosition(new Vector2f(-posX, -posY));
-			navRight.setPosition(new Vector2f(posY, -posX));
-			navLeft.setPosition(new Vector2f(-posY, posX));
-			
-			// Setting nav. btn. rotation to match new position
-			navTop.setRotation(new Vector3f(0, 0, rotZ));
-			navBot.setRotation(new Vector3f(0, 0, rotZ));
-			navRight.setRotation(new Vector3f(0, 0, rotZ));
-			navLeft.setRotation(new Vector3f(0, 0, rotZ));
-		}
 		
 		// Detecting mouse events on nav. btn.
 		navTop.update();

@@ -302,15 +302,14 @@ public class VideoPlayer {
 		
 		showTimer = new Timer(300, new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				frame.setAlwaysOnTop(true);
-				frame.toFront();
-				frame.repaint();
-				
 				if(DisplayManager.isFullscreen()) {
 					DisplayManager.requestReturnToFullScreen();
 					DisplayManager.requestWindowed();
 				}
 				else {
+					frame.setAlwaysOnTop(true);
+					frame.toFront();
+					frame.repaint();
 					showTimer.stop();
 				}
 			}	

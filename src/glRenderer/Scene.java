@@ -3,6 +3,7 @@ package glRenderer;
 import gui.GuiNavButtons;
 import panorama.PanNode;
 import panorama.Panorama;
+import utils.ConfigData;
 
 public class Scene {
 	private static PanNode activePanorama;
@@ -96,17 +97,23 @@ public class Scene {
 	 * <br><b>3</b> - levo
 	 */
 	public static void goSide(int selectedSide) {
-		int numOfSides = 4;
-		int actualSide = 4;
-		float camAngle = camera.getYaw();
-		float refAngle = 315.0f;
+		int actualSide;
 		
-		while(!(camAngle>refAngle) && refAngle>0) {
-			actualSide--;
-			refAngle -= 90;
+		if(ConfigData.getFixGUIFlag()) {
+			actualSide = selectedSide;
 		}
-		
-		actualSide = (selectedSide + actualSide) % numOfSides;
+		else {
+			int numOfSides = 4;
+			float camAngle = camera.getYaw();
+			float refAngle = 315.0f;
+			
+			actualSide = numOfSides;
+			while(!(camAngle>refAngle) && refAngle>0) {
+				actualSide--;
+				refAngle -= 90;
+			}
+			actualSide = (selectedSide + actualSide) % numOfSides;
+		}
 		
 		switch(actualSide) {
 		case 0:

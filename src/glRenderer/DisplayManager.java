@@ -17,8 +17,6 @@ import static org.lwjgl.opengl.GL11.*;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.util.vector.Vector2f;
 
-import frames.MainFrame;
-
 public class DisplayManager {
 	private static final int WIDTH = 800;
 	private static final int HEIGHT = 600;
@@ -86,7 +84,6 @@ public class DisplayManager {
 		int width = (int) screenSize.getWidth();
 		int height = (int) screenSize.getHeight();
 		try {
-			MainFrame.getInstance().setVisible(false);
 			Display.setDisplayModeAndFullscreen(Display.getDesktopDisplayMode());
 		} catch (LWJGLException e) {
 			e.printStackTrace();
@@ -106,7 +103,6 @@ public class DisplayManager {
 	private static void setWindowed() {
 		try {
 			Display.setFullscreen(false);
-			MainFrame.getInstance().setVisible(true);
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 		}
