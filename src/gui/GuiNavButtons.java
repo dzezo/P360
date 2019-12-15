@@ -36,10 +36,10 @@ public class GuiNavButtons {
 	private static long lastShowTime;
 	private static final long hideLatency = 3000; // in milis
 	
-	private static float btnLocation = 0.935f;
-	private static float btnArea = 0.875f;
-	private static float btnScaleX = 0.055f;
-	private static float btnScaleY = 0.055f;
+	private static final float btnLocation = 0.935f;
+	private static final float btnArea = 0.875f;
+	private static final float btnScaleX = 0.055f;
+	private static final float btnScaleY = 0.055f;
 	
 	public static void init() {
 		navTop = new GuiButton("/nav/top.png", new Vector2f(0,btnLocation), new Vector2f(btnScaleX, btnScaleY)) {
@@ -322,6 +322,17 @@ public class GuiNavButtons {
 			navBot.setRotation(new Vector3f(0, 0, f_yaw));
 			navRight.setRotation(new Vector3f(0, 0, f_yaw));
 			navLeft.setRotation(new Vector3f(0, 0, f_yaw));
+		}
+		else {
+			navTop.setPosition(new Vector2f(0, btnLocation));
+			navBot.setPosition(new Vector2f(0, -btnLocation));
+			navRight.setPosition(new Vector2f(btnLocation, 0));
+			navLeft.setPosition(new Vector2f(-btnLocation, 0));
+			
+			navTop.setRotation(new Vector3f(0, 0, 0));
+			navBot.setRotation(new Vector3f(0, 0, 0));
+			navRight.setRotation(new Vector3f(0, 0, 0));
+			navLeft.setRotation(new Vector3f(0, 0, 0));
 		}
 		
 		// Detecting mouse events on nav. btn.
