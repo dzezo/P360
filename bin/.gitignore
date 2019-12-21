@@ -1,12 +1,8 @@
-/utils/
+/shaders/
 /glRenderer/
-/models/
 /panorama/
-/toolbar/
-/videoPlayer/
 /gui/
-/frames/
 /input/
-/main/
-/loaders/
-/sprites/
+/p360/
+/frames/
+/videoPlayer/

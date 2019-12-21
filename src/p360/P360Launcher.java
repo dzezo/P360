@@ -1,4 +1,4 @@
-package main;
+package p360;
 
 import static utils.ConfigData.WORKING_DIR;
 
@@ -30,7 +30,7 @@ import utils.ChooserUtils;
 import utils.ConfigData;
 import utils.Loader;
 
-public class Main {
+public class P360Launcher {
 	
 	public static void main(String[] args) throws Exception {
 		// set system look and feel
@@ -51,9 +51,11 @@ public class Main {
 			public void run() {
 				MapDrawFrame.getInstance();
 				MapViewFrame.getInstance();
+				MainFrame.getInstance();
 			}
 		});
-		MainFrame mainFrame = MainFrame.getInstance();
+		// Attach OpenGL display to mainframe
+		DisplayManager.createDisplay(MainFrame.getInstance().getCanvas());
 		
 		Camera camera = new Camera();
 		StaticShader shader = new StaticShader();
@@ -68,7 +70,7 @@ public class Main {
 		IconLoader iconLoader = IconLoader.getInstance();
 		AutoLoad.load();
 		
-		while(mainFrame.isRunning()) {
+		while(MainFrame.getInstance().isRunning()) {
 			// check for changes
 			if(Scene.changeRequested()) {
 				if(imageLoader.isLoaded()) {
@@ -115,15 +117,6 @@ public class Main {
 			
 		}
 		
-		// Disposing frames
-		SwingUtilities.invokeAndWait(new Runnable() {
-			public void run() {
-				MapViewFrame.getInstance().cleanUp();
-		    	MapDrawFrame.getInstance().cleanUp();
-			}
-		});
-		MainFrame.getInstance().cleanUp();
-		
 		// stop audio
 		AudioManager.stopAudio();
 		
@@ -139,6 +132,15 @@ public class Main {
 		
 		// Save config data
     	ConfigData.updateConfigFile();
+    	
+    	// Disposing frames
+    	SwingUtilities.invokeAndWait(new Runnable() {
+			public void run() {
+				MapViewFrame.getInstance().cleanUp();
+		    	MapDrawFrame.getInstance().cleanUp();
+		    	MainFrame.getInstance().cleanUp();
+			}
+		});
 		
 		// Everything is released exit
 		System.exit(0);

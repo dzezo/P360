@@ -202,9 +202,6 @@ public class MapDrawFrame extends MapFrame {
                 // stop auto save
                 AutoSave.stopSaving();
                 
-                // update map size
-                PanGraph.updateMapSize();
-                
             	// hide frame
                 hideFrame();
             }

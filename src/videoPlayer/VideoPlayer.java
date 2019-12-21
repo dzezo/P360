@@ -44,6 +44,8 @@ public class VideoPlayer {
 
 	private final JFrame frame;
 	
+	private final Dimension defaultSize = new Dimension(600, 400);
+	
 	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
 	
 	private String videoPath;
@@ -178,7 +180,7 @@ public class VideoPlayer {
 		playerPane = new JPanel();
 		playerPane.setLayout(new BorderLayout());
 		playerPane.add(mediaPlayerComponent, BorderLayout.CENTER);
-		playerPane.setSize(new Dimension(600, 400));
+		playerPane.setSize(defaultSize);
 		
 		controlsPane = new JPanel();
 		playPauseButton = new JButton(pauseIcon);

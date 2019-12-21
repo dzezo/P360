@@ -22,7 +22,15 @@ public class PanGraphSize implements Serializable {
 		return (NORTH + SOUTH) / 2;
 	}
 	
-	public void updateSize(int x, int y) {
+	public void adjustBounds(PanNode node) {
+		WEST = EAST = node.getMapNode().x;
+		NORTH = SOUTH = node.getMapNode().y;
+	}
+	
+	public void updateSize(PanNode node) {
+		int x = node.getMapNode().x;
+		int y = node.getMapNode().y;
+		
 		if(x <= WEST) WEST = x;
 		if(x >= EAST) EAST = x;
 		if(y <= NORTH) NORTH = y;

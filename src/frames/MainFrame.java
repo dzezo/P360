@@ -92,9 +92,6 @@ public class MainFrame extends Frame {
 		// start ControllerScanner service
 		controllerScanner.start();
 		
-		// create openGL display
-		DisplayManager.createDisplay(displayCanvas);
-		
 		// ready
 		running = true;
 	}
@@ -219,6 +216,10 @@ public class MainFrame extends Frame {
 		return running;
 	}
 
+	public Canvas getCanvas() {
+		return this.displayCanvas;
+	}
+	
 	/* Menubar Actions */
 	
 	private void openImage(){

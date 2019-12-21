@@ -58,9 +58,6 @@ public class PanGraph {
 		
 		// Update node count
 		nodeCount++;
-		
-		// Update map size
-		updateMapSize();
 	}
 	
 	public static void deleteNode(PanNode selectedPanorama) {
@@ -108,9 +105,6 @@ public class PanGraph {
 		
 		// Update node count
 		nodeCount--;
-		
-		// Update map size
-		updateMapSize();
 	}
 
 	public static void setHome(PanNode node) {
@@ -793,19 +787,13 @@ public class PanGraph {
 	}
 	
 	public static void updateMapSize() {
-		if(isEmpty()) return;
+		if(isEmpty()) 
+			return;
 		
 		PanNode node = head;
-		
-		size.WEST = size.EAST = node.getMapNode().x;
-		size.NORTH = size.SOUTH = node.getMapNode().y;
-		
+		size.adjustBounds(node);
 		while(node != null) {
-			int x = node.getMapNode().x;
-			int y = node.getMapNode().y;
-			
-			size.updateSize(x, y);
-			
+			size.updateSize(node);
 			node = node.getNext();
 		}
 	}
