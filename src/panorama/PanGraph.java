@@ -29,8 +29,8 @@ public class PanGraph {
 	private static String name;
 	private static int nodeCount = 0;
 	
-	// graph scale
-	private static PanGraphSize size = new PanGraphSize();
+	// graph graphSize
+	private static PanGraphSize graphSize = new PanGraphSize();
 	
 	// graph path
 	private static TourPath tour = new TourPath();
@@ -63,18 +63,31 @@ public class PanGraph {
 	public static void deleteNode(PanNode selectedPanorama) {
 		// Remove his connections
 		if(selectedPanorama.getLeft() != null) {
+			// This will remove waypoints between these nodes if there are any
+			removeFromPath(selectedPanorama, selectedPanorama.getLeft());
+			removeFromPath(selectedPanorama.getLeft(), selectedPanorama);
+			
 			selectedPanorama.getLeft().setRight(null);
 			selectedPanorama.setLeft(null);
 		}
 		if(selectedPanorama.getRight() != null) {
+			removeFromPath(selectedPanorama, selectedPanorama.getRight());
+			removeFromPath(selectedPanorama.getRight(), selectedPanorama);
+			
 			selectedPanorama.getRight().setLeft(null);
 			selectedPanorama.setRight(null);
 		}
 		if(selectedPanorama.getTop() != null) {
+			removeFromPath(selectedPanorama, selectedPanorama.getTop());
+			removeFromPath(selectedPanorama.getTop(), selectedPanorama);
+			
 			selectedPanorama.getTop().setBot(null);
 			selectedPanorama.setTop(null);
 		}
 		if(selectedPanorama.getBot() != null) {
+			removeFromPath(selectedPanorama, selectedPanorama.getBot());
+			removeFromPath(selectedPanorama.getBot(), selectedPanorama);
+			
 			selectedPanorama.getBot().setTop(null);
 			selectedPanorama.setBot(null);
 		}
@@ -276,7 +289,7 @@ public class PanGraph {
 					out.writeObject(home);
 					out.writeObject(name);
 					out.writeObject(nodeCount);
-					out.writeObject(size);
+					out.writeObject(graphSize);
 					out.writeObject(tour);
 					
 					// saving icons
@@ -339,23 +352,23 @@ public class PanGraph {
 	}
 	
 	public static boolean loadMap(String loadPath) {
-		PanNode gHead, gHome;
-		int gNodeCount;
-		PanGraphSize gSize;
-		TourPath gTour;
+		PanNode 		newHead;
+		PanNode			newHome;
+		int 			newNodeCount;
+		PanGraphSize	newGraphSize;
+		TourPath 		newTour;
 		
 		try {
 			FileInputStream fin = new FileInputStream(loadPath);
 			ObjectInputStream ois = new ObjectInputStream(fin);
-			gHead = (PanNode) ois.readObject();
-			gHome = (PanNode) ois.readObject();
+			newHead = (PanNode) ois.readObject();
+			newHome = (PanNode) ois.readObject();
 			name = (String) ois.readObject();
-			gNodeCount = (int) ois.readObject();
+			newNodeCount = (int) ois.readObject();
+			newGraphSize = (PanGraphSize) ois.readObject();
+			newTour = (TourPath) ois.readObject();
 			
-			gSize = (PanGraphSize) ois.readObject();
-			gTour = (TourPath) ois.readObject();
-			
-			PanNode node = gHead;
+			PanNode node = newHead;
 			while(node != null) {
 				byte[] iconData = (byte[]) ois.readObject();
 				node.getMapNode().icon.init(iconData);
@@ -371,7 +384,7 @@ public class PanGraph {
 		}
 		
 		// path checking
-		PanNode start = gHead;
+		PanNode start = newHead;
 		
 		// Path to the last manually loaded image/audio file
 		String lastImageLoc = null;
@@ -457,7 +470,7 @@ public class PanGraph {
 				
 				start.setAudio(newAudioPath);
 			}
-			// Video not found
+			// Video Not found
 			else if(videoFile != null && !videoFile.exists()) {
 				String videoName = start.getMapNode().getNameFromPath(videoFile.getPath());
 				
@@ -502,12 +515,13 @@ public class PanGraph {
 		AutoSave.setSavingPath(loadPath);
 		
 		// success
-		head = gHead;
-		home = gHome;
+		head = newHead;
+		home = newHome;
 		name = loadPath;
-		nodeCount = gNodeCount;
-		size = gSize;
-		tour = gTour;
+		nodeCount = newNodeCount;
+		graphSize = newGraphSize;
+		graphSize.updateSize();
+		tour = newTour;
 		
 		return true;
 	}
@@ -757,7 +771,7 @@ public class PanGraph {
 		nodeCount = 0;
 		
 		tour = new TourPath();
-		size = new PanGraphSize();
+		graphSize = new PanGraphSize();
 	}
 	
 	public static PanNode getNode(int id) {
@@ -778,24 +792,8 @@ public class PanGraph {
 		return tour.getPath();
 	}
 	
-	public static int getCenterX() {
-		return size.getCenterX();
-	}
-	
-	public static int getCenterY() {
-		return size.getCenterY();
-	}
-	
-	public static void updateMapSize() {
-		if(isEmpty()) 
-			return;
-		
-		PanNode node = head;
-		size.adjustBounds(node);
-		while(node != null) {
-			size.updateSize(node);
-			node = node.getNext();
-		}
+	public static PanGraphSize getGraphSize() {
+		return graphSize;
 	}
 
 	public static String getName() {

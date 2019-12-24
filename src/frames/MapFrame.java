@@ -45,9 +45,8 @@ public abstract class MapFrame extends Frame {
 	protected void setOrigin() {
 		if(!PanGraph.isEmpty()) {
 			// map center
-			PanGraph.updateMapSize();
-			int x = PanGraph.getCenterX();
-			int y = PanGraph.getCenterY();
+			int x = PanGraph.getGraphSize().getCenterX();
+			int y = PanGraph.getGraphSize().getCenterY();
 			
 			// node size
 			int h = PanMap.HEIGHT / 2;

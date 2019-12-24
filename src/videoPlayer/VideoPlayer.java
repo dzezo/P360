@@ -60,6 +60,7 @@ public class VideoPlayer {
 	
 	private JSlider timeSlider;
 	private boolean timeSeeking;
+	private Dimension timeSliderSize;
 	
 	private Timer hideCursorTimer;
 	private Timer fullScreenTimer;
@@ -84,6 +85,7 @@ public class VideoPlayer {
     public VideoPlayer() {
     	frame = new JFrame("Media Player");
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frame.setMinimumSize(defaultSize);
 		// clean up
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -177,15 +179,19 @@ public class VideoPlayer {
 			}
 		});
 		
+		/* Player panel */
 		playerPane = new JPanel();
 		playerPane.setLayout(new BorderLayout());
 		playerPane.add(mediaPlayerComponent, BorderLayout.CENTER);
 		playerPane.setSize(defaultSize);
 		
+		/* Controls panel */
 		controlsPane = new JPanel();
+		/* Play/Pause button */
 		playPauseButton = new JButton(pauseIcon);
 		playPauseButton.setFocusable(false);
 		controlsPane.add(playPauseButton);
+		/* Time slider */
 		timeSlider = new JSlider();
 		timeSlider.setFocusable(false);
 		timeSlider.setUI(new BasicSliderUI(timeSlider) {
@@ -197,18 +203,23 @@ public class VideoPlayer {
 				};
 			}
 		});
+		timeSliderSize = new Dimension();
 		timeSeeking = false;
 		controlsPane.add(timeSlider);
+		/* Full screen button */
 		fullScreenButton = new JButton(fullScreenIcon);
 		fullScreenButton.setFocusable(false);
 		controlsPane.add(fullScreenButton);
+		/* Close button */
 		closeButton = new JButton(closeIcon);
 		closeButton.setFocusable(false);
 		controlsPane.add(closeButton);
+		/* Controls panel adjustment */
 		controlsPane.setSize(controlsPane.getPreferredSize());
 		controlsPane.setLocation(playerPane.getWidth() / 2 - controlsPane.getWidth() / 2, 
 				playerPane.getHeight() - controlsPane.getHeight());
 		
+		/* Controls listeners */
 		playPauseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	if(mediaPlayerComponent.mediaPlayer().status().isPlaying()) {
@@ -259,7 +270,7 @@ public class VideoPlayer {
             }
         });
 		
-		
+		/* Content Panel */
 		contentPane = new JLayeredPane();
 		contentPane.add(playerPane, new Integer(0));
 		contentPane.add(controlsPane, new Integer(1));
@@ -267,8 +278,16 @@ public class VideoPlayer {
 		contentPane.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent e) {
 				playerPane.setSize(contentPane.getSize());
+				
+				timeSliderSize.setSize(contentPane.getSize().width / 2, timeSlider.getSize().height);
+				timeSlider.setPreferredSize(timeSliderSize);
+				timeSlider.revalidate();
+				timeSlider.repaint();
+				
+				controlsPane.setSize(controlsPane.getPreferredSize());
 				controlsPane.setLocation(playerPane.getWidth() / 2 - controlsPane.getWidth() / 2, 
 						playerPane.getHeight() - controlsPane.getHeight());
+				
 				contentPane.revalidate();
 				contentPane.repaint();				
 			}	
@@ -330,11 +349,11 @@ public class VideoPlayer {
     public void playVideo(String videoPath) {
     	this.videoPath = videoPath;
     	frame.setVisible(true);
-    	
     	timeSlider.setValue(0);
     	
     	mediaPlayerComponent.mediaPlayer().fullScreen().set(true);
     	mediaPlayerComponent.mediaPlayer().media().play(videoPath);
+    	playPauseButton.setIcon(pauseIcon);
     }
     
     public void cleanUp() {
@@ -347,11 +366,10 @@ public class VideoPlayer {
     	return this.frame;
     }
     
-    public void hideFrame() {
+    private void hideFrame() {
     	mediaPlayerComponent.mediaPlayer().controls().stop();
     	Scene.setReady(true);
     	
-		//frame.setVisible(false);
 		if(DisplayManager.returnToFullScreenRequested()) {
 			DisplayManager.requestFullScreen();
 			hideTimer.start();

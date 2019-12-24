@@ -254,16 +254,20 @@ public class MapDrawFrame extends MapFrame {
 			spawnY = mapPanel.getOriginY() + offset;
 			PanGraph.addNode(images[i].getPath(), spawnX, spawnY);
 		}
+		
+		PanGraph.getGraphSize().updateSize();
 	}
 	
 	private void remove() {
 		PanNode selectedNode = mapPanel.getSelectedNode1();
-		if(selectedNode != null) {
-			PanGraph.deleteNode(selectedNode);
-			mapPanel.deselectNodes();
-		}
-		else
+		if(selectedNode == null) {
 			DialogUtils.showMessage(err_noSelection, err_selection);
+			return;
+		}
+		
+		PanGraph.deleteNode(selectedNode);
+		PanGraph.getGraphSize().updateSize();
+		mapPanel.deselectNodes();
 	}
 	
 	private void home() {
@@ -428,7 +432,7 @@ public class MapDrawFrame extends MapFrame {
 			TourManager.prepare(PanGraph.getHome());
 			
 			// update map size
-            PanGraph.updateMapSize();
+            PanGraph.getGraphSize().updateSize();
 			
 			// stop auto save
             AutoSave.stopSaving();

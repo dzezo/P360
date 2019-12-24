@@ -112,6 +112,7 @@ public class MainFrame extends Frame {
 		this.setVisible(true);
 		this.pack();
 		this.setLocationRelativeTo(null);
+		this.setMinimumSize(this.getPreferredSize());
 		
 		// Frame Listener
 		this.addWindowListener(new WindowAdapter() 
