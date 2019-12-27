@@ -20,11 +20,10 @@ public class MapViewPanel extends MapPanel{
 		this.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent press) {
 				// getting mouse click location
-				mouseX = press.getX();
-				mouseY = press.getY();
+				mouseClick.setLocation(press.getX(), press.getY());
 				
 				// check if node is clicked, it will be null if none
-				PanNode node = getSelectedNode(mouseX, mouseY);
+				PanNode node = getSelectedNode();
 				
 				// if node is clicked and first click is not taken
 				if(node != null && selectedNode1 == null)
@@ -33,8 +32,10 @@ public class MapViewPanel extends MapPanel{
 				else if(node != null)
 					selectedNode2 = node;
 				// panel click
-				else if(node == null)
+				else if(node == null) {
 					deselectNodes();
+					setPanelDragAllowed(true);
+				}
 				
 				// do we have first and second click
 				if(selectedNode1 != null && selectedNode2 != null) {
@@ -48,11 +49,16 @@ public class MapViewPanel extends MapPanel{
 					}
 				}
 			}
+			
+			public void mouseReleased(MouseEvent release) {
+				if(release.getButton() == MouseEvent.BUTTON1)
+					setPanelDragAllowed(false);
+			}
 		});
 		
 		this.addMouseMotionListener(new MouseMotionAdapter() {
 			public void mouseDragged(MouseEvent drag) {
-				if(selectedNode1 == null)
+				if(isPanelDragAllowed())
 					dragPanel(drag.getX(), drag.getY());
 			}			
 		});
@@ -66,10 +72,10 @@ public class MapViewPanel extends MapPanel{
 		graphicSettings.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
 		// Translates the origin of the Graphics2D context to the point (x, y) in the current coordinate system.
-		graphicSettings.translate(originX, originY);
+		graphicSettings.translate(origin.x, origin.y);
 		
 		// Calculating drawing panel dimensions
-		panelRect.setBounds(-originX, -originY, this.getWidth(), this.getHeight());
+		panelRect.setBounds(-origin.x, -origin.y, this.getWidth(), this.getHeight());
 		
 		// Drawing starts from the head (root), and id zero is assigned to it.
 		int id = 0;
@@ -83,8 +89,7 @@ public class MapViewPanel extends MapPanel{
 	}
 	
 	public void setOrigin(int oX, int oY) {
-		originX = -oX;
-		originY = -oY;
+		origin.setLocation(-oX, -oY);
 	}
 	
 	private void setNextActivePanorama() {

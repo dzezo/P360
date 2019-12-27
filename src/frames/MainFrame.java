@@ -239,9 +239,9 @@ public class MainFrame extends Frame {
 		
 		// Add to new map
 		int spawnX, spawnY;
-		spawnX = MapDrawFrame.getInstance().getMapPanel().getOriginX();
-		spawnY = MapDrawFrame.getInstance().getMapPanel().getOriginY();
-		PanGraph.addNode(imagePath, spawnX, spawnY);
+		spawnX = MapDrawFrame.getInstance().getMapPanel().getOrigin().x;
+		spawnY = MapDrawFrame.getInstance().getMapPanel().getOrigin().y;
+		PanGraph.addNode(imagePath, -spawnX, -spawnY);
 		PanGraph.setName(PanGraph.DEFAULT_NAME);
 		
 		// Queue image for loading

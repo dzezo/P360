@@ -17,7 +17,7 @@ public class Panorama extends Texture {
 			for(int i = 0; i < partsCount; i++)
 				parts[i] = new Sphere(width, i, partsCount, textureID[i]);
 		else
-			for(int i = 0; i < 2; i++)
+			for(int i = 0; i < partsCount; i++)
 				parts[i] = new Cylinder(width, height, i, partsCount, textureID[i]);
 	}
 	

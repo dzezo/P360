@@ -176,7 +176,7 @@ public class MapDrawFrame extends MapFrame {
 	}
 	
 	private void createFrame() {
-		setSize(mapWidth, mapHeight);
+		setSize(mapSize);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
@@ -217,11 +217,8 @@ public class MapDrawFrame extends MapFrame {
 	}
 	
 	public void showFrame() {
-		// show frame
-		setVisible(true);
 		setTitle(PanGraph.getName());
-		
-		// set origin of a map
+		setVisible(true);
 		setOrigin();
 		
 		// Unpause IconLoader
@@ -250,8 +247,8 @@ public class MapDrawFrame extends MapFrame {
 		int spawnX, spawnY, offset;
 		for(int i = 0; i < images.length; i++) {
 			offset = i*MapDrawPanel.getGridSize();
-			spawnX = mapPanel.getOriginX() + offset;
-			spawnY = mapPanel.getOriginY() + offset;
+			spawnX = -mapPanel.getOrigin().x + offset;
+			spawnY = -mapPanel.getOrigin().y + offset;
 			PanGraph.addNode(images[i].getPath(), spawnX, spawnY);
 		}
 		
@@ -430,9 +427,6 @@ public class MapDrawFrame extends MapFrame {
 		if(PanGraph.getHome() != null) {
 			Scene.queuePanorama(PanGraph.getHome());
 			TourManager.prepare(PanGraph.getHome());
-			
-			// update map size
-            PanGraph.getGraphSize().updateSize();
 			
 			// stop auto save
             AutoSave.stopSaving();

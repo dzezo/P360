@@ -65,7 +65,7 @@ public class MapViewFrame extends MapFrame {
 	}
 	
 	private void createFrame() {
-		setSize(mapWidth, mapHeight);
+		setSize(mapSize);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
@@ -92,13 +92,9 @@ public class MapViewFrame extends MapFrame {
 	}
 	
 	public void showFrame() {
-		// show frame
-		setVisible(true);
 		setTitle(PanGraph.getName());
+		setVisible(true);
 		toFront();
-		repaint();
-		
-		// set origin of a map
 		setOrigin();
 		
 		// Unpause IconLoader
