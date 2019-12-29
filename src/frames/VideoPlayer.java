@@ -1,4 +1,4 @@
-package videoPlayer;
+package frames;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -40,9 +40,8 @@ import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.player.embedded.fullscreen.adaptive.AdaptiveFullScreenStrategy;
 import utils.DialogUtils;
 
-public class VideoPlayer {
-
-	private final JFrame frame;
+@SuppressWarnings("serial")
+public class VideoPlayer extends Frame {
 	
 	private final Dimension defaultSize = new Dimension(600, 400);
 	
@@ -83,11 +82,12 @@ public class VideoPlayer {
             };
 	
     public VideoPlayer() {
-    	frame = new JFrame("Media Player");
-		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		frame.setMinimumSize(defaultSize);
+    	super("Media Player");
+    	
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		setMinimumSize(defaultSize);
 		// clean up
-		frame.addWindowListener(new WindowAdapter() {
+		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				hideFrame();
 			}
@@ -113,7 +113,7 @@ public class VideoPlayer {
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent(
 				null,
 				null,
-				new AdaptiveFullScreenStrategy(frame),
+				new AdaptiveFullScreenStrategy(this),
 				null,
 				null);
 		
@@ -162,7 +162,7 @@ public class VideoPlayer {
 			public void mouseMoved(MouseEvent e) {
 				if(!controlsPane.isVisible())
 					controlsPane.setVisible(true);
-				frame.getContentPane().setCursor(Cursor.getDefaultCursor());
+				getContentPane().setCursor(Cursor.getDefaultCursor());
 				hideCursorTimer.restart();
 			}
 		});
@@ -258,9 +258,9 @@ public class VideoPlayer {
             public void actionPerformed(ActionEvent e) {	
             	mediaPlayerComponent.mediaPlayer().fullScreen().toggle();
             	if(mediaPlayerComponent.mediaPlayer().fullScreen().isFullScreen())
-            		frame.setAlwaysOnTop(true);
+            		setAlwaysOnTop(true);
             	else
-            		frame.setAlwaysOnTop(false);
+            		setAlwaysOnTop(false);
             }
         });
 		
@@ -293,8 +293,8 @@ public class VideoPlayer {
 			}	
 		});
 		
-		frame.setContentPane(contentPane);
-		frame.pack();
+		setContentPane(contentPane);
+		pack();
 		
 		cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
 		blankCursor = Toolkit.getDefaultToolkit()
@@ -302,12 +302,12 @@ public class VideoPlayer {
 		
 		hideCursorTimer = new Timer(3000, new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if(frame.isVisible() && controlsPane.isVisible()) {
+				if(isVisible() && controlsPane.isVisible()) {
 					Rectangle controlsRect = controlsPane.getBounds();
 					controlsRect.setLocation(controlsPane.getLocationOnScreen());
 					if(!controlsRect.contains(MouseInfo.getPointerInfo().getLocation())) {	
 						controlsPane.setVisible(false);
-						frame.getContentPane().setCursor(blankCursor);
+						getContentPane().setCursor(blankCursor);
 					}
 				}
 			}	
@@ -328,9 +328,9 @@ public class VideoPlayer {
 					DisplayManager.requestWindowed();
 				}
 				else {
-					frame.setAlwaysOnTop(true);
-					frame.toFront();
-					frame.repaint();
+					setAlwaysOnTop(true);
+					toFront();
+					repaint();
 					showTimer.stop();
 				}
 			}	
@@ -339,7 +339,7 @@ public class VideoPlayer {
 		hideTimer = new Timer(300, new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if(DisplayManager.isFullscreen()) {
-					frame.setVisible(false);
+					setVisible(false);
 					hideTimer.stop();
 				}
 			}	
@@ -348,7 +348,7 @@ public class VideoPlayer {
     
     public void playVideo(String videoPath) {
     	this.videoPath = videoPath;
-    	frame.setVisible(true);
+    	setVisible(true);
     	timeSlider.setValue(0);
     	
     	mediaPlayerComponent.mediaPlayer().fullScreen().set(true);
@@ -358,12 +358,8 @@ public class VideoPlayer {
     
     public void cleanUp() {
     	mediaPlayerComponent.release();
-		frame.dispose();
+		dispose();
 		System.out.println("Video player is disposed.");
-    }
-    
-    public JFrame getFrame() {
-    	return this.frame;
     }
     
     private void hideFrame() {
@@ -375,7 +371,7 @@ public class VideoPlayer {
 			hideTimer.start();
 		}
 		else {
-			frame.setVisible(false);
+			setVisible(false);
 		}
     }
 }

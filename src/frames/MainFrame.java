@@ -31,7 +31,6 @@ import utils.AutoSave;
 import utils.ChooserUtils;
 import utils.ConfigData;
 import utils.DialogUtils;
-import videoPlayer.VideoPlayer;
 
 @SuppressWarnings("serial")
 public class MainFrame extends Frame {

@@ -1,9 +1,5 @@
-/shaders/
-/glRenderer/
-/panorama/
-/gui/
-/input/
-/p360/
 /frames/
+/sprites/
+/glRenderer/
+/gui/
 /videoPlayer/
-/utils/
