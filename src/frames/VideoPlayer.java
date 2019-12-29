@@ -75,12 +75,6 @@ public class VideoPlayer extends Frame {
 	private final ImageIcon fullScreenIcon 	= new ImageIcon(Class.class.getResource("/video_player/fullScreen.png"));
 	private final ImageIcon closeIcon 		= new ImageIcon(Class.class.getResource("/video_player/close.png"));
 	
-	private final String keys [] = {
-            "sun.arch.data.model",
-            "com.ibm.vm.bitmode",
-            "os.arch",
-            };
-	
     public VideoPlayer() {
     	super("Media Player");
     	
@@ -94,21 +88,8 @@ public class VideoPlayer extends Frame {
 		});
 		
 		// Ukljucivanje VLC native biblioteka i VLC plugin-ova
-		boolean jvm64 = true;
-		for (String key : keys) {
-			String property  = System.getProperty(key);
-			if(property != null) {
-				jvm64 = (property.indexOf("64") >= 0) ? true : false;
-			}
-		}
-		if(jvm64) {
-			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "./vlc");
-			System.setProperty("VLC_PLUGIN_PATH", "./vlc/plugins");
-		}
-		else {
-			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "./vlc(x86)");
-			System.setProperty("VLC_PLUGIN_PATH", "./vlc(x86)/plugins");
-		}
+		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "./vlc");
+		System.setProperty("VLC_PLUGIN_PATH", "./vlc/plugins");
 		
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent(
 				null,
