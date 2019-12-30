@@ -17,7 +17,6 @@ import panorama.PanNode;
 
 @SuppressWarnings("serial")
 public class MapDrawPanel extends MapPanel {
-	private static int gridSize = 10;
 	
 	public MapDrawPanel() {
 		// Listeners
@@ -111,26 +110,22 @@ public class MapDrawPanel extends MapPanel {
 		int endX = x + this.getWidth();
 		int endY = y + this.getHeight();
 		
-		for(int i = 0; i < this.getHeight()/gridSize + 1; i++)
-			g.drawLine(x, y + i*gridSize, endX, y + i*gridSize);
-		for(int i = 0; i < this.getWidth()/gridSize + 1; i++)
-			g.drawLine(x + i*gridSize, y, x + i*gridSize, endY);
+		for(int i = 0; i < this.getHeight()/GRID_SIZE + 1; i++)
+			g.drawLine(x, y + i*GRID_SIZE, endX, y + i*GRID_SIZE);
+		for(int i = 0; i < this.getWidth()/GRID_SIZE + 1; i++)
+			g.drawLine(x + i*GRID_SIZE, y, x + i*GRID_SIZE, endY);
 	}
 	
 	private int centerOnGrid(int coord) {
-        int q = coord / gridSize; 
+        int q = coord / GRID_SIZE; 
         
-        int n1 = gridSize * q; 
-        int n2 = (coord * gridSize) > 0 ? (gridSize * (q + 1)) : (gridSize * (q - 1)); 
+        int n1 = GRID_SIZE * q; 
+        int n2 = (coord * GRID_SIZE) > 0 ? (GRID_SIZE * (q + 1)) : (GRID_SIZE * (q - 1)); 
            
         if (Math.abs(coord - n1) < Math.abs(coord - n2)) 
             return n1; 
         else
         	return n2;  
-	}
-	
-	public static int getGridSize() {
-		return gridSize;
 	}
 	
 	public void paint(Graphics g) {

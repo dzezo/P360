@@ -8,14 +8,14 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Iterator;
 
-import frames.MapDrawPanel;
+import frames.MapPanel;
 
 public class PanMap extends Rectangle {
 	private static final long serialVersionUID = 1L;
 	
 	/* Dimensions */
-	public static final int WIDTH = MapDrawPanel.getGridSize() * 16;
-	public static final int HEIGHT = MapDrawPanel.getGridSize() * 8;
+	public static final int WIDTH = MapPanel.getGridSize() * 16;
+	public static final int HEIGHT = MapPanel.getGridSize() * 8;
 	public static final float BORDER_SIZE = 2.0f;
 	public static final float CONNECTION_SIZE = 1.5f;
 	
@@ -144,13 +144,13 @@ public class PanMap extends Rectangle {
 		
 		// offseting port location if arrow is present
 		if(b_leftArrow)
-			portLeft.x -= MapDrawPanel.getGridSize();
+			portLeft.x -= MapPanel.getGridSize();
 		if(b_rightArrow)
-			portRight.x += MapDrawPanel.getGridSize();
+			portRight.x += MapPanel.getGridSize();
 		if(b_topArrow)
-			portTop.y -= MapDrawPanel.getGridSize();
+			portTop.y -= MapPanel.getGridSize();
 		if(b_bottomArrow)
-			portBot.y += MapDrawPanel.getGridSize();
+			portBot.y += MapPanel.getGridSize();
 	}
 	
 	// Getters and Setters
@@ -391,22 +391,22 @@ public class PanMap extends Rectangle {
 		g.setColor(lineColor);
 		if(b_leftArrow && parent.getLeft() != null) {
 			g.drawLine(leftArrow.x, leftArrow.y, leftArrow.x - 6, leftArrow.y + 3);
-			g.drawLine(leftArrow.x, leftArrow.y, leftArrow.x - MapDrawPanel.getGridSize(), leftArrow.y);
+			g.drawLine(leftArrow.x, leftArrow.y, leftArrow.x - MapPanel.getGridSize(), leftArrow.y);
 			g.drawLine(leftArrow.x, leftArrow.y, leftArrow.x - 6, leftArrow.y - 3);
 		}
 		if(b_rightArrow && parent.getRight() != null) {
 			g.drawLine(rightArrow.x, rightArrow.y, rightArrow.x + 6, rightArrow.y + 3);
-			g.drawLine(rightArrow.x, rightArrow.y, rightArrow.x + MapDrawPanel.getGridSize(), rightArrow.y);
+			g.drawLine(rightArrow.x, rightArrow.y, rightArrow.x + MapPanel.getGridSize(), rightArrow.y);
 			g.drawLine(rightArrow.x, rightArrow.y, rightArrow.x + 6, rightArrow.y - 3);
 		}
 		if(b_topArrow && parent.getTop() != null) {
 			g.drawLine(topArrow.x, topArrow.y, topArrow.x + 3, topArrow.y - 6);
-			g.drawLine(topArrow.x, topArrow.y, topArrow.x, topArrow.y - MapDrawPanel.getGridSize());
+			g.drawLine(topArrow.x, topArrow.y, topArrow.x, topArrow.y - MapPanel.getGridSize());
 			g.drawLine(topArrow.x, topArrow.y, topArrow.x -3, topArrow.y - 6);
 		}
 		if(b_bottomArrow && parent.getBot() != null) {
 			g.drawLine(botArrow.x, botArrow.y, botArrow.x + 3, botArrow.y + 6);
-			g.drawLine(botArrow.x, botArrow.y, botArrow.x, botArrow.y + MapDrawPanel.getGridSize());
+			g.drawLine(botArrow.x, botArrow.y, botArrow.x, botArrow.y + MapPanel.getGridSize());
 			g.drawLine(botArrow.x, botArrow.y, botArrow.x - 3, botArrow.y + 6);
 		}
 	}

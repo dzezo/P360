@@ -15,16 +15,18 @@ import panorama.PanNode;
 public abstract class MapPanel extends JComponent {
 	protected MapFrame parent;
 	
+	protected final static int GRID_SIZE = 10;
+	
 	protected Color panelColor = new Color(128,128,128);
 	
-	protected Point mouseClick = new Point(0, 0);
-	
 	protected Rectangle panelRect = new Rectangle();
-	private boolean panelDragAllowed;
+	protected Point mouseClick = new Point(0, 0);
 	protected Point origin = new Point(0, 0);
 	
 	protected PanNode selectedNode1;
 	protected PanNode selectedNode2;
+	
+	private boolean panelDragAllowed;
 	
 	protected void setPanelDragAllowed(boolean b) {
 		panelDragAllowed = b;
@@ -91,6 +93,10 @@ public abstract class MapPanel extends JComponent {
 	
 	public void setParent(MapFrame parentFrame) {
 		this.parent = parentFrame;
+	}
+	
+	public static int getGridSize() {
+		return GRID_SIZE;
 	}
 	
 	public abstract void paint(Graphics g);
