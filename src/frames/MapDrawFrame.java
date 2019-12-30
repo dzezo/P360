@@ -72,7 +72,7 @@ public class MapDrawFrame extends MapFrame {
 	private MapDrawFrame() {
 		super("P360");
 		// instantiate map panel
-		mapPanel = new MapDrawPanel();
+		setMapPanel(new MapDrawPanel());
 		
 		// create frame
 		createToolBar();
@@ -182,8 +182,8 @@ public class MapDrawFrame extends MapFrame {
 		setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		
 		// add map panel to frame
-		mapPanel.setParent(this);
-		add(mapPanel, BorderLayout.CENTER);
+		getMapPanel().setParent(this);
+		add(getMapPanel(), BorderLayout.CENTER);
 		
 		setVisible(false);
 		
@@ -226,17 +226,14 @@ public class MapDrawFrame extends MapFrame {
 	}
 	
 	public void hideFrame() {
-		// stop frame repaint
         stopFrameRepaint();
-        
-        // deselect nodes
-        mapPanel.deselectNodes();
-        
-    	// hide frame
         setVisible(false);
+        getMapPanel().deselectNodes();
         
         // Pause IconLoader
         IconLoader.getInstance().postponeLoading(true);
+        
+        PanGraph.getGraphSize().updateSize();
 	}
 	
 	/* Toolbar Actions */
@@ -247,28 +244,25 @@ public class MapDrawFrame extends MapFrame {
 		int spawnX, spawnY, offset;
 		for(int i = 0; i < images.length; i++) {
 			offset = i*MapDrawPanel.getGridSize();
-			spawnX = -mapPanel.getOrigin().x + offset;
-			spawnY = -mapPanel.getOrigin().y + offset;
+			spawnX = -getMapPanel().getOrigin().x + offset;
+			spawnY = -getMapPanel().getOrigin().y + offset;
 			PanGraph.addNode(images[i].getPath(), spawnX, spawnY);
 		}
-		
-		PanGraph.getGraphSize().updateSize();
 	}
 	
 	private void remove() {
-		PanNode selectedNode = mapPanel.getSelectedNode1();
+		PanNode selectedNode = getMapPanel().getSelectedNode1();
 		if(selectedNode == null) {
 			DialogUtils.showMessage(err_noSelection, err_selection);
 			return;
 		}
 		
 		PanGraph.deleteNode(selectedNode);
-		PanGraph.getGraphSize().updateSize();
-		mapPanel.deselectNodes();
+		getMapPanel().deselectNodes();
 	}
 	
 	private void home() {
-		PanNode selectedNode = mapPanel.getSelectedNode1();
+		PanNode selectedNode = getMapPanel().getSelectedNode1();
 		if(selectedNode != null) {
 			PanGraph.setHome(selectedNode);
 		}
@@ -277,8 +271,8 @@ public class MapDrawFrame extends MapFrame {
 	}
 	
 	private void connect() {
-		PanNode selectedNode1 = mapPanel.getSelectedNode1();
-		PanNode selectedNode2 = mapPanel.getSelectedNode2();
+		PanNode selectedNode1 = getMapPanel().getSelectedNode1();
+		PanNode selectedNode2 = getMapPanel().getSelectedNode2();
 		if(selectedNode1 != null && selectedNode2 != null) {
 			PanGraph.connectNodes(selectedNode1, selectedNode2);
 		}
@@ -287,8 +281,8 @@ public class MapDrawFrame extends MapFrame {
 	}
 	
 	private void disconnect() {
-		PanNode selectedNode1 = mapPanel.getSelectedNode1();
-		PanNode selectedNode2 = mapPanel.getSelectedNode2();
+		PanNode selectedNode1 = getMapPanel().getSelectedNode1();
+		PanNode selectedNode2 = getMapPanel().getSelectedNode2();
 		if(selectedNode1 != null && selectedNode2 != null) {
 			PanGraph.disconnectNode(selectedNode1, selectedNode2);
 		}
@@ -297,7 +291,7 @@ public class MapDrawFrame extends MapFrame {
 	}
 	
 	private void addAudio() {
-		PanNode selectedNode = mapPanel.getSelectedNode1();
+		PanNode selectedNode = getMapPanel().getSelectedNode1();
 		if(selectedNode == null) {
 			DialogUtils.showMessage(err_noSelection, err_selection);
 			return;
@@ -311,7 +305,7 @@ public class MapDrawFrame extends MapFrame {
 	}
 	
 	private void removeAudio() {
-		PanNode selectedNode = mapPanel.getSelectedNode1();
+		PanNode selectedNode = getMapPanel().getSelectedNode1();
 		if(selectedNode == null) {
 			DialogUtils.showMessage(err_noSelection, err_selection);
 			return;
@@ -321,7 +315,7 @@ public class MapDrawFrame extends MapFrame {
 	}
 	
 	private void addVideo() {
-		PanNode selectedNode = mapPanel.getSelectedNode1();
+		PanNode selectedNode = getMapPanel().getSelectedNode1();
 		if(selectedNode == null) {
 			DialogUtils.showMessage(err_noSelection, err_selection);
 			return;
@@ -335,7 +329,7 @@ public class MapDrawFrame extends MapFrame {
 	}
 	
 	private void removeVideo() {
-		PanNode selectedNode = mapPanel.getSelectedNode1();
+		PanNode selectedNode = getMapPanel().getSelectedNode1();
 		if(selectedNode == null) {
 			DialogUtils.showMessage(err_noSelection, err_selection);
 			return;
@@ -353,20 +347,20 @@ public class MapDrawFrame extends MapFrame {
 	}
 	
 	private void addToPath() {
-		PanNode selectedNode1 = mapPanel.getSelectedNode1();
-		PanNode selectedNode2 = mapPanel.getSelectedNode2();
+		PanNode selectedNode1 = getMapPanel().getSelectedNode1();
+		PanNode selectedNode2 = getMapPanel().getSelectedNode2();
 		if(selectedNode1 != null && selectedNode2 != null) {
-			PanGraph.addToPath(selectedNode1, selectedNode2);
+			PanGraph.addWaypoint(selectedNode1, selectedNode2);
 		}
 		else
 			DialogUtils.showMessage(err_noMultipleSelection, err_selection);
 	}
 	
 	private void removeFromPath() {
-		PanNode selectedNode1 = mapPanel.getSelectedNode1();
-		PanNode selectedNode2 = mapPanel.getSelectedNode2();
+		PanNode selectedNode1 = getMapPanel().getSelectedNode1();
+		PanNode selectedNode2 = getMapPanel().getSelectedNode2();
 		if(selectedNode1 != null && selectedNode2 != null) {
-			PanGraph.removeFromPath(selectedNode1, selectedNode2);
+			PanGraph.removeWaypoint(selectedNode1, selectedNode2);
 		}
 		else
 			DialogUtils.showMessage(err_noMultipleSelection, err_selection);

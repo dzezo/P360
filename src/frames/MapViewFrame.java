@@ -38,7 +38,7 @@ public class MapViewFrame extends MapFrame {
 	private MapViewFrame() {
 		super("P360");
 		// instantiate map panel
-		mapPanel = new MapViewPanel();
+		setMapPanel(new MapViewPanel());
 		
 		// create frame
 		createToolBar();
@@ -71,8 +71,8 @@ public class MapViewFrame extends MapFrame {
 		setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		
 		// add map panel to frame
-		mapPanel.setParent(this);
-		add(mapPanel, BorderLayout.CENTER);
+		getMapPanel().setParent(this);
+		add(getMapPanel(), BorderLayout.CENTER);
 		
 		setVisible(false);
 		
@@ -106,7 +106,7 @@ public class MapViewFrame extends MapFrame {
         stopFrameRepaint();
         
         // deselect nodes
-        mapPanel.deselectNodes();
+        getMapPanel().deselectNodes();
         
     	// hide frame
         setVisible(false);
@@ -126,9 +126,9 @@ public class MapViewFrame extends MapFrame {
 		PanNode activePanorama = Scene.getActivePanorama();
 		int cX = (int) activePanorama.getMapNode().getCenterX();
 		int cY = (int) activePanorama.getMapNode().getCenterY();
-		int width = mapPanel.getWidth() / 2;
-		int height = mapPanel.getHeight() / 2;
-		mapPanel.setOrigin(cX - width, cY - height);
+		int width = getMapPanel().getWidth() / 2;
+		int height = getMapPanel().getHeight() / 2;
+		getMapPanel().setOrigin(cX - width, cY - height);
 	}
 	
 	private void setTextMode() {

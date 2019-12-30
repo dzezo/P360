@@ -64,29 +64,29 @@ public class PanGraph {
 		// Remove his connections
 		if(selectedPanorama.getLeft() != null) {
 			// This will remove waypoints between these nodes if there are any
-			removeFromPath(selectedPanorama, selectedPanorama.getLeft());
-			removeFromPath(selectedPanorama.getLeft(), selectedPanorama);
+			deleteWaypoint(selectedPanorama, selectedPanorama.getLeft());
+			deleteWaypoint(selectedPanorama.getLeft(), selectedPanorama);
 			
 			selectedPanorama.getLeft().setRight(null);
 			selectedPanorama.setLeft(null);
 		}
 		if(selectedPanorama.getRight() != null) {
-			removeFromPath(selectedPanorama, selectedPanorama.getRight());
-			removeFromPath(selectedPanorama.getRight(), selectedPanorama);
+			deleteWaypoint(selectedPanorama, selectedPanorama.getRight());
+			deleteWaypoint(selectedPanorama.getRight(), selectedPanorama);
 			
 			selectedPanorama.getRight().setLeft(null);
 			selectedPanorama.setRight(null);
 		}
 		if(selectedPanorama.getTop() != null) {
-			removeFromPath(selectedPanorama, selectedPanorama.getTop());
-			removeFromPath(selectedPanorama.getTop(), selectedPanorama);
+			deleteWaypoint(selectedPanorama, selectedPanorama.getTop());
+			deleteWaypoint(selectedPanorama.getTop(), selectedPanorama);
 			
 			selectedPanorama.getTop().setBot(null);
 			selectedPanorama.setTop(null);
 		}
 		if(selectedPanorama.getBot() != null) {
-			removeFromPath(selectedPanorama, selectedPanorama.getBot());
-			removeFromPath(selectedPanorama.getBot(), selectedPanorama);
+			deleteWaypoint(selectedPanorama, selectedPanorama.getBot());
+			deleteWaypoint(selectedPanorama.getBot(), selectedPanorama);
 			
 			selectedPanorama.getBot().setTop(null);
 			selectedPanorama.setBot(null);
@@ -120,6 +120,21 @@ public class PanGraph {
 		nodeCount--;
 	}
 
+	private static void deleteWaypoint(PanNode node1, PanNode node2) {
+		if(!tour.hasPath() || TourPath.WAYPOINT_NOT_FOUND == tour.remove(new Waypoint(node1, node2)))
+			return;
+		
+		// Reset graphics
+		node2.getMapNode().setArrow(node1, false);	
+		
+		// Reset TourNum on every node
+		for(PanNode node = head; node != null; node = node.getNext())
+			node.tourNum.clear();
+		
+		// Assign new TourNum on every node
+		tour.updateTourNumbers();
+	}
+	
 	public static void setHome(PanNode node) {
 		home = node;
 	}
@@ -572,7 +587,7 @@ public class PanGraph {
 		}
 	}
 	
-	public static void addToPath(PanNode node1, PanNode node2) {
+	public static void addWaypoint(PanNode node1, PanNode node2) {
 		// Check if nodes are connected
 		boolean connected = false;
 		if(node1.getLeft() == node2)
@@ -611,7 +626,7 @@ public class PanGraph {
 		node2.getMapNode().setArrow(node1, true);
 	}
 	
-	public static void removeFromPath(PanNode node1, PanNode node2) {
+	public static void removeWaypoint(PanNode node1, PanNode node2) {
 		// Check if path exists
 		if(!tour.hasPath()) {
 			DialogUtils.showMessage("Path does not exist.", "Path Deletion Aborted");

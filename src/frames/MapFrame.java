@@ -13,10 +13,10 @@ import panorama.PanMap;
 public abstract class MapFrame extends Frame {
 	protected static final Dimension mapSize = Toolkit.getDefaultToolkit().getScreenSize();
 	
-	protected ScheduledThreadPoolExecutor repaint = new ScheduledThreadPoolExecutor(5);
-	protected ScheduledFuture<?> repaintTasks;
+	private ScheduledThreadPoolExecutor repaint = new ScheduledThreadPoolExecutor(5);
+	private ScheduledFuture<?> repaintTasks;
 	
-	protected MapPanel mapPanel;
+	private MapPanel mapPanel;
 	
 	public MapFrame(String title) {
 		super(title);
@@ -24,6 +24,10 @@ public abstract class MapFrame extends Frame {
 	
 	public MapPanel getMapPanel() {
 		return this.mapPanel;
+	}
+	
+	public void setMapPanel(MapPanel newMapPanel) {
+		this.mapPanel = newMapPanel;
 	}
 	
 	protected void startFrameRepaint() {
