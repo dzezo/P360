@@ -1,4 +1,4 @@
-package utils;
+package loaders;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +14,9 @@ import static org.lwjgl.opengl.GL30.*;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
-public class Loader {
+import utils.BuffUtils;
+
+public class VertexLoader {
 	private static List<Integer> vaos = new ArrayList<Integer>();
 	private static List<Integer> vbos = new ArrayList<Integer>();
 	private static List<Integer> textures = new ArrayList<Integer>();
@@ -66,18 +68,6 @@ public class Loader {
 		return textureID;
 	}
 	
-	public static void cleanUp() {
-		for(int vao:vaos) {
-			glDeleteVertexArrays(vao);
-		}
-		for(int vbo:vbos) {
-			glDeleteBuffers(vbo);
-		}
-		for(int texture:textures) {
-			glDeleteTextures(texture);
-		}
-	}
-	
 	private static int storeDataInAttributeList(int attributeNumber, int coordinateSize, float[] data) {
 		int vboID = glGenBuffers();
 		
@@ -99,5 +89,17 @@ public class Loader {
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
 		
 		return vboID;
+	}
+	
+	public static void cleanUp() {
+		for(int vao:vaos) {
+			glDeleteVertexArrays(vao);
+		}
+		for(int vbo:vbos) {
+			glDeleteBuffers(vbo);
+		}
+		for(int texture:textures) {
+			glDeleteTextures(texture);
+		}
 	}
 }

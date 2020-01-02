@@ -28,7 +28,6 @@ import panorama.PanGraph;
 import panorama.PanNode;
 import touring.TourManager;
 import utils.AutoSave;
-import utils.ChooserUtils;
 import utils.ConfigData;
 import utils.DialogUtils;
 
@@ -229,7 +228,7 @@ public class MainFrame extends Frame {
 			if(dialogRes != DialogUtils.YES) return;
 		}
 		
-		String imagePath = ChooserUtils.openImageDialog();
+		String imagePath = DialogUtils.openImageDialog();
 		if(imagePath == null) return;
 		
 		// Set new map flag

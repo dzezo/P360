@@ -21,7 +21,6 @@ import panorama.PanGraph;
 import panorama.PanNode;
 import touring.TourManager;
 import utils.AutoSave;
-import utils.ChooserUtils;
 import utils.DialogUtils;
 
 @SuppressWarnings("serial")
@@ -238,7 +237,7 @@ public class MapDrawFrame extends MapFrame {
 	
 	/* Toolbar Actions */
 	private void add() {
-		File images[] = ChooserUtils.openImagesDialog();
+		File images[] = DialogUtils.openImagesDialog();
 		if(images == null) return;
 		
 		int spawnX, spawnY, offset;
@@ -297,7 +296,7 @@ public class MapDrawFrame extends MapFrame {
 			return;
 		}
 		
-		String audioPath = ChooserUtils.openAudioDialog();
+		String audioPath = DialogUtils.openAudioDialog();
 		if(audioPath == null) 
 			return;
 		
@@ -321,7 +320,7 @@ public class MapDrawFrame extends MapFrame {
 			return;
 		}
 		
-		String videoPath = ChooserUtils.openVideoDialog();
+		String videoPath = DialogUtils.openVideoDialog();
 		if(videoPath == null) 
 			return;
 		
@@ -386,7 +385,7 @@ public class MapDrawFrame extends MapFrame {
 	
 	public boolean load() {
 		// get path
-		String loadPath = ChooserUtils.openMapDialog();
+		String loadPath = DialogUtils.openMapDialog();
 		if(loadPath == null) return false;
 		
 		// load
@@ -410,7 +409,7 @@ public class MapDrawFrame extends MapFrame {
 		}
 		
 		// get path
-		String savePath = ChooserUtils.saveMapDialog();
+		String savePath = DialogUtils.saveMapDialog();
 		if(savePath == null) return;
 		
 		// save

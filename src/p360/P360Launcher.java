@@ -23,12 +23,12 @@ import gui.GuiSprites;
 import input.InputManager;
 import loaders.IconLoader;
 import loaders.ImageLoader;
+import loaders.VertexLoader;
 import shaders.GuiShader;
 import shaders.StaticShader;
 import utils.AutoLoad;
-import utils.ChooserUtils;
 import utils.ConfigData;
-import utils.Loader;
+import utils.DialogUtils;
 
 public class P360Launcher {
 	
@@ -44,7 +44,7 @@ public class P360Launcher {
 		}
 		
 		// set working dir
-		ChooserUtils.setWorkingDir();
+		DialogUtils.setWorkingDir();
 		
 		// init
 		SwingUtilities.invokeAndWait(new Runnable() {
@@ -127,7 +127,7 @@ public class P360Launcher {
 		// Releasing resources
 		shader.cleanUp();
 		guiShader.cleanUp();
-		Loader.cleanUp();
+		VertexLoader.cleanUp();
 		DisplayManager.closeDisplay();
 		
 		// Save config data
